@@ -29,6 +29,9 @@ def get_args():
     parser.add_argument('--checkpoint', type=str, default='',
                         help='for loading a checkpoint model')
 
+    parser.add_argument('--visualize', action='store_true', default=False,
+                        help='input batch size for testing (default: False)')
+
     return parser.parse_args()
 
 

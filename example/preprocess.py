@@ -1,6 +1,3 @@
-
-
-
 def train_test_split(array_list, train_frac=0.8, val_frac=0.1, test_frac=0.1):
     """Split data into three subsets (train, validation, and test).
 
