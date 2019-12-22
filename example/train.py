@@ -3,7 +3,8 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
-from tqdm import tqdm
+# from tqdm import tqdm
+from tqdm import tqdm_notebook as tqdm
 
 import util
 from util import AverageMeter
