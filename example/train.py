@@ -19,7 +19,7 @@ def train_model(args, model, criterion, train_loader, optimizer, epoch, writer):
     model = model.to(device)
 
     train_loss, running_loss = 0.0, 0.0
-    with tqdm(desc='Batch', total=len(train_loader), ncols=120, position=1) as pbar:
+    with tqdm(desc='Batch', total=len(train_loader), ncols=120, position=1, leave=True) as pbar:
         for i, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
@@ -67,7 +67,7 @@ def main():
     train_loader, val_loader, _ = load_data(args)
 
     best_loss = np.inf
-    with tqdm(desc='Epoch', total=args.epochs + 1, ncols=120, position=0) as pbar:
+    with tqdm(desc='Epoch', total=args.epochs + 1, ncols=120, position=0, leave=True) as pbar:
         for epoch in range(start_epoch, args.epochs + 1):
             train_loss = train_model(args, model, criterion, train_loader, optimizer, epoch, writer)
             val_loss = test_model(args, model, criterion, val_loader)

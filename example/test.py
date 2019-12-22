@@ -14,7 +14,7 @@ def test_model(args, model, criterion, test_loader):
 
     test_loss, correct = 0, 0
     with torch.no_grad():
-        with tqdm(desc='Batch', total=len(test_loader), ncols=120, position=0) as pbar:
+        with tqdm(desc='Batch', total=len(test_loader), ncols=120, position=0, leave=True) as pbar:
             for data, target in test_loader:
                 data, target = data.to(device), target.to(device)
                 output = model(data)
