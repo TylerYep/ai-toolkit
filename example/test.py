@@ -1,23 +1,24 @@
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from torchvision import datasets, transforms
+from tqdm import tqdm
 
+import util
 from dataset import load_data
-from util import get_args
+from models import BasicCNN
 
 
-def test(args, model, device, test_loader):
+def test_model(args, model, device, test_loader):
     model.eval()
     test_loss, correct = 0, 0
     with torch.no_grad():
-        for data, target in test_loader:
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
-            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-            correct += pred.eq(target.view_as(pred)).sum().item()
+        with tqdm(desc='Batch', total=len(test_loader), ncols=120) as pbar:
+            for data, target in test_loader:
+                data, target = data.to(device), target.to(device)
+                output = model(data)
+                test_loss += F.nll_loss(output, target, reduction='sum').item()
+                pred = output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(target.view_as(pred)).sum().item()
+                pbar.update()
 
     test_loss /= len(test_loader.dataset)
 
@@ -28,18 +29,16 @@ def test(args, model, device, test_loader):
 
 
 def main():
-    args = get_args()
-    checkpoint = torch.load(args.checkpoint_path)
+    args = util.get_args()
+    util.set_seed()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    torch.manual_seed(args.seed)
-    use_cuda = not args.no_cuda and torch.cuda.is_available()
-    device = torch.device("cuda" if use_cuda else "cpu")
-
-    _, test_loader = load_data(args)
+    _, _, test_loader = load_data(args)
     model = BasicCNN().to(device)
-    model.load_state_dict(checkpoint['state_dict']) # TODO
+    if args.checkpoint != '':
+        util.load_checkpoint(args.checkpoint, model)
 
-    test(args, model, device, test_loader)
+    test_model(args, model, device, test_loader)
 
 
 if __name__ == '__main__':

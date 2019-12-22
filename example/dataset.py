@@ -1,4 +1,3 @@
-import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 from torchvision import datasets, transforms
@@ -10,15 +9,11 @@ def load_data(args):
     test_set = datasets.MNIST('data', train=False, transform=norm)
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
-    return train_loader, test_loader
+    return train_loader, test_loader, test_loader
 
 
-class RubricDataset(Dataset):
-    r"""Dataset for training a model on a synthetic dataset using a rubric
-
-    @param data_path: string
-                      path to the rubric sampled dataset
-    """
+class MyDataset(Dataset):
+    """ Dataset for training a model on a dataset. """
     def __init__(self):
         super().__init__()
         self.data = []

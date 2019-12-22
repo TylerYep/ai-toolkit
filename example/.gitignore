@@ -4,7 +4,7 @@
 *.pkl
 *.pth
 data/*
-logs/
+!data/.gitkeep
 checkpoints/
 
 # Byte-compiled / optimized / DLL files
