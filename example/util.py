@@ -1,45 +1,6 @@
 import os
 import shutil
-import argparse
 import torch
-import numpy as np
-
-
-def get_args():
-    parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
-
-    parser.add_argument('--batch-size', type=int, default=100, metavar='N',
-                        help='input batch size for training (default: 100)')
-
-    parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
-                        help='input batch size for testing (default: 1000)')
-
-    parser.add_argument('--epochs', type=int, default=2, metavar='N',
-                        help='number of epochs to train (default: 14)')
-
-    parser.add_argument('--lr', type=float, default=1.0, metavar='LR',
-                        help='learning rate (default: 1.0)')
-
-    parser.add_argument('--gamma', type=float, default=0.7, metavar='M',
-                        help='Learning rate step gamma (default: 0.7)')
-
-    parser.add_argument('--log-interval', type=int, default=10, metavar='N',
-                        help='how many batches to wait before logging training status')
-
-    parser.add_argument('--checkpoint', type=str, default='',
-                        help='for loading a checkpoint model')
-
-    parser.add_argument('--visualize', action='store_true', default=False,
-                        help='input batch size for testing (default: False)')
-
-    return parser.parse_args()
-
-
-def set_seed():
-    np.random.seed(0)
-    torch.manual_seed(0)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
 
 
 def get_run_name(save_dir='checkpoints'):
@@ -69,9 +30,11 @@ def save_checkpoint(state, run_name, is_best):
         is_best: (bool) True if it is the best model seen till now
         checkpoint: (string) folder where parameters are to be saved
     """
+    print('Saving checkpoint...')
     save_path = os.path.join(run_name, 'checkpoint.pth.tar')
     torch.save(state, save_path)
     if is_best:
+        print('Saving new model_best...')
         shutil.copyfile(save_path, os.path.join(run_name, 'model_best.pth.tar'))
 
 
@@ -83,12 +46,31 @@ def load_checkpoint(checkpoint_run, model, optimizer=None):
         model: (torch.nn.Module) model for which the parameters are loaded
         optimizer: (torch.optim) optional: resume optimizer from checkpoint
     """
+    print('Loading checkpoint...')
     checkpoint = torch.load(os.path.join('checkpoints', checkpoint_run, 'checkpoint.pth.tar'))
     torch.set_rng_state(checkpoint['rng_state'])
     model.load_state_dict(checkpoint['state_dict'])
     if optimizer is not None:
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     return checkpoint
+
+
+class Metrics:
+    def __init__(self, metric_names):
+        self.metric_names = metric_names
+        self.metric_data = {name: 0.0 for name in metric_names}
+
+    def __getattr__(self, name):
+        return self.metric_data[name]
+
+    def reset(self, metric_names=None):
+        if metric_names is None:
+            metric_names = self.metric_names
+        for name in metric_names:
+            self.metric_data[name] = 0.0
+
+    def update(self, name, val, n=1):
+        self.metric_data[name] += val
 
 
 class AverageMeter():

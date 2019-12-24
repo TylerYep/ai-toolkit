@@ -1,20 +1,21 @@
 import torch
 import torch.nn.functional as F
-from tqdm import tqdm
+if torch.cuda.is_available():
+    from tqdm import tqdm_notebook as tqdm
+else:
+    from tqdm import tqdm
 
+from args import init_pipeline
 import util
-from dataset import load_data
+from dataset import load_test_data
 from models import BasicCNN
 
 
-def test_model(args, model, criterion, test_loader):
+def test_model(args, model, criterion, test_loader, device):
     model.eval()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
-
     test_loss, correct = 0, 0
     with torch.no_grad():
-        with tqdm(desc='Batch', total=len(test_loader), ncols=120, position=0, leave=True) as pbar:
+        with tqdm(desc='Test Batch', total=len(test_loader), ncols=120) as pbar:
             for data, target in test_loader:
                 data, target = data.to(device), target.to(device)
                 output = model(data)
@@ -32,16 +33,15 @@ def test_model(args, model, criterion, test_loader):
 
 
 def main():
-    args = util.get_args()
-    util.set_seed()
+    args, device = init_pipeline()
 
-    _, _, test_loader = load_data(args)
-    model = BasicCNN()
+    test_loader = load_test_data(args)
+    model = BasicCNN().to(device)
     if args.checkpoint != '':
         util.load_checkpoint(args.checkpoint, model)
 
     criterion = F.nll_loss
-    test_model(args, model, criterion, test_loader)
+    test_model(args, model, criterion, test_loader, device)
 
 
 if __name__ == '__main__':
