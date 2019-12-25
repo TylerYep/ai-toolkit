@@ -13,7 +13,7 @@ import util
 from args import init_pipeline
 from util import Metrics
 from dataset import load_train_data
-from models import BasicCNN
+from models import BasicCNN as Model
 from viz import visualize
 
 
@@ -33,36 +33,34 @@ def update_metrics(metrics, args, loss, epoch, i, writer, pbar, loader, accuracy
     pbar.update()
 
 
-def train_model(args, model, criterion, train_loader, optimizer, epoch, writer, device):
+def get_results(metrics, data_loader, writer, epoch, mode='Train'):
+    print(f'{mode} Loss: {metrics.epoch_loss / len(data_loader):.4f}',
+          f'Accuracy: {100 * metrics.epoch_acc / len(data_loader):.2f}%')
+    writer.add_scalar(f'{mode} Epoch Loss', metrics.epoch_loss / len(data_loader), epoch)
+    writer.add_scalar(f'{mode} Epoch Accuracy', metrics.epoch_acc / len(data_loader), epoch)
+    return metrics.epoch_loss
+
+
+def train_model(args, model, criterion, train_loader, optimizer, epoch, writer, device, metrics):
     model.train()
-    # summary(model, (1, 64, 64))
-    metrics = Metrics(['epoch_loss', 'running_loss', 'epoch_acc', 'running_acc'])
     with tqdm(desc='Train Batch', total=len(train_loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
-
             if args.visualize:
                 visualize(data, target)
-
             output = model(data)
             loss = criterion(output, target)
             loss.backward()
             optimizer.step()
             accuracy = (output.argmax(1) == target).float().mean()
-
             update_metrics(metrics, args, loss, epoch, i, writer, pbar, train_loader, accuracy)
 
-    print(f'Train Loss: {metrics.epoch_loss / len(train_loader):.4f}',
-          f'Accuracy: {100 * metrics.epoch_acc / len(train_loader):.2f}%')
-    writer.add_scalar('training epoch loss', metrics.epoch_loss / len(train_loader), epoch)
-    writer.add_scalar('training epoch accuracy', metrics.epoch_acc / len(train_loader), epoch)
-    return metrics.epoch_loss
+    return get_results(metrics, train_loader, writer, epoch)
 
 
-def validate_model(args, model, criterion, val_loader, epoch, writer, device):
+def validate_model(args, model, criterion, val_loader, epoch, writer, device, metrics):
     model.eval()
-    metrics = Metrics(['epoch_loss', 'running_loss', 'epoch_acc', 'running_acc'])
     with torch.no_grad():
         with tqdm(desc='Val Batch', total=len(val_loader), ncols=120) as pbar:
             for i, (data, target) in enumerate(val_loader):
@@ -72,17 +70,15 @@ def validate_model(args, model, criterion, val_loader, epoch, writer, device):
                 accuracy = (output.argmax(1) == target).float().mean()
                 update_metrics(metrics, args, loss, epoch, i, writer, pbar, val_loader, accuracy)
 
-    print(f'Val Loss: {metrics.epoch_loss / len(val_loader):.4f}',
-          f'Accuracy: {100 * metrics.epoch_acc / len(val_loader):.2f}%')
-    writer.add_scalar('val epoch loss', metrics.epoch_loss / len(val_loader), epoch)
-    writer.add_scalar('val epoch accuracy', metrics.epoch_acc / len(val_loader), epoch)
-    return metrics.epoch_loss
+    return get_results(metrics, val_loader, writer, epoch, mode='Val')
 
 
 def main():
     args, device = init_pipeline()
 
-    model = BasicCNN().to(device)
+    model = Model().to(device)
+    summary(model, (1, 64, 64))
+
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     criterion = F.nll_loss
 
@@ -90,16 +86,19 @@ def main():
     if args.checkpoint != '':
         checkpoint = util.load_checkpoint(args.checkpoint, model, optimizer)
         start_epoch = checkpoint['epoch']
+        run_name = checkpoint['run_name']
+    else:
+        run_name = util.get_run_name()
 
-    run_name = util.get_run_name()
     writer = SummaryWriter(run_name)
     train_loader, val_loader = load_train_data(args)
+    metrics = Metrics(['epoch_loss', 'running_loss', 'epoch_acc', 'running_acc'])
 
     best_loss = np.inf
     for epoch in range(start_epoch, args.epochs + 1):
         print(f'Epoch [{epoch}/{args.epochs}]')
-        train_loss = train_model(args, model, criterion, train_loader, optimizer, epoch, writer, device)
-        val_loss = validate_model(args, model, criterion, val_loader, epoch, writer, device)
+        train_loss = train_model(args, model, criterion, train_loader, optimizer, epoch, writer, device, metrics)
+        val_loss = validate_model(args, model, criterion, val_loader, epoch, writer, device, metrics)
 
         is_best = val_loss < best_loss
         best_loss = min(val_loss, best_loss)
