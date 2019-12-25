@@ -1,17 +1,18 @@
 import torch
 import torch.nn.functional as F
+
+from args import init_pipeline
+import util
+from dataset import load_test_data
+from models import BasicCNN as Model
+
 if torch.cuda.is_available():
     from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm
 
-from args import init_pipeline
-import util
-from dataset import load_test_data
-from models import BasicCNN
 
-
-def test_model(args, model, criterion, test_loader, device):
+def test_model(test_loader, model, device, criterion):
     model.eval()
     test_loss, correct = 0, 0
     with torch.no_grad():
@@ -35,13 +36,13 @@ def test_model(args, model, criterion, test_loader, device):
 def main():
     args, device = init_pipeline()
 
-    test_loader = load_test_data(args)
-    model = BasicCNN().to(device)
+    criterion = F.nll_loss
+    model = Model().to(device)
     if args.checkpoint != '':
         util.load_checkpoint(args.checkpoint, model)
 
-    criterion = F.nll_loss
-    test_model(args, model, criterion, test_loader, device)
+    test_loader = load_test_data(args)
+    test_model(test_loader, model, device, criterion)
 
 
 if __name__ == '__main__':

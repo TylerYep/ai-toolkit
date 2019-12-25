@@ -32,7 +32,7 @@ def init_pipeline():
     parser.add_argument('--checkpoint', type=str, default='',
                         help='for loading a checkpoint model')
 
-    parser.add_argument('--visualize', action='store_true', default=False,
-                        help='input batch size for testing (default: False)')
+    parser.add_argument('--name', type=str, default='',
+                        help='name to save in checkpoint/')
 
     return parser.parse_args(), device

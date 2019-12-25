@@ -1,3 +1,5 @@
+from typing import Tuple
+from argparse import Namespace
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
@@ -8,8 +10,9 @@ if torch.cuda.is_available():
 else:
     DATA_PATH = 'data/'
 
+INPUT_SHAPE = (1, 28, 28)
 
-def load_train_data(args):
+def load_train_data(args: Namespace) -> Tuple[DataLoader, DataLoader]:
     norm = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
     train_set = datasets.MNIST('data', train=True, download=True, transform=norm)
     val_set = datasets.MNIST('data', train=False, transform=norm)
@@ -18,7 +21,7 @@ def load_train_data(args):
     return train_loader, val_loader
 
 
-def load_test_data(args):
+def load_test_data(args: Namespace) -> DataLoader:
     norm = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
     test_set = datasets.MNIST('data', train=False, transform=norm)
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
@@ -30,6 +33,7 @@ class MyDataset(Dataset):
     def __init__(self, data_path, transform=None):
         super().__init__()
         self.label = pd.read_csv(data_path)
+        self.data = []
 
     def __len__(self):
         return len(self.data)
