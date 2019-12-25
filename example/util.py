@@ -56,9 +56,11 @@ def load_checkpoint(checkpoint_run, model, optimizer=None):
 
 
 class Metrics:
-    def __init__(self, metric_names):
+    def __init__(self, writer, metric_names, log_interval=10):
+        self.writer = writer
         self.metric_names = metric_names
         self.metric_data = {name: 0.0 for name in metric_names}
+        self.log_interval = log_interval
 
     def __getattr__(self, name):
         return self.metric_data[name]
@@ -66,11 +68,15 @@ class Metrics:
     def reset(self, metric_names=None):
         if metric_names is None:
             metric_names = self.metric_names
+
         for name in metric_names:
             self.metric_data[name] = 0.0
 
     def update(self, name, val, n=1):
         self.metric_data[name] += val
+
+    def write(self, title, val, step_num):
+        self.writer.add_scalar(title, val, step_num)
 
 
 class AverageMeter():
