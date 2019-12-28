@@ -1,15 +1,13 @@
 import os
 import torch
 import matplotlib.pyplot as plt
-import cv2
 import numpy as np
 from dataset import load_train_data
+from args import init_pipeline
 
 
 def visualize(data, target, run_name=''):
-    '''
-    data is of shape (B, C, H, W)
-    '''
+    ''' Data is of shape (B, C, H, W) '''
     NUM_SUBPLOTS = 27
     NUM_ROWS = 4
     fig = plt.figure(figsize=(25, 16))
@@ -60,7 +58,8 @@ def compute_saliency(inputs, run_name=''):
 
 
 def main():
-    train_loader, _ = load_train_data()
+    args, _ = init_pipeline()
+    train_loader, _ = load_train_data(args)
     for data, target in train_loader:
         visualize(data, target)
 

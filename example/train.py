@@ -35,9 +35,7 @@ def verify_model(model, loader, optimizer, device, test_val=2):
 
     assert loss.data != 0
     assert (data.grad[test_val] != 0).any()
-    for i in range(data.grad.shape[0]):
-        if i != test_val:
-            assert (data.grad[i] == 0.).all()
+    assert (data.grad[0: test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all()
 
 
 def main():
@@ -49,7 +47,6 @@ def main():
     checkpoint = util.load_checkpoint(args.checkpoint, model, optimizer)
 
     def train_and_validate(loader, metrics, mode) -> float:
-        run_name = metrics.writer.log_dir
         if mode == Mode.TRAIN:
             model.train()
             torch.set_grad_enabled(True)
@@ -67,8 +64,8 @@ def main():
                     optimizer.zero_grad()
 
                     if should_visualize:
-                        visualize(data, target, run_name)
-                        compute_activations(model, data, run_name)
+                        visualize(data, target, metrics.run_name)
+                        compute_activations(model, data, metrics.run_name)
                         data.requires_grad_()
 
                 output = model(data)
@@ -79,7 +76,7 @@ def main():
                     optimizer.step()
 
                     if should_visualize:
-                        compute_saliency(data, run_name)
+                        compute_saliency(data, metrics.run_name)
 
                 update_metrics(metrics, pbar, i, data, loss, output, target, mode)
         return get_results(metrics, mode)
@@ -88,7 +85,7 @@ def main():
     verify_model(model, train_loader, optimizer, device)
 
     run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
-    metrics = Metrics(run_name, metric_names, args.log_interval)
+    metrics = Metrics(run_name, METRIC_NAMES, args.log_interval)
 
     best_loss = np.inf
     start_epoch = checkpoint['epoch'] if checkpoint else 1
@@ -116,15 +113,18 @@ def update_metrics(metrics, pbar, i, data, loss, output, target, mode) -> None:
     metrics.update('epoch_acc', accuracy.item())
     metrics.update('running_acc', accuracy.item())
 
-    if i % metrics.log_interval == 0:
-        num_steps = (metrics.epoch-1) * metrics.num_examples + i
+    num_steps = (metrics.epoch-1) * metrics.num_examples + i
+    if i % metrics.log_interval == 0 and i > 0:
         metrics.write(f'{mode} Loss', metrics.running_loss / metrics.log_interval, num_steps)
         metrics.write(f'{mode} Accuracy', metrics.running_acc / metrics.log_interval, num_steps)
         metrics.reset(['running_loss', 'running_acc'])
 
-        if mode == Mode.VAL:
-            rand_i = random.randint(0, len(output.data)-1)
-            metrics.writer.add_image(str(int(target.data[rand_i])), data[i], num_steps)
+    if mode == Mode.VAL:
+        for j in range(output.shape[0]):
+            pred, ind = torch.max(output.data[j], dim=0)
+            metrics.writer.add_image(f'{int(target.data[j])}/Pred:{ind}',
+                                     data[j],
+                                     num_steps)
 
     pbar.set_postfix({'Loss': f'{loss.item():.5f}', 'Accuracy': accuracy.item()})
     pbar.update()

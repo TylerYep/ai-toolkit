@@ -10,7 +10,9 @@ if torch.cuda.is_available():
 else:
     DATA_PATH = 'data/'
 
+
 INPUT_SHAPE = (1, 28, 28)
+
 
 def load_train_data(args: Namespace) -> Tuple[DataLoader, DataLoader]:
     norm = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
