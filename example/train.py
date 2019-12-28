@@ -1,8 +1,8 @@
+import random
 import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
 import torchsummary
 
 import util
@@ -10,12 +10,34 @@ from util import Metrics, Mode
 from args import init_pipeline
 from dataset import load_train_data, INPUT_SHAPE
 from models import BasicCNN as Model
-from viz import visualize
+from viz import visualize, compute_activations, compute_saliency
 
 if torch.cuda.is_available():
     from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm
+
+
+METRIC_NAMES = ('epoch_loss', 'running_loss', 'epoch_acc', 'running_acc')
+
+
+def verify_model(model, loader, optimizer, device, test_val=2):
+    model.eval()
+    torch.set_grad_enabled(True)
+    data, target = next(iter(loader))
+    data, target = data.to(device), target.to(device)
+    optimizer.zero_grad()
+    data.requires_grad_()
+
+    output = model(data)
+    loss = output[test_val].sum()
+    loss.backward()
+
+    assert loss.data != 0
+    assert (data.grad[test_val] != 0).any()
+    for i in range(data.grad.shape[0]):
+        if i != test_val:
+            assert (data.grad[i] == 0.).all()
 
 
 def main():
@@ -24,12 +46,10 @@ def main():
     model = Model().to(device)
     torchsummary.summary(model, INPUT_SHAPE)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-
     checkpoint = util.load_checkpoint(args.checkpoint, model, optimizer)
-    run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
-    start_epoch = checkpoint['epoch'] if checkpoint else 1
 
     def train_and_validate(loader, metrics, mode) -> float:
+        run_name = metrics.writer.log_dir
         if mode == Mode.TRAIN:
             model.train()
             torch.set_grad_enabled(True)
@@ -41,11 +61,15 @@ def main():
         with tqdm(desc='', total=len(loader), ncols=120) as pbar:
             for i, (data, target) in enumerate(loader):
                 data, target = data.to(device), target.to(device)
+                should_visualize = args.visualize and i == 0 and metrics.epoch == 1
+
                 if mode == Mode.TRAIN:
                     optimizer.zero_grad()
 
-                if i == 0 and metrics.epoch == 1:
-                    visualize(data, target, run_name)
+                    if should_visualize:
+                        visualize(data, target, run_name)
+                        compute_activations(model, data, run_name)
+                        data.requires_grad_()
 
                 output = model(data)
                 loss = criterion(output, target)
@@ -53,14 +77,21 @@ def main():
                 if mode == Mode.TRAIN:
                     loss.backward()
                     optimizer.step()
-                update_metrics(metrics, pbar, i, loss, output, target, mode)
+
+                    if should_visualize:
+                        compute_saliency(data, run_name)
+
+                update_metrics(metrics, pbar, i, data, loss, output, target, mode)
         return get_results(metrics, mode)
 
-    metric_names = ('epoch_loss', 'running_loss', 'epoch_acc', 'running_acc')
-    metrics = Metrics(SummaryWriter(run_name), metric_names, args.log_interval)
     train_loader, val_loader = load_train_data(args)
+    verify_model(model, train_loader, optimizer, device)
+
+    run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
+    metrics = Metrics(run_name, metric_names, args.log_interval)
 
     best_loss = np.inf
+    start_epoch = checkpoint['epoch'] if checkpoint else 1
     for epoch in range(start_epoch, args.epochs + 1):
         print(f'Epoch [{epoch}/{args.epochs}]')
         metrics.set_epoch(epoch)
@@ -78,7 +109,7 @@ def main():
         }, run_name, is_best)
 
 
-def update_metrics(metrics, pbar, i, loss, output, target, mode) -> None:
+def update_metrics(metrics, pbar, i, data, loss, output, target, mode) -> None:
     accuracy = (output.argmax(1) == target).float().mean()
     metrics.update('epoch_loss', loss.item())
     metrics.update('running_loss', loss.item())
@@ -90,6 +121,10 @@ def update_metrics(metrics, pbar, i, loss, output, target, mode) -> None:
         metrics.write(f'{mode} Loss', metrics.running_loss / metrics.log_interval, num_steps)
         metrics.write(f'{mode} Accuracy', metrics.running_acc / metrics.log_interval, num_steps)
         metrics.reset(['running_loss', 'running_acc'])
+
+        if mode == Mode.VAL:
+            rand_i = random.randint(0, len(output.data)-1)
+            metrics.writer.add_image(str(int(target.data[rand_i])), data[i], num_steps)
 
     pbar.set_postfix({'Loss': f'{loss.item():.5f}', 'Accuracy': accuracy.item()})
     pbar.update()

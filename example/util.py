@@ -5,6 +5,7 @@ import os
 import shutil
 import torch
 import torch.nn as nn
+from torch.utils.tensorboard import SummaryWriter
 
 SAVE_DIR = 'checkpoints'
 
@@ -48,7 +49,7 @@ def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None
         shutil.copyfile(save_path, os.path.join(run_name, 'model_best.pth.tar'))
 
 
-def load_checkpoint(checkpoint_run: str, model: nn.Module, optimizer=None) -> Dict[str, Any]:
+def load_checkpoint(checkpoint_name: str, model: nn.Module, optimizer=None) -> Dict[str, Any]:
     """ Loads model parameters (state_dict) from file_path. If optimizer is provided,
     loads state_dict of optimizer assuming it is present in checkpoint.
     Args:
@@ -56,10 +57,10 @@ def load_checkpoint(checkpoint_run: str, model: nn.Module, optimizer=None) -> Di
         model: (torch.nn.Module) model for which the parameters are loaded
         optimizer: (torch.optim) optional: resume optimizer from checkpoint
     """
-    if not checkpoint_run:
+    if not checkpoint_name:
         return {}
     print('Loading checkpoint...')
-    checkpoint = torch.load(os.path.join(SAVE_DIR, checkpoint_run, 'checkpoint.pth.tar'))
+    checkpoint = torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'checkpoint.pth.tar'))
     torch.set_rng_state(checkpoint['rng_state'])
     model.load_state_dict(checkpoint['state_dict'])
     if optimizer is not None:
@@ -74,8 +75,9 @@ class Mode(Enum):
 
 
 class Metrics:
-    def __init__(self, writer, metric_names, log_interval=10):
-        self.writer = writer
+    def __init__(self, run_name, metric_names, log_interval=10):
+        self.run_name = run_name
+        self.writer = SummaryWriter(run_name)
         self.epoch = 1
         self.metric_names = metric_names
         self.metric_data = {name: 0.0 for name in metric_names}

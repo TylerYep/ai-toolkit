@@ -33,6 +33,9 @@ def init_pipeline():
                         help='for loading a checkpoint model')
 
     parser.add_argument('--name', type=str, default='',
-                        help='name to save in checkpoint/')
+                        help='folder to save files to checkpoint/')
+
+    parser.add_argument('--visualize', action='store_true',
+                        help='folder to save files to checkpoint/')
 
     return parser.parse_args(), device

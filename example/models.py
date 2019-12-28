@@ -27,3 +27,19 @@ class BasicCNN(nn.Module):
         out = self.fc2(out)
         out = F.log_softmax(out, dim=1)
         return out
+
+    def forward_with_activations(self, x):
+        out = self.conv1(x)
+        first_activation = out
+        out = F.relu(out)
+        second_activation = out
+        out = self.conv2(out)
+        out = F.max_pool2d(out, 2)
+        out = self.dropout1(out)
+        out = torch.flatten(out, 1)
+        out = self.fc1(out)
+        out = F.relu(out)
+        out = self.dropout2(out)
+        out = self.fc2(out)
+        out = F.log_softmax(out, dim=1)
+        return out, [first_activation, second_activation]
