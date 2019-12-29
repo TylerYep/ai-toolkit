@@ -7,7 +7,7 @@ class Accuracy(Metric):
         self.running_acc = 0.0
 
     def formatted(self, computed_val):
-        return f'{self.name}: {computed_val:.2f}%'
+        return f'{self.name}: {100. * computed_val:.2f}%'
 
     def reset(self):
         self.running_acc = 0.0
@@ -20,4 +20,4 @@ class Accuracy(Metric):
         return self.running_acc / log_interval
 
     def get_epoch_result(self, num_examples):
-        return 100. * self.epoch_acc / num_examples
+        return self.epoch_acc / num_examples

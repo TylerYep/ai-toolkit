@@ -5,9 +5,9 @@ import torch.optim as optim
 import torchsummary
 
 import util
-from metric_tracker import MetricTracker, Mode
 from args import init_pipeline
 from dataset import load_train_data, INPUT_SHAPE
+from metric_tracker import MetricTracker, Mode
 from models import BasicCNN as Model
 from viz import visualize, compute_activations, compute_saliency
 
@@ -41,11 +41,11 @@ def main():
     args, device = init_pipeline()
     criterion = F.nll_loss
     model = Model().to(device)
-    torchsummary.summary(model, INPUT_SHAPE)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     checkpoint = util.load_checkpoint(args.checkpoint, model, optimizer)
+    torchsummary.summary(model, INPUT_SHAPE)
 
-    def train_and_validate(loader, metrics, mode) -> float:
+    def train_and_validate(loader, metrics, run_name, mode) -> float:
         if mode == Mode.TRAIN:
             model.train()
             torch.set_grad_enabled(True)
@@ -54,7 +54,7 @@ def main():
             torch.set_grad_enabled(False)
 
         metrics.set_num_examples(len(loader))
-        with tqdm(desc='', total=len(loader), ncols=120) as pbar:
+        with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
             for i, (data, target) in enumerate(loader):
                 data, target = data.to(device), target.to(device)
                 should_visualize = args.visualize and i == 0 and metrics.epoch == 1
@@ -63,8 +63,8 @@ def main():
                     optimizer.zero_grad()
 
                     if should_visualize:
-                        visualize(data, target, metrics.run_name)
-                        compute_activations(model, data, metrics.run_name)
+                        visualize(data, target, run_name)
+                        compute_activations(model, data, run_name)
                         data.requires_grad_()
 
                 output = model(data)
@@ -75,11 +75,10 @@ def main():
                     optimizer.step()
 
                     if should_visualize:
-                        compute_saliency(data, metrics.run_name)
+                        compute_saliency(data, run_name)
 
-                metrics.batch_update(i, data, loss, output, target, mode)
-                # accuracy = (output.argmax(1) == target).float().mean()
-                # pbar.set_postfix({'Loss': f'{loss.item():.4f}', 'Accuracy': accuracy.item()})
+                tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
+                pbar.set_postfix(tqdm_dict)
                 pbar.update()
 
         return metrics.get_epoch_results(mode)
@@ -95,8 +94,8 @@ def main():
     for epoch in range(start_epoch, args.epochs + 1):
         print(f'Epoch [{epoch}/{args.epochs}]')
         metrics.set_epoch(epoch)
-        train_loss = train_and_validate(train_loader, metrics, Mode.TRAIN)
-        val_loss = train_and_validate(val_loader, metrics, Mode.VAL)
+        train_loss = train_and_validate(train_loader, metrics, run_name, Mode.TRAIN)
+        val_loss = train_and_validate(val_loader, metrics, run_name, Mode.VAL)
 
         is_best = val_loss < best_loss
         best_loss = min(val_loss, best_loss)
