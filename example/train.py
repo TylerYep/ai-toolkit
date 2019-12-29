@@ -1,4 +1,3 @@
-import random
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -79,8 +78,8 @@ def main():
                         compute_saliency(data, metrics.run_name)
 
                 metrics.batch_update(i, data, loss, output, target, mode)
-                accuracy = (output.argmax(1) == target).float().mean()
-                pbar.set_postfix({'Loss': f'{loss.item():.4f}', 'Accuracy': accuracy.item()})
+                # accuracy = (output.argmax(1) == target).float().mean()
+                # pbar.set_postfix({'Loss': f'{loss.item():.4f}', 'Accuracy': accuracy.item()})
                 pbar.update()
 
         return metrics.get_epoch_results(mode)

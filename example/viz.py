@@ -47,7 +47,7 @@ def compute_activations(model, inputs, run_name=''):
 
 def compute_saliency(inputs, run_name=''):
     saliency = inputs.grad.data
-    saliency, _ = torch.max(saliency, dim=1) # dim 1 is the channel dimension
+    saliency, _ = torch.max(saliency, dim=1)  # dim 1 is the channel dimension
     plt.imshow(saliency.numpy()[0], cmap=plt.cm.gray)
     plt.axis('off')
     # plt.gcf().set_size_inches(12, 5)

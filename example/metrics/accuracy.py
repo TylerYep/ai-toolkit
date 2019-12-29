@@ -6,9 +6,6 @@ class Accuracy(Metric):
         self.epoch_acc = 0.0
         self.running_acc = 0.0
 
-    def __repr__(self):
-        return self.running_acc
-
     def formatted(self, computed_val):
         return f'{self.name}: {computed_val:.2f}%'
 

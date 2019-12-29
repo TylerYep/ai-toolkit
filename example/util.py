@@ -8,39 +8,6 @@ import torch.nn as nn
 SAVE_DIR = 'checkpoints'
 
 
-class Metrics:
-    def __init__(self, run_name, metric_names, log_interval=10):
-        self.run_name = run_name
-        self.writer = SummaryWriter(run_name)
-        self.epoch = 1
-        self.metric_names = metric_names
-        self.metric_data = {name: 0.0 for name in metric_names}
-        self.log_interval = log_interval
-        self.num_examples = 0
-
-    def __getattr__(self, name) -> float:
-        return self.metric_data[name]
-
-    def set_epoch(self, new_epoch):
-        self.epoch = new_epoch
-
-    def reset(self, metric_names=None):
-        if metric_names is None:
-            metric_names = self.metric_names
-
-        for name in metric_names:
-            self.metric_data[name] = 0.0
-
-    def update(self, name, val, n=1):
-        self.metric_data[name] += val * n
-
-    def write(self, title, val, step_num):
-        self.writer.add_scalar(title, val, step_num)
-
-    def set_num_examples(self, num_examples):
-        self.num_examples = num_examples
-
-
 def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)

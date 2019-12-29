@@ -1,6 +1,4 @@
 from enum import Enum, unique
-import numpy as np
-import torch
 from torch.utils.tensorboard import SummaryWriter
 
 from metrics import get_metric
@@ -49,15 +47,16 @@ class MetricTracker:
     def write_all(self, num_steps, mode):
         for metric, metric_obj in self.metric_data.items():
             batch_result = metric_obj.get_batch_result(self.log_interval)
-            self.write(f'{mode} Batch {metric}', batch_result, num_steps)
+            self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
 
     def batch_update(self, i, data, loss, output, target, mode):
         accuracy = (output.argmax(1) == target).float().mean()
         val_dict = {'Loss': loss.item(), 'Accuracy': accuracy.item()}
         self.update_all(val_dict)
-        if i % self.log_interval == 0 and i != 0:
-            num_steps = (self.epoch-1) * self.num_examples + i
-            self.write_all(num_steps, mode)
+        num_steps = (self.epoch-1) * self.num_examples + i
+        if i % self.log_interval == 0 and mode == Mode.TRAIN:
+            if i > 0:
+                self.write_all(num_steps, mode)
             self.reset_all()
 
         # if mode == Mode.VAL:
@@ -72,7 +71,7 @@ class MetricTracker:
         for metric, metric_obj in self.metric_data.items():
             epoch_result = metric_obj.get_epoch_result(self.num_examples)
             result_str += f'{metric_obj.formatted(epoch_result)} '
-            self.write(f'{mode} Epoch {metric}', epoch_result, self.epoch)
+            self.write(f'{mode}_Epoch_{metric}', epoch_result, self.epoch)
         print(f'{mode} {result_str}')
         ret_val = self.metric_data[self.primary_metric].get_epoch_result(self.num_examples)
         self.reset_hard()
