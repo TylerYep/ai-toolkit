@@ -1,11 +1,9 @@
 from typing import Dict, Any
-from enum import Enum, unique
 from argparse import Namespace
 import os
 import shutil
 import torch
 import torch.nn as nn
-from torch.utils.tensorboard import SummaryWriter
 
 SAVE_DIR = 'checkpoints'
 
@@ -99,9 +97,3 @@ def load_checkpoint(checkpoint_name: str, model: nn.Module, optimizer=None) -> D
     if optimizer is not None:
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     return checkpoint
-
-
-@unique
-class Mode(Enum):
-    TRAIN = 'Train'
-    VAL = 'Val'
