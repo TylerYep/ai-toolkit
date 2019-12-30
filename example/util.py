@@ -17,7 +17,7 @@ def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
         dirlist = [f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))]
         dirlist.sort()
         dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
-        if len(dirlist) == 0:
+        if not dirlist:
             result = 'A'
         else:
             last_run_char = dirlist[-1][-1]

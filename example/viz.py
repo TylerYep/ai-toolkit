@@ -46,7 +46,7 @@ def compute_activations(model, inputs, run_name=''):
         plot_num += 1
 
     if run_name:
-        plt.savefig(os.path.join(run_name, f'activations_layer_{i}.png'))
+        plt.savefig(os.path.join(run_name, f'activation_layers.png'))
         plt.clf()
     else:
         plt.show()
