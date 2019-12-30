@@ -1,3 +1,4 @@
+import numpy as np
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
@@ -21,3 +22,19 @@ def load_data():
     print('Test data shape: ', X_test.shape)
     print('Test labels shape: ', y_test.shape)
     return X_train, y_train, X_test, y_test
+
+
+def preprocess(X_train, X_test):
+    # Preprocessing: subtract the mean image
+    # first: compute the image mean based on the training data
+    mean_image = np.mean(X_train, axis=0)
+
+    # second: subtract the mean image from train and test data
+    X_train -= mean_image
+    X_test -= mean_image
+
+    # third: append the bias dimension of ones (i.e. bias trick) so that our SVM
+    # only has to worry about optimizing a single weight matrix W.
+    X_train = np.hstack([X_train, np.ones((X_train.shape[0], 1))])
+    X_test = np.hstack([X_test, np.ones((X_test.shape[0], 1))])
+    return X_train, X_test

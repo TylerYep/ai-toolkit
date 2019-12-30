@@ -15,12 +15,18 @@ from dataset import load_data
 
 def main():
     X_train, y_train, X_test, y_test = load_data()
+    classifiers = [
+        KNeighborsClassifier,
+        DecisionTreeClassifier,
+        LogisticRegression,
+        LinearRegression
+    ]
+    clf_dict = {clf.__name__: clf for clf in classifiers}
+    
+    clf_name = 'LinearSVM'
+    kwargs = {}
 
-    clf = KNeighborsClassifier(n_neighbors=3)
-    # clf = DecisionTreeClassifier(criterion="entropy", max_depth=3)
-    # clf = LogisticRegression()
-    # clf = LinearRegression()
-
+    clf = clf_dict[clf_name](**kwargs)
     clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
     print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
