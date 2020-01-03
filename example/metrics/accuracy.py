@@ -13,8 +13,11 @@ class Accuracy(Metric):
         self.running_acc = 0.0
 
     def update(self, val_dict):
-        self.epoch_acc += val_dict[self.name]
-        self.running_acc += val_dict[self.name]
+        output, target = val_dict['output'], val_dict['target']
+        accuracy = (output.argmax(1) == target).float().mean().item()
+        self.epoch_acc += accuracy
+        self.running_acc += accuracy
+        return accuracy
 
     def get_batch_result(self, log_interval):
         return self.running_acc / log_interval

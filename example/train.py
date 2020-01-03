@@ -9,8 +9,7 @@ from args import init_pipeline
 from dataset import load_train_data, INPUT_SHAPE
 from metric_tracker import MetricTracker, Mode
 from models import BasicCNN as Model
-from viz import visualize, compute_activations, compute_saliency
-
+from viz import visualize, compute_activations
 if torch.cuda.is_available():
     from tqdm import tqdm_notebook as tqdm
 else:
@@ -61,11 +60,9 @@ def main():
 
                 if mode == Mode.TRAIN:
                     optimizer.zero_grad()
-
                     if should_visualize:
                         visualize(data, target, run_name)
                         compute_activations(model, data, run_name)
-                        data.requires_grad_()
 
                 output = model(data)
                 loss = criterion(output, target)
@@ -73,9 +70,6 @@ def main():
                 if mode == Mode.TRAIN:
                     loss.backward()
                     optimizer.step()
-
-                    if should_visualize:
-                        compute_saliency(data, run_name)
 
                 tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
                 pbar.set_postfix(tqdm_dict)

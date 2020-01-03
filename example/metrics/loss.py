@@ -6,15 +6,14 @@ class Loss(Metric):
         self.epoch_loss = 0.0
         self.running_loss = 0.0
 
-    def formatted(self, computed_val):
-        return f'{self.name}: {computed_val:.4f}'
-
     def reset(self):
         self.running_loss = 0.0
 
     def update(self, val_dict):
-        self.epoch_loss += val_dict[self.name]
-        self.running_loss += val_dict[self.name]
+        loss = val_dict['loss'].item()
+        self.epoch_loss += loss
+        self.running_loss += loss
+        return loss
 
     def get_batch_result(self, log_interval):
         return self.running_loss / log_interval
