@@ -1,5 +1,6 @@
+import random
 import numpy as np
-from random import randrange
+
 
 def eval_numerical_gradient(f, x, verbose=True, h=0.00001):
     """
@@ -7,8 +8,7 @@ def eval_numerical_gradient(f, x, verbose=True, h=0.00001):
     - f should be a function that takes a single argument
     - x is the point (numpy array) to evaluate the gradient at
     """
-
-    fx = f(x) # evaluate function value at original point
+    # fx = f(x) # evaluate function value at original point
     grad = np.zeros_like(x)
     # iterate over all indexes in x
     it = np.nditer(x, flags=['multi_index'], op_flags=['readwrite'])
@@ -98,7 +98,7 @@ def eval_numerical_gradient_blobs(f, inputs, output, h=1e-5):
 
 def eval_numerical_gradient_net(net, inputs, output, h=1e-5):
     return eval_numerical_gradient_blobs(lambda *args: net.forward(),
-                inputs, output, h=h)
+                                         inputs, output, h=h)
 
 
 def grad_check_sparse(f, x, analytic_grad, num_checks=10, h=1e-5):
@@ -107,8 +107,8 @@ def grad_check_sparse(f, x, analytic_grad, num_checks=10, h=1e-5):
     in this dimensions.
     """
 
-    for i in range(num_checks):
-        ix = tuple([randrange(m) for m in x.shape])
+    for _ in range(num_checks):
+        ix = tuple([random.randrange(m) for m in x.shape])
 
         oldval = x[ix]
         x[ix] = oldval + h # increment by h
@@ -120,6 +120,6 @@ def grad_check_sparse(f, x, analytic_grad, num_checks=10, h=1e-5):
         grad_numerical = (fxph - fxmh) / (2 * h)
         grad_analytic = analytic_grad[ix]
         rel_error = (abs(grad_numerical - grad_analytic) /
-                    (abs(grad_numerical) + abs(grad_analytic)))
+                     (abs(grad_numerical) + abs(grad_analytic)))
         print('numerical: %f analytic: %f, relative error: %e'
               %(grad_numerical, grad_analytic, rel_error))

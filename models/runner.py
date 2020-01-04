@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -57,7 +58,6 @@ def visualize_weights(clf, classes=None):
     plt.show()
 
 
-import math
 def tune_svm(X_train, y_train, X_val, y_val):
     learning_rates = [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2]
     regularization_strengths = [1e3, 5e3, 1e4, 5e4, 1e5, 5e5, 1e6, 5e6]

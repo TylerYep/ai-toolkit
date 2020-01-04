@@ -1,15 +1,15 @@
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchsummary
 
 import util
 from args import init_pipeline
-from dataset import load_train_data, INPUT_SHAPE
+from dataset import load_train_data
 from metric_tracker import MetricTracker, Mode
-from models import BasicCNN as Model
-from viz import visualize, compute_activations
+from models import RNN as Model
 if torch.cuda.is_available():
     from tqdm import tqdm_notebook as tqdm
 else:
@@ -33,16 +33,20 @@ def verify_model(model, loader, optimizer, device, test_val=2):
 
     assert loss.data != 0
     assert (data.grad[test_val] != 0).any()
-    assert (data.grad[0: test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all()
+    print(data)
+    print(output)
+    print(target)
+    print(data.grad)
+    assert (data.grad[:test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all()
 
 
 def main():
     args, device = init_pipeline()
-    criterion = F.nll_loss
-    model = Model().to(device)
+    criterion = nn.CrossEntropyLoss()
+    train_loader, val_loader, params = load_train_data(args)
+    model = Model(*params).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     checkpoint = util.load_checkpoint(args.checkpoint, model, optimizer)
-    torchsummary.summary(model, INPUT_SHAPE)
 
     def train_and_validate(loader, metrics, run_name, mode) -> float:
         if mode == Mode.TRAIN:
@@ -56,13 +60,9 @@ def main():
         with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
             for i, (data, target) in enumerate(loader):
                 data, target = data.to(device), target.to(device)
-                should_visualize = args.visualize and i == 0 and metrics.epoch == 1
 
                 if mode == Mode.TRAIN:
                     optimizer.zero_grad()
-                    if should_visualize:
-                        visualize(data, target, run_name)
-                        compute_activations(model, data, run_name)
 
                 output = model(data)
                 loss = criterion(output, target)
@@ -77,9 +77,7 @@ def main():
 
         return metrics.get_epoch_results(mode)
 
-    train_loader, val_loader = load_train_data(args)
     verify_model(model, train_loader, optimizer, device)
-
     run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
     metrics = MetricTracker(run_name, METRIC_NAMES, args.log_interval)
 
@@ -91,15 +89,15 @@ def main():
         train_loss = train_and_validate(train_loader, metrics, run_name, Mode.TRAIN)
         val_loss = train_and_validate(val_loader, metrics, run_name, Mode.VAL)
 
-        is_best = val_loss < best_loss
-        best_loss = min(val_loss, best_loss)
-        util.save_checkpoint({
-            'state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'rng_state': torch.get_rng_state(),
-            'run_name': run_name,
-            'epoch': epoch
-        }, run_name, is_best)
+        # is_best = val_loss < best_loss
+        # best_loss = min(val_loss, best_loss)
+        # util.save_checkpoint({
+        #     'state_dict': model.state_dict(),
+        #     'optimizer_state_dict': optimizer.state_dict(),
+        #     'rng_state': torch.get_rng_state(),
+        #     'run_name': run_name,
+        #     'epoch': epoch
+        # }, run_name, is_best)
 
 
 if __name__ == '__main__':

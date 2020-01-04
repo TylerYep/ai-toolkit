@@ -2,12 +2,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn import init
-import torchvision
-from torchvision import transforms
 import torch.optim as optim
-from torch.utils.data import DataLoader
-from torch.utils.data import sampler
-from torchvision import datasets
+from torch.utils.data import DataLoader, sampler
+from torchvision import datasets, transforms
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -35,7 +32,7 @@ def show_images(images):
         ax.set_xticklabels([])
         ax.set_yticklabels([])
         ax.set_aspect('equal')
-        plt.imshow(img.reshape([sqrtimg,sqrtimg]))
+        plt.imshow(img.reshape([sqrtimg, sqrtimg]))
     return
 
 
@@ -157,7 +154,7 @@ def run_a_gan(D, G, D_solver, G_solver, loader_train, device, show_every=250,
     - num_epochs: Number of epochs over the training dataset to use for training.
     """
     iter_count = 0
-    for epoch in range(num_epochs):
+    for _ in range(num_epochs):
         for x, _ in loader_train:
             if len(x) != batch_size:
                 continue
@@ -182,7 +179,7 @@ def run_a_gan(D, G, D_solver, G_solver, loader_train, device, show_every=250,
             g_error.backward()
             G_solver.step()
 
-            if (iter_count % show_every == 0):
+            if iter_count % show_every == 0:
                 print(f'Iter: {iter_count}, D: {d_total_error.item():.4}, G: {g_error.item():.4}')
                 imgs_numpy = fake_images.data.cpu().numpy()
                 show_images(imgs_numpy[:16])
@@ -240,7 +237,7 @@ def main():
     mnist_train = datasets.MNIST('data', train=True, download=False, transform=norm)
     mnist_val = datasets.MNIST('data', train=False, transform=norm)
     loader_train = DataLoader(mnist_train, batch_size=128, sampler=ChunkSampler(NUM_TRAIN, 0))
-    loader_val = DataLoader(mnist_val, batch_size=128, sampler=ChunkSampler(NUM_VAL, NUM_TRAIN))
+    # loader_val = DataLoader(mnist_val, batch_size=128, sampler=ChunkSampler(NUM_VAL, NUM_TRAIN))
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -257,6 +254,7 @@ def main():
     # D_solver = get_optimizer(D)
     # G_solver = get_optimizer(G)
     # run_a_gan(D, G, D_solver, G_solver, loader_train, device)
+
 
 if __name__ == '__main__':
     main()
