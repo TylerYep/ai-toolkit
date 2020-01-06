@@ -14,20 +14,20 @@ else:
 INPUT_SHAPE = (1, 28, 28)
 
 
-def load_train_data(args: Namespace) -> Tuple[DataLoader, DataLoader]:
-    norm = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
-    train_set = datasets.ImageFolder('data/tiny-imagenet-200', transform=norm)
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False)
-    return train_loader, None
-
-
 # def load_train_data(args: Namespace) -> Tuple[DataLoader, DataLoader]:
 #     norm = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
-#     train_set = datasets.FashionMNIST('data', train=True, download=True, transform=norm)
-#     val_set = datasets.FashionMNIST('data', train=False, transform=norm)
-#     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
-#     val_loader = DataLoader(val_set, batch_size=args.test_batch_size)
-#     return train_loader, val_loader
+#     train_set = datasets.ImageFolder('data/tiny-imagenet-200', transform=norm)
+#     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False)
+#     return train_loader, None
+
+
+def load_train_data(args: Namespace) -> Tuple[DataLoader, DataLoader]:
+    norm = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+    train_set = datasets.FashionMNIST('data', train=True, download=True, transform=norm)
+    val_set = datasets.FashionMNIST('data', train=False, transform=norm)
+    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
+    val_loader = DataLoader(val_set, batch_size=args.test_batch_size)
+    return train_loader, val_loader
 
 
 def load_test_data(args: Namespace) -> DataLoader:

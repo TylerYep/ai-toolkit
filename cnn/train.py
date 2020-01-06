@@ -81,11 +81,12 @@ def main():
     verify_model(model, train_loader, optimizer, device)
 
     run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
-    metrics = MetricTracker(run_name, METRIC_NAMES, args.log_interval)
+    metric_checkpoint = checkpoint['metric_obj'] if checkpoint else {}
+    metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
 
     best_loss = np.inf
-    start_epoch = checkpoint['epoch'] if checkpoint else 1
-    for epoch in range(start_epoch, args.epochs + 1):
+    start_epoch = metrics.epoch + 1
+    for epoch in range(start_epoch, start_epoch + args.epochs + 1):
         print(f'Epoch [{epoch}/{args.epochs}]')
         metrics.set_epoch(epoch)
         train_loss = train_and_validate(train_loader, metrics, run_name, Mode.TRAIN)
@@ -98,7 +99,7 @@ def main():
             'optimizer_state_dict': optimizer.state_dict(),
             'rng_state': torch.get_rng_state(),
             'run_name': run_name,
-            'epoch': epoch
+            'metric_obj': metrics.json_repr()
         }, run_name, is_best)
 
 
