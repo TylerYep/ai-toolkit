@@ -78,16 +78,14 @@ def main():
     metric_checkpoint = checkpoint['metric_obj'] if checkpoint else {}
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
 
-    best_loss = np.inf
     start_epoch = metrics.epoch + 1
     for epoch in range(start_epoch, start_epoch + args.epochs + 1):
         print(f'Epoch [{epoch}/{args.epochs}]')
         metrics.set_epoch(epoch)
         train_loss = train_and_validate(train_loader, metrics, run_name, Mode.TRAIN)
         val_loss = train_and_validate(val_loader, metrics, run_name, Mode.VAL)
-
-        is_best = val_loss < best_loss
-        best_loss = min(val_loss, best_loss)
+        
+        is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({
             'state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),

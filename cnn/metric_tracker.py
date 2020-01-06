@@ -1,9 +1,11 @@
 from typing import Any, Dict
 from enum import Enum, unique
+import numpy as np
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
 from metrics import get_metric
+
 
 @unique
 class Mode(Enum):
@@ -19,7 +21,8 @@ class MetricTracker:
                  log_interval,
                  epoch=0,
                  num_examples=0,
-                 metric_data=None):
+                 metric_data=None,
+                 best_metric=np.inf): # TODO
         assert metric_names
         self.writer = SummaryWriter(run_name)
         self.epoch = epoch
@@ -27,19 +30,26 @@ class MetricTracker:
         self.num_examples = num_examples
         self.metric_names = metric_names
         self.primary_metric = metric_names[0]
+        self.best_metric = best_metric
         if metric_data:
             self.metric_data = metric_data
         else:
             self.metric_data = {name: get_metric(name)() for name in self.metric_names}
 
     def json_repr(self) -> Dict[str, Any]:
-        ''' Returns json representation of the Statement. '''
         return {'epoch': self.epoch,
                 'metric_data': self.metric_data,
-                'num_examples': self.num_examples}
+                'num_examples': self.num_examples,
+                'best_metric': self.best_metric}
 
     def __getattr__(self, name):
         return self.metric_data[name]
+
+    def update_best_metric(self, val_loss):
+        print(self.best_metric)
+        is_best = val_loss < self.best_metric
+        self.best_metric = min(val_loss, self.best_metric)
+        return self.best_metric
 
     def write(self, title: str, val: float, step_num: int):
         self.writer.add_scalar(title, val, step_num)
