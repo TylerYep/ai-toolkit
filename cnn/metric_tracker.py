@@ -22,7 +22,7 @@ class MetricTracker:
                  epoch=0,
                  num_examples=0,
                  metric_data=None,
-                 best_metric=np.inf): # TODO
+                 best_metric=None):
         assert metric_names
         self.writer = SummaryWriter(run_name)
         self.epoch = epoch
@@ -30,11 +30,10 @@ class MetricTracker:
         self.num_examples = num_examples
         self.metric_names = metric_names
         self.primary_metric = metric_names[0]
-        self.best_metric = best_metric
-        if metric_data:
-            self.metric_data = metric_data
-        else:
-            self.metric_data = {name: get_metric(name)() for name in self.metric_names}
+        self.metric_data = metric_data if metric_data else \
+                           {name: get_metric(name)() for name in self.metric_names}
+        self.best_metric = best_metric if best_metric else \
+                           self.metric_data[self.primary_metric].init_val
 
     def json_repr(self) -> Dict[str, Any]:
         return {'epoch': self.epoch,

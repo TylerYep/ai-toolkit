@@ -1,10 +1,9 @@
 import torch
 import torch.nn.functional as F
-import torchsummary
 
 import util
 from args import init_pipeline
-from dataset import load_test_data, INPUT_SHAPE
+from dataset import load_test_data
 from models import BasicCNN as Model
 
 if torch.cuda.is_available():
@@ -36,11 +35,10 @@ def test_model(test_loader, model, device, criterion):
 def main():
     args, device = init_pipeline()
     criterion = F.nll_loss
-    model = Model().to(device)
+    test_loader, params = load_test_data(args)
+    model = Model(*params).to(device)
     util.load_checkpoint(args.checkpoint, model)
-    torchsummary.summary(model, INPUT_SHAPE)
 
-    test_loader = load_test_data(args)
     test_model(test_loader, model, device, criterion)
 
 

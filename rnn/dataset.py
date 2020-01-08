@@ -8,6 +8,8 @@ import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 from torchvision import datasets, transforms
+from metric_tracker import Mode
+
 if torch.cuda.is_available():
     DATA_PATH = '/content/'
 else:
@@ -19,21 +21,21 @@ ALL_LETTERS = string.ascii_letters + " .,;'"
 
 def load_train_data(args):
     train_set = LanguageWords()
-    val_set = LanguageWords(mode='val')
+    val_set = LanguageWords(mode=Mode.VAL)
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=args.test_batch_size)
     return train_loader, val_loader, train_set.get_model_params()
 
 
-# def load_test_data(args):
-#     test_set = datasets.FashionMNIST('data', train=False, transform=norm)
-#     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
-#     return test_loader
+def load_test_data(args):
+    test_set = LanguageWords(mode=Mode.TEST)
+    test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
+    return test_loader, train_set.get_model_params()
 
 
 class LanguageWords(Dataset):
     ''' Dataset for training a model on a dataset. '''
-    def __init__(self, data_path=None, mode='train'):
+    def __init__(self, data_path=None, mode=Mode.TRAIN):
         super().__init__()
         self.all_categories = []
         self.data = []
@@ -52,9 +54,9 @@ class LanguageWords(Dataset):
 
         random.shuffle(self.data)
         train_val_split = int(len(self.data) * 0.8)
-        if mode == 'train':
+        if mode == Mode.TRAIN:
             self.data = self.data[:train_val_split]
-        else:
+        elif mode == Mode.VAL:
             self.data = self.data[train_val_split:]
 
     def get_model_params(self):

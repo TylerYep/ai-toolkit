@@ -1,8 +1,11 @@
+import numpy as np
+
 from .metric import Metric
 
 class Loss(Metric):
     def __init__(self):
         super().__init__()
+        self.init_val = np.inf
         self.epoch_loss = 0.0
         self.running_loss = 0.0
 

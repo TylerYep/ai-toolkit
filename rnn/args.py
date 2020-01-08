@@ -11,7 +11,7 @@ def init_pipeline():
 
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
-    parser.add_argument('--batch-size', type=int, default=4, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=100, metavar='N',
                         help='input batch size for training (default: 100)')
 
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
@@ -36,6 +36,6 @@ def init_pipeline():
                         help='folder to save files to checkpoint/')
 
     parser.add_argument('--visualize', action='store_true', default=True,
-                        help='folder to save files to checkpoint/')
+                        help='save visualization files ')
 
     return parser.parse_args(), device
