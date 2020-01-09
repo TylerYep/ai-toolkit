@@ -31,7 +31,7 @@ def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
 
 
 def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None:
-    """Saves model and training parameters at checkpoint + 'last.pth.tar'.
+    """ Saves model and training parameters at checkpoint + 'last.pth.tar'.
     If is_best is True, also saves best.pth.tar
     Args:
         state: (dict) contains model's state_dict, may contain other keys such as
@@ -47,20 +47,30 @@ def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None
         shutil.copyfile(save_path, os.path.join(run_name, 'model_best.pth.tar'))
 
 
-def load_checkpoint(checkpoint_name: str, model: nn.Module, optimizer=None) -> Dict[str, Any]:
-    """ Loads model parameters (state_dict) from file_path. If optimizer is provided,
-    loads state_dict of optimizer assuming it is present in checkpoint.
+def load_checkpoint(checkpoint_name: str):
+    """ Loads torch checkpoint.
     Args:
         checkpoint: (string) filename which needs to be loaded
-        model: (torch.nn.Module) model for which the parameters are loaded
-        optimizer: (torch.optim) optional: resume optimizer from checkpoint
     """
     if not checkpoint_name:
         return {}
     print('Loading checkpoint...')
-    checkpoint = torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'checkpoint.pth.tar'))
+    return torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'checkpoint.pth.tar'))
+
+
+def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None) -> Dict[str, Any]:
+    """ Loads model parameters (state_dict) from checkpoint. If optimizer is provided,
+    loads state_dict of optimizer assuming it is present in checkpoint.
+    Args:
+        checkpoint: () checkpoint object
+        model: (torch.nn.Module) model for which the parameters are loaded
+        optimizer: (torch.optim) optional: resume optimizer from checkpoint
+    """
+    print(checkpoint)
+    if not checkpoint:
+        return {}
     torch.set_rng_state(checkpoint['rng_state'])
-    model.load_state_dict(checkpoint['state_dict'])
+    if model is not None:
+        model.load_state_dict(checkpoint['state_dict'])
     if optimizer is not None:
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    return checkpoint

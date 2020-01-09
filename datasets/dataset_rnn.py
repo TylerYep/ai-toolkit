@@ -15,32 +15,32 @@ if torch.cuda.is_available():
 else:
     DATA_PATH = 'data/'
 
-
+INPUT_SHAPE = (1, 19)
 ALL_LETTERS = string.ascii_letters + " .,;'"
 
 
 def load_train_data(args):
-    train_set = LanguageWords()
-    val_set = LanguageWords(mode=Mode.VAL)
+    train_set = LanguageWords(Mode.TRAIN)
+    val_set = LanguageWords(Mode.VAL)
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=args.test_batch_size)
     return train_loader, val_loader, train_set.get_model_params()
 
 
 def load_test_data(args):
-    test_set = LanguageWords(mode=Mode.TEST)
+    test_set = LanguageWords(Mode.TEST)
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
-    return test_loader, train_set.get_model_params()
+    return test_loader
 
 
 class LanguageWords(Dataset):
     ''' Dataset for training a model on a dataset. '''
-    def __init__(self, data_path=None, mode=Mode.TRAIN):
+    def __init__(self, mode):
         super().__init__()
         self.all_categories = []
         self.data = []
         # Build the category_lines dictionary, a list of names per language
-        for filename in glob.glob('data/names/*.txt'):
+        for filename in glob.glob(f'{DATA_PATH}names/*.txt'):
             category = os.path.splitext(os.path.basename(filename))[0]
             self.all_categories.append(category)
             lines = self.read_lines(filename)
@@ -56,7 +56,7 @@ class LanguageWords(Dataset):
         train_val_split = int(len(self.data) * 0.8)
         if mode == Mode.TRAIN:
             self.data = self.data[:train_val_split]
-        elif mode == Mode.VAL:
+        elif mode == Mode.VAL or mode == Mode.TEST:
             self.data = self.data[train_val_split:]
 
     def get_model_params(self):

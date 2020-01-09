@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 import torchsummary
 
@@ -36,11 +37,13 @@ def test_model(test_loader, model, device, criterion):
 def main():
     args, device = init_pipeline()
     criterion = F.nll_loss
-    model = Model().to(device)
-    util.load_checkpoint(args.checkpoint, model)
+    test_loader = load_test_data(args)
+    checkpoint = util.load_checkpoint(args.checkpoint)
+    init_params = checkpoint['model_init'] if checkpoint else {}
+    model = Model(*init_params).to(device)
+    util.load_state_dict(checkpoint, model)
     torchsummary.summary(model, INPUT_SHAPE)
 
-    test_loader = load_test_data(args)
     test_model(test_loader, model, device, criterion)
 
 

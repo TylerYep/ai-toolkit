@@ -9,7 +9,7 @@ import util
 from args import init_pipeline
 from dataset import load_train_data, INPUT_SHAPE
 from models import BasicCNN as Model
-from viz_utils import jitter, rearrange
+from .viz_utils import jitter, rearrange
 
 
 def main():
@@ -26,8 +26,9 @@ def main():
 
 
 def visualize(model, data, target, run_name=''):
-    view_input(data, target, run_name)
-    compute_activations(model, data, run_name)
+    pass
+    # view_input(data, target, run_name)
+    # compute_activations(model, data, run_name)
 
 
 def view_input(data, target, run_name=''):

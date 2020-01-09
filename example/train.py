@@ -7,9 +7,11 @@ import torchsummary
 
 import util
 from args import init_pipeline
-from dataset import load_train_data
+from dataset import load_train_data, INPUT_SHAPE
 from metric_tracker import MetricTracker, Mode
-from models import RNN as Model
+from models import BasicCNN as Model
+from visualizations import visualize
+
 if torch.cuda.is_available():
     from tqdm import tqdm_notebook as tqdm
 else:
@@ -38,11 +40,13 @@ def verify_model(model, loader, optimizer, device, test_val=2):
 
 def main():
     args, device = init_pipeline()
-    criterion = nn.CrossEntropyLoss()
-    train_loader, val_loader, params = load_train_data(args)
-    model = Model(*params).to(device)
+    criterion = F.nll_loss
+    train_loader, val_loader, init_params = load_train_data(args)
+    model = Model(*init_params).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    checkpoint = util.load_checkpoint(args.checkpoint, model, optimizer)
+    checkpoint = util.load_checkpoint(args.checkpoint)
+    util.load_state_dict(checkpoint, model, optimizer)
+    torchsummary.summary(model, INPUT_SHAPE)
 
     def train_and_validate(loader, metrics, run_name, mode) -> float:
         if mode == Mode.TRAIN:
@@ -59,6 +63,8 @@ def main():
 
                 if mode == Mode.TRAIN:
                     optimizer.zero_grad()
+                    if args.visualize and i == 0 and metrics.epoch == 1:
+                        visualize(model, data, target, run_name)
 
                 output = model(data)
                 loss = criterion(output, target)
@@ -84,9 +90,10 @@ def main():
         metrics.set_epoch(epoch)
         train_loss = train_and_validate(train_loader, metrics, run_name, Mode.TRAIN)
         val_loss = train_and_validate(val_loader, metrics, run_name, Mode.VAL)
-        
+
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({
+            'model_init': init_params,
             'state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             'rng_state': torch.get_rng_state(),
