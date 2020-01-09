@@ -88,7 +88,8 @@ class MetricTracker:
                 self.write_all(num_steps, mode)
             self.reset_all()
 
-        # elif mode == Mode.VAL: # TODO make image its own metric, two types of metrics, qual vs quant
+        # TODO make image its own metric, two types of metrics, qual vs quant
+        # elif mode == Mode.VAL:
         #     for j in range(output.shape[0]):
         #         _, ind = torch.max(output.data[j], dim=0)
         #         self.writer.add_image(f'{int(target.data[j])}/Pred:{ind}',

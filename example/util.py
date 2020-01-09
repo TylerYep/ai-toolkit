@@ -66,9 +66,8 @@ def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None) -> Dict[
         model: (torch.nn.Module) model for which the parameters are loaded
         optimizer: (torch.optim) optional: resume optimizer from checkpoint
     """
-    print(checkpoint)
     if not checkpoint:
-        return {}
+        return
     torch.set_rng_state(checkpoint['rng_state'])
     if model is not None:
         model.load_state_dict(checkpoint['state_dict'])

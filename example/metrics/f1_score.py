@@ -21,7 +21,7 @@ class F1Score(Metric):
         y_pred = F.softmax(y_pred, dim=1)
 
         tp = (y_true * y_pred).sum(dim=0)
-        tn = ((1 - y_true) * (1 - y_pred)).sum(dim=0)
+        # tn = ((1 - y_true) * (1 - y_pred)).sum(dim=0)
         fp = ((1 - y_true) * y_pred).sum(dim=0)
         fn = (y_true * (1 - y_pred)).sum(dim=0)
 
