@@ -1,9 +1,8 @@
 import numpy as np
-from classifiers.linear_svm import svm_loss_vectorized
-from classifiers.softmax import softmax_loss_vectorized
 
 
 class LinearClassifier():
+    """ A simple linear classifier abstract class. """
 
     def __init__(self):
         self.W = None
@@ -89,17 +88,3 @@ class LinearClassifier():
         - gradient with respect to self.W; an array of the same shape as W
         """
         pass
-
-
-class LinearSVM(LinearClassifier):
-    """ A subclass that uses the Multiclass SVM loss function """
-
-    def loss(self, X_batch, y_batch, reg):
-        return svm_loss_vectorized(self.W, X_batch, y_batch, reg)
-
-
-class Softmax(LinearClassifier):
-    """ A subclass that uses the Softmax + Cross-entropy loss function """
-
-    def loss(self, X_batch, y_batch, reg):
-        return softmax_loss_vectorized(self.W, X_batch, y_batch, reg)

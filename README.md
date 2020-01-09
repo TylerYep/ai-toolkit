@@ -29,6 +29,10 @@ This repo draws from learning from:
 - cs230, 231n, 224n, 398
 
 
+# Directory Structure
+models/ contains 
+
+
 # TODO
 1. Write an init script that copies all of example/ into the repo
 2. Allow customizability with config.json

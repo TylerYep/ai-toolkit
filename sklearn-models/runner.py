@@ -22,9 +22,11 @@ def main():
         LinearRegression
     ]
     clf_dict = {clf.__name__: clf for clf in classifiers}
-    
+
+    ###
     clf_name = 'LinearSVM'
     kwargs = {}
+    ###
 
     clf = clf_dict[clf_name](**kwargs)
     clf.fit(X_train, y_train)

@@ -10,27 +10,28 @@ from classifiers import KNearestNeighbor, LinearSVM, Softmax, TwoLayerNet
 def main():
     np.random.seed(0)
     X_train, y_train, X_test, y_test = load_data()
-    # X_train, X_test = preprocess(X_train, X_test)
-    # classifiers = [KNearestNeighbor, LinearSVM, Softmax, TwoLayerNet]
-    # clf_dict = {clf.__name__: clf for clf in classifiers}
+    X_train, X_test = preprocess(X_train, X_test)
+    classifiers = [KNearestNeighbor, LinearSVM, Softmax, TwoLayerNet]
+    clf_dict = {clf.__name__: clf for clf in classifiers}
 
-    # ###
-    # clf_name = 'LinearSVM'
-    # kwargs = {
+    ###
+    clf_name = 'TwoLayerNet'
+    args = [5, 5, 5]
+    kwargs = {
 
-    # }
-    # ###
+    }
+    ###
 
-    # clf = clf_dict[clf_name](**kwargs)
-    # loss_hist = clf.fit(X_train, y_train)
-    # y_test_pred = clf.predict(X_test)
+    clf = clf_dict[clf_name](*args, **kwargs)
+    loss_hist = clf.fit(X_train, y_train)
+    y_test_pred = clf.predict(X_test)
 
-    # num_correct = np.sum(y_test_pred == y_test)
-    # num_test = y_test.shape[0]
-    # accuracy = float(num_correct) / num_test
-    # print('Got %d / %d correct => accuracy: %f' % (num_correct, num_test, accuracy))
+    num_correct = np.sum(y_test_pred == y_test)
+    num_test = y_test.shape[0]
+    accuracy = float(num_correct) / num_test
+    print('Got %d / %d correct => accuracy: %f' % (num_correct, num_test, accuracy))
     # k_fold_validation(X_train, y_train)
-    tune_svm(X_train, y_train, X_test, y_test)
+    # tune_svm(X_train, y_train, X_test, y_test)
 
 
 def plot_loss_curve(loss_hist):
