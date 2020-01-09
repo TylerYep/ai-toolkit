@@ -56,13 +56,11 @@ def main():
         with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
             for i, (data, target) in enumerate(loader):
                 data, target = data.to(device), target.to(device)
-                should_visualize = args.visualize and i == 0 and metrics.epoch == 1
 
                 if mode == Mode.TRAIN:
                     optimizer.zero_grad()
-                    if should_visualize:
-                        visualize(data, target, run_name)
-                        compute_activations(model, data, run_name)
+                    if args.visualize and i == 0 and metrics.epoch == 1:
+                        visualize(model, data, target, run_name)
 
                 output = model(data)
                 loss = criterion(output, target)

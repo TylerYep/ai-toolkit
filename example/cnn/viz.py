@@ -25,7 +25,12 @@ def main():
     create_class_visualization(target[1], model)
 
 
-def visualize(data, target, run_name=''):
+def visualize(model, data, target, run_name=''):
+    view_input(data, target, run_name)
+    compute_activations(model, data, run_name)
+
+
+def view_input(data, target, run_name=''):
     ''' Data is of shape (B, C, H, W) '''
     NUM_SUBPLOTS = 24
     NUM_ROWS = 4

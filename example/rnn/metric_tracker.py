@@ -75,6 +75,7 @@ class MetricTracker:
             batch_result = metric_obj.get_batch_result(self.log_interval)
             self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
 
+    # Public Methods
     def batch_update(self, i, data, loss, output, target, mode):
         val_dict = {}  # Note: cannot use list comprehension with locals().
         for item in ('data', 'loss', 'output', 'target'):
@@ -86,6 +87,7 @@ class MetricTracker:
             if i > 0:
                 self.write_all(num_steps, mode)
             self.reset_all()
+
         return ret_dict
 
     def get_epoch_results(self, mode) -> float:
