@@ -52,6 +52,7 @@ class LanguageWords(Dataset):
         self.n_hidden = 128
         self.max_word_length = len(max(self.data, key=lambda x: len(x[0]))[0])
 
+        random.shuffle(self.data)
         train_val_split = int(len(self.data) * 0.8)
         if mode == Mode.TRAIN:
             self.data = self.data[:train_val_split]
