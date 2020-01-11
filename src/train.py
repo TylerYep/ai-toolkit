@@ -42,7 +42,6 @@ def verify_model(model, loader, optimizer, device, test_val=2):
 def main():
     args, device, checkpoint = init_pipeline()
     criterion = nn.CrossEntropyLoss()
-    util.set_rng_state(checkpoint)
     train_loader, val_loader, init_params = load_train_data(args)
     model = Model(*init_params).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
@@ -85,7 +84,7 @@ def main():
     metric_checkpoint = checkpoint['metric_obj'] if checkpoint else {}
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
     util.set_rng_state(checkpoint)
-    
+
     start_epoch = metrics.epoch + 1
     for epoch in range(start_epoch, start_epoch + args.epochs):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')

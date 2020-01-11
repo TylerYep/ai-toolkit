@@ -12,6 +12,8 @@ CONFIG = {
 
 
 def init_project(source, destination, config):
+    if not os.path.isdir(destination):
+        os.makedirs(destination)
     for file_ in os.listdir(source):
         full_src_path = os.path.join(source, file_)
         if os.path.isdir(full_src_path):
