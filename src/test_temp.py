@@ -6,7 +6,7 @@ import torchsummary
 import util
 from args import init_pipeline
 from dataset import load_test_data, INPUT_SHAPE
-from models import BasicRNN as Model
+from models import $model as Model
 
 if torch.cuda.is_available():
     from tqdm import tqdm_notebook as tqdm
@@ -36,7 +36,7 @@ def test_model(test_loader, model, device, criterion):
 
 def main():
     args, device = init_pipeline()
-    criterion = nn.CrossEntropyLoss()
+    criterion = $loss_fn
     test_loader = load_test_data(args)
     checkpoint = util.load_checkpoint(args.checkpoint)
     init_params = checkpoint['model_init'] if checkpoint else {}

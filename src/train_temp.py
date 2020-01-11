@@ -10,7 +10,7 @@ import util
 from args import init_pipeline
 from dataset import load_train_data, INPUT_SHAPE
 from metric_tracker import MetricTracker, Mode
-from models import BasicRNN as Model
+from models import $model as Model
 from visualizations import visualize
 
 if torch.cuda.is_available():
@@ -41,7 +41,7 @@ def verify_model(model, loader, optimizer, device, test_val=2):
 
 def main():
     args, device, checkpoint = init_pipeline()
-    criterion = nn.CrossEntropyLoss()
+    criterion = $loss_fn
     train_loader, val_loader, init_params = load_train_data(args)
     model = Model(*init_params).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
