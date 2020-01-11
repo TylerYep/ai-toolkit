@@ -1,3 +1,5 @@
+import random
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,7 +10,7 @@ import util
 from args import init_pipeline
 from dataset import load_train_data, INPUT_SHAPE
 from metric_tracker import MetricTracker, Mode
-from models import BasicCNN as Model
+from models import BasicRNN as Model
 from visualizations import visualize
 
 if torch.cuda.is_available():
@@ -38,12 +40,11 @@ def verify_model(model, loader, optimizer, device, test_val=2):
 
 
 def main():
-    args, device = init_pipeline()
-    criterion = F.nll_loss
+    args, device, checkpoint = init_pipeline()
+    criterion = nn.CrossEntropyLoss()
     train_loader, val_loader, init_params = load_train_data(args)
     model = Model(*init_params).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    checkpoint = util.load_checkpoint(args.checkpoint)
     util.load_state_dict(checkpoint, model, optimizer)
     torchsummary.summary(model, INPUT_SHAPE)
 
@@ -84,8 +85,8 @@ def main():
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
 
     start_epoch = metrics.epoch + 1
-    for epoch in range(start_epoch, start_epoch + args.epochs + 1):
-        print(f'Epoch [{epoch}/{args.epochs}]')
+    for epoch in range(start_epoch, start_epoch + args.epochs):
+        print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.set_epoch(epoch)
         train_loss = train_and_validate(train_loader, metrics, run_name, Mode.TRAIN)
         val_loss = train_and_validate(val_loader, metrics, run_name, Mode.VAL)
@@ -95,7 +96,9 @@ def main():
             'model_init': init_params,
             'state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
-            'rng_state': torch.get_rng_state(),
+            'rng_state': random.getstate(),
+            'np_rng_state': np.random.get_state(),
+            'torch_rng_state': torch.get_rng_state(),
             'run_name': run_name,
             'metric_obj': metrics.json_repr()
         }, run_name, is_best)

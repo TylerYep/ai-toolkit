@@ -1,7 +1,7 @@
 import shutil
 import os
 
-SOURCE = 'example/'
+SOURCE = 'src/'
 DESTINATION = 'output/'
 CONFIG = {
     'datasets': 'dataset_rnn',

@@ -43,10 +43,10 @@ class MetricTracker:
     def __getattr__(self, name):
         return self.metric_data[name]
 
-    def update_best_metric(self, val_loss):
-        is_best = val_loss < self.best_metric
+    def update_best_metric(self, val_loss) -> bool:
         self.best_metric = min(val_loss, self.best_metric)
-        return self.best_metric
+        is_best = val_loss < self.best_metric
+        return is_best
 
     def write(self, title: str, val: float, step_num: int):
         self.writer.add_scalar(title, val, step_num)
@@ -77,9 +77,9 @@ class MetricTracker:
 
     # Public Methods
     def batch_update(self, i, data, loss, output, target, mode):
-        val_dict = {}  # Note: cannot use list comprehension with locals().
-        for item in ('data', 'loss', 'output', 'target'):
-            val_dict[item] = locals()[item]
+        names = ('data', 'loss', 'output', 'target')
+        variables = (data, loss, output, target)
+        val_dict = dict(zip(names, variables))
 
         ret_dict = self.update_all(val_dict)
         num_steps = (self.epoch-1) * self.num_examples + i

@@ -1,12 +1,12 @@
 import argparse
+import random
 import numpy as np
 import torch
 
+import util
+
 def init_pipeline():
-    np.random.seed(0)
-    torch.manual_seed(0)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    set_random_seeds()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
@@ -38,4 +38,17 @@ def init_pipeline():
     parser.add_argument('--visualize', action='store_true', default=True,
                         help='save visualization files ')
 
-    return parser.parse_args(), device
+    args = parser.parse_args()
+    checkpoint = util.load_checkpoint(args.checkpoint)
+
+    return args, device, checkpoint
+
+
+def set_random_seeds():
+    random.seed(0)
+    np.random.seed(0)
+    torch.manual_seed(0)
+    torch.cuda.manual_seed(0)
+    torch.cuda.manual_seed_all(0)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False

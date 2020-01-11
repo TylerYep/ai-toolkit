@@ -57,4 +57,5 @@ The rough evaluation metric for this repo's success is how fast I can start work
 
 
 # TODO
-1. Allow customizability with config.json
+- Allow customizability with config.json
+- Bug with resuming checkpoints - graphs not perfectly smooth after 100 epochs?

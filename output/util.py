@@ -2,6 +2,8 @@ from typing import Dict, Any
 from argparse import Namespace
 import os
 import shutil
+import random
+import numpy as np
 import torch
 import torch.nn as nn
 
@@ -28,6 +30,13 @@ def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     out_dir = os.path.join(save_dir, result)
     os.makedirs(out_dir)
     return out_dir
+
+
+def set_rng_state(checkpoint):
+    if checkpoint:
+        random.setstate(checkpoint['rng_state'])
+        np.random.set_state(checkpoint['np_rng_state'])
+        torch.set_rng_state(checkpoint['torch_rng_state'])
 
 
 def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None:
@@ -66,10 +75,7 @@ def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None) -> Dict[
         model: (torch.nn.Module) model for which the parameters are loaded
         optimizer: (torch.optim) optional: resume optimizer from checkpoint
     """
-    if not checkpoint:
-        return
-    torch.set_rng_state(checkpoint['rng_state'])
-    if model is not None:
+    if checkpoint:
         model.load_state_dict(checkpoint['state_dict'])
-    if optimizer is not None:
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        if optimizer is not None:
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
