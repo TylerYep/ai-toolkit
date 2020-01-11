@@ -56,7 +56,7 @@ def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None
         shutil.copyfile(save_path, os.path.join(run_name, 'model_best.pth.tar'))
 
 
-def load_checkpoint(checkpoint_name: str):
+def load_checkpoint(checkpoint_name: str) -> Dict[str, Any]:
     """ Loads torch checkpoint.
     Args:
         checkpoint: (string) filename which needs to be loaded
@@ -67,7 +67,7 @@ def load_checkpoint(checkpoint_name: str):
     return torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'checkpoint.pth.tar'))
 
 
-def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None) -> Dict[str, Any]:
+def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None):
     """ Loads model parameters (state_dict) from checkpoint. If optimizer is provided,
     loads state_dict of optimizer assuming it is present in checkpoint.
     Args:

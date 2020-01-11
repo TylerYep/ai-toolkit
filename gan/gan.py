@@ -33,7 +33,6 @@ def show_images(images):
         ax.set_yticklabels([])
         ax.set_aspect('equal')
         plt.imshow(img.reshape([sqrtimg, sqrtimg]))
-    return
 
 
 class ChunkSampler(sampler.Sampler):
@@ -87,6 +86,7 @@ class Unflatten(nn.Module):
         self.W = W
     def forward(self, x):
         return x.view(self.N, self.C, self.H, self.W)
+
 
 def initialize_weights(m):
     if isinstance(m, nn.Linear) or isinstance(m, nn.ConvTranspose2d):
