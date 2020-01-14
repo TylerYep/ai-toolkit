@@ -35,10 +35,9 @@ def test_model(test_loader, model, device, criterion):
 
 
 def main():
-    args, device = init_pipeline()
+    args, device, checkpoint = init_pipeline()
     criterion = $loss_fn
     test_loader = load_test_data(args)
-    checkpoint = util.load_checkpoint(args.checkpoint)
     init_params = checkpoint['model_init'] if checkpoint else {}
     model = Model(*init_params).to(device)
     util.load_state_dict(checkpoint, model)

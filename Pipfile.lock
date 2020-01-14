@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1408833790605393ca58d996817973cc5865e62ccdb96cefa311771904b2636d"
+            "sha256": "168eeb65aae3da5b08c6677c63ca527b55994f8710aec234dfd3097e969285cc"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.6.5"
+            "python_version": "3.6"
         },
         "sources": [
             {
@@ -22,6 +22,13 @@
                 "sha256:cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"
             ],
             "version": "==0.10.0"
+        },
+        "efficientnet-pytorch": {
+            "hashes": [
+                "sha256:8c1d954c4b15a6574d81147215920db9b192f03e0e0360e2c0606ce3c219bb77"
+            ],
+            "index": "pypi",
+            "version": "==0.5.1"
         },
         "joblib": {
             "hashes": [

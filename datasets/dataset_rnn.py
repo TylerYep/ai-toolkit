@@ -1,3 +1,4 @@
+import sys
 import glob
 import os
 import unicodedata
@@ -10,7 +11,7 @@ from torch.utils.data.dataset import Dataset
 from torchvision import datasets, transforms
 from metric_tracker import Mode
 
-if torch.cuda.is_available():
+if 'google.colab' in sys.modules:
     DATA_PATH = '/content/'
 else:
     DATA_PATH = 'data/'

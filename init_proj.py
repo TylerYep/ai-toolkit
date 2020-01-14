@@ -20,7 +20,7 @@ CNN_CONFIG = {
     },
     'substitutions': {
         'loss_fn': 'F.nll_loss',
-        'model': 'BasicCNN'
+        'model': 'EfficientNet'
     }
 }
 
@@ -64,4 +64,4 @@ def init_project(source, destination, config):
 
 
 if __name__ == '__main__':
-    init_project(SOURCE, DESTINATION, RNN_CONFIG)
+    init_project(SOURCE, DESTINATION, CNN_CONFIG)
