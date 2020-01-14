@@ -10,8 +10,8 @@ import util
 from args import init_pipeline
 from dataset import load_train_data, INPUT_SHAPE
 from metric_tracker import MetricTracker, Mode
-from models import $model as Model
-from visualizations import visualize
+from models import BasicCNN as Model
+from viz import visualize
 
 if torch.cuda.is_available():
     from tqdm import tqdm_notebook as tqdm
@@ -41,7 +41,7 @@ def verify_model(model, loader, optimizer, device, test_val=2):
 
 def main():
     args, device, checkpoint = init_pipeline()
-    criterion = $loss_fn
+    criterion = F.nll_loss
     train_loader, val_loader, class_labels, init_params = load_train_data(args)
     model = Model(*init_params).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)

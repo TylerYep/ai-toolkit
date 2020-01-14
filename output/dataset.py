@@ -22,11 +22,13 @@ INPUT_SHAPE = (1, 28, 28)
 
 def load_train_data(args):
     norm = get_transforms()
+    class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+                   'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
     train_set = datasets.FashionMNIST(DATA_PATH, train=True, download=True, transform=norm)
     val_set = datasets.FashionMNIST(DATA_PATH, train=False, transform=norm)
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=args.test_batch_size)
-    return train_loader, val_loader, {}
+    return train_loader, val_loader, class_names, {}
 
 
 def load_test_data(args):

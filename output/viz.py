@@ -25,12 +25,13 @@ def main():
     create_class_visualization(target[1], model)
 
 
-def visualize(model, train_loader, class_labels, optimizer, device, run_name)
-    view_input(data, target, run_name)
+def visualize(model, train_loader, class_labels, optimizer, device, run_name):
+    data, target = next(iter(train_loader))
+    view_input(data, target, class_labels, run_name)
     compute_activations(model, data, run_name)
 
 
-def view_input(data, target, run_name=''):
+def view_input(data, target, class_labels, run_name=''):
     ''' Data is of shape (B, C, H, W) '''
     NUM_SUBPLOTS = 24
     NUM_ROWS = 4
@@ -39,12 +40,12 @@ def view_input(data, target, run_name=''):
     for i in range(0, data.shape[0] - NUM_SUBPLOTS, NUM_SUBPLOTS):
         for j in range(NUM_SUBPLOTS):
             # Subplot: a x b, cth subplot
-            ax = fig.add_subplot(NUM_ROWS, NUM_SUBPLOTS // NUM_ROWS + 1, j+1, label=plot_num)
-            img = rearrange(data[i+j]) #.permute(1, 2, 0).squeeze()
-            # label = int(target[i+j])
+            ax = fig.add_subplot(NUM_ROWS, NUM_SUBPLOTS // NUM_ROWS + 1, j+1)
+            img = rearrange(data[i+j])
+            label = class_labels[target[i+j]]
             plt.imshow(img)
             ax.axis('off')
-            # ax.set_title(label)
+            ax.set_title(label)
             plot_num += 1
 
     if run_name:

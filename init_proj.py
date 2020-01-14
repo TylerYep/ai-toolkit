@@ -20,7 +20,7 @@ CNN_CONFIG = {
     },
     'substitutions': {
         'loss_fn': 'F.nll_loss',
-        'model': 'EfficientNet'
+        'model': 'BasicCNN'
     }
 }
 
@@ -32,6 +32,8 @@ def init_project(source, destination, config):
 
     # Copy all files over to the destination directory.
     for filename in os.listdir(source):
+        if 'data' in filename:
+            continue
         # Fill in template files with entries in config.
         if '_temp.py' in filename:
             result = ''
