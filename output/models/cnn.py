@@ -34,7 +34,9 @@ class BasicCNN(nn.Module):
         out = F.relu(out)
         second_activation = out
         out = self.conv2(out)
+        third_activation = out
         out = F.max_pool2d(out, 2)
+        fourth_activation = out
         out = self.dropout1(out)
         out = torch.flatten(out, 1)
         out = self.fc1(out)
@@ -42,4 +44,4 @@ class BasicCNN(nn.Module):
         out = self.dropout2(out)
         out = self.fc2(out)
         out = F.log_softmax(out, dim=1)
-        return out, [first_activation, second_activation]
+        return out, [first_activation, second_activation, third_activation, fourth_activation]

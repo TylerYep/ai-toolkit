@@ -13,11 +13,11 @@ else:
 INPUT_SHAPE = (1, 28, 28)
 
 
-# def load_train_data(args):
-#     norm = get_transforms()
-#     train_set = datasets.ImageFolder('data/tiny-imagenet-200', transform=norm)
-#     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False)
-#     return train_loader, None, {}
+def load_train_data(args):
+    norm = get_transforms()
+    train_set = datasets.ImageFolder('data/tiny-imagenet-200', transform=norm)
+    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False)
+    return train_loader, None, [0 for _ in range(10000)], {}
 
 
 def load_train_data(args):
