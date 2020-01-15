@@ -11,7 +11,7 @@ from args import init_pipeline
 from dataset import load_train_data, INPUT_SHAPE
 from metric_tracker import MetricTracker, Mode
 from models import $model as Model
-from visualizations import visualize
+from viz import visualize
 
 if torch.cuda.is_available():
     from tqdm import tqdm_notebook as tqdm

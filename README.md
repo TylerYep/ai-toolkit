@@ -1,11 +1,11 @@
 # ml-toolkit
 
 ## Motivation
-When working on ML projects, especially supervised learning, there is a lot of repeated code, because in almost all projects, we want a way to checkpoint our work, visualize the loss curves in tensorboard, add additional metrics, and see example output. Some projects do this better than others. However, the best case would be some way to consolidate all of this code into a single place.
+When working on ML projects, especially supervised learning, there tends to be a lot of repeated code. This is because in every project, we always want a way to checkpoint our work, visualize loss curves in tensorboard, add additional metrics, and see example output. Some projects we are able to do this better than others. Ideally, we would have some way to consolidate all of this code into a single place.
 
-The problem is that these Pytorch examples are not nearly similar enough. With most data exploration, we want the ability to modify every part of the codebase to handle different loss metrics, different types of data, or different visualizations based on our data dimensions. Combining everything into a single repository over-complicates the underlying logic (making the training loop extremely complicated, for example). We want to strike a balance between extremely minimalistic and readable code that makes it easy to add on extra functionality when needed.
+The problem is that Pytorch examples are not nearly similar enough. Like most data exploration, we want the ability to modify every part of the codebase to handle different loss metrics, different types of data, or different visualizations based on our data dimensions. Combining everything into a single repository would overcomplicate the underlying logic (making the training loop extremely unreadable, for example). We want to strike a balance between extremely minimalistic / readable code that makes it easy to add on extra functionality when needed.
 
-Thus, this project for developers or aspiring ML scientists, who want to learn how to modify a generic template code into a fully-functioning ML pipeline. Each project comes with consistent styling, an opinionated way of handling logging, metrics, and checkpointing / resuming training from checkpoints.
+Thus, this project is for developers or ML scientists who want features of a fully-functioning ML pipeline from the beginning. Each project comes with consistent styling, an opinionated way of handling logging, metrics, and checkpointing / resuming training from checkpoints. It also integrates seamlessly with Google Colab and AWS/Google Cloud GPUs.
 
 
 ## Evaluation Criteria
@@ -35,8 +35,6 @@ The rough evaluation metric for this repo's success is how fast I can start work
     - layers/
     - ...
 - visualizers/
-    - viz.py                    (Stub, import existing visualizations if necessary)
-    - ...
 - args.py                       (Modify default hyperparameters manually)
 - dataset.py                    (Stub)
 - metric_tracker.py
@@ -45,6 +43,7 @@ The rough evaluation metric for this repo's success is how fast I can start work
 - test.py
 - train.py
 - util.py
+- viz.py                        (Stub, create more visualizations if necessary)
 
 
 # Goal Workflow
@@ -58,4 +57,3 @@ The rough evaluation metric for this repo's success is how fast I can start work
 
 # TODO
 - Allow customizability with config.json
-- Bug with resuming checkpoints - graphs not perfectly smooth after 100 epochs?
