@@ -47,12 +47,6 @@ def get_transforms():
     #                            transforms.Normalize((0.1307,), (0.3081,))])
 
 
-def get_data_example(train_loader, device):
-    data, target = next(iter(train_loader))
-    data, target = data.to(device), target.to(device)
-    return data, target
-
-
 class MyDataset(Dataset):
     ''' Dataset for training a model on a dataset. '''
     def __init__(self, data_path, transform=None):

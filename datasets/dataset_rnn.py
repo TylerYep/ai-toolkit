@@ -36,12 +36,6 @@ def load_test_data(args):
     return test_loader
 
 
-def get_data_example(train_loader, device):
-    data, target = next(iter(train_loader))
-    data, target = data.to(device), target.to(device)
-    return data, target
-
-
 class LanguageWords(Dataset):
     ''' Dataset for training a model on a dataset. '''
     def __init__(self, mode):
