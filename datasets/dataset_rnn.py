@@ -21,17 +21,25 @@ ALL_LETTERS = string.ascii_letters + " .,;'"
 
 
 def load_train_data(args):
+    class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+                   'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
     train_set = LanguageWords(Mode.TRAIN)
     val_set = LanguageWords(Mode.VAL)
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=args.test_batch_size)
-    return train_loader, val_loader, train_set.get_model_params()
+    return train_loader, val_loader, class_names, train_set.get_model_params()
 
 
 def load_test_data(args):
     test_set = LanguageWords(Mode.TEST)
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
     return test_loader
+
+
+def get_data_example(train_loader, device):
+    data, target = next(iter(train_loader))
+    data, target = data.to(device), target.to(device)
+    return data, target
 
 
 class LanguageWords(Dataset):

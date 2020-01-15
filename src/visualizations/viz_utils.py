@@ -1,4 +1,15 @@
+import os
+import matplotlib.pyplot as plt
 import torch
+
+
+def save_figure(run_name, img_name):
+    plt.tight_layout(True)
+    if run_name:
+        plt.savefig(os.path.join(run_name, img_name))
+        plt.clf()
+    else:
+        plt.show()
 
 
 def rearrange(orig_img):

@@ -8,7 +8,7 @@ import torchsummary
 
 import util
 from args import init_pipeline
-from dataset import load_train_data, INPUT_SHAPE
+from dataset import load_train_data, get_data_example, INPUT_SHAPE
 from metric_tracker import MetricTracker, Mode
 from models import $model as Model
 from viz import visualize
@@ -19,24 +19,8 @@ else:
     from tqdm import tqdm
 
 
+# Adding metrics here will automatically search the metrics/ folder for an implementation.
 METRIC_NAMES = ['Loss', 'Accuracy']
-
-
-def verify_model(model, loader, optimizer, device, test_val=2):
-    model.eval()
-    torch.set_grad_enabled(True)
-    data, target = next(iter(loader))
-    data, target = data.to(device), target.to(device)
-    optimizer.zero_grad()
-    data.requires_grad_()
-
-    output = model(data)
-    loss = output[test_val].sum()
-    loss.backward()
-
-    assert loss.data != 0
-    assert (data.grad[test_val] != 0).any()
-    assert (data.grad[:test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all()
 
 
 def main():
@@ -79,12 +63,11 @@ def main():
 
     verify_model(model, train_loader, optimizer, device)
     run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
-
-    if args.visualize:
-        visualize(model, train_loader, class_labels, optimizer, device, run_name)
-
     metric_checkpoint = checkpoint['metric_obj'] if checkpoint else {}
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
+    metrics.add_network(model, get_data_example(train_loader, device)[0])
+    visualize(model, train_loader, class_labels, device, metrics, run_name)
+
     util.set_rng_state(checkpoint)
 
     start_epoch = metrics.epoch + 1
@@ -105,6 +88,29 @@ def main():
             'run_name': run_name,
             'metric_obj': metrics.json_repr()
         }, run_name, is_best)
+
+
+def verify_model(model, loader, optimizer, device, test_val=2):
+    """
+    Verifies that the provided model loads the data correctly. We do this by setting the
+    loss to be something trivial (e.g. the sum of all outputs of example i), running the
+    backward pass all the way to the input, and ensuring that we only get a non-zero gradient
+    on the i-th input.
+    See details at http://karpathy.github.io/2019/04/25/recipe/.
+    """
+    model.eval()
+    torch.set_grad_enabled(True)
+    data, target = get_data_example(loader, device)
+    optimizer.zero_grad()
+    data.requires_grad_()
+
+    output = model(data)
+    loss = output[test_val].sum()
+    loss.backward()
+
+    assert loss.data != 0
+    assert (data.grad[test_val] != 0).any()
+    assert (data.grad[:test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all()
 
 
 if __name__ == '__main__':

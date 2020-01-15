@@ -43,9 +43,12 @@ class MetricTracker:
     def __getattr__(self, name):
         return self.metric_data[name]
 
+    def add_network(self, model, data):
+        self.writer.add_graph(model, data)
+
     def update_best_metric(self, val_loss) -> bool:
-        self.best_metric = min(val_loss, self.best_metric)
         is_best = val_loss < self.best_metric
+        self.best_metric = min(val_loss, self.best_metric)
         return is_best
 
     def write(self, title: str, val: float, step_num: int):

@@ -17,21 +17,23 @@ INPUT_SHAPE = (1, 28, 28)
 #     norm = get_transforms()
 #     train_set = datasets.ImageFolder('data/tiny-imagenet-200', transform=norm)
 #     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False)
-#     return train_loader, None, {}
+#     return train_loader, None, [0 for _ in range(10000)], {}
 
 
 def load_train_data(args):
     norm = get_transforms()
-    train_set = datasets.FashionMNIST(DATA_PATH, train=True, download=True, transform=norm)
-    val_set = datasets.FashionMNIST(DATA_PATH, train=False, transform=norm)
+    class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+                   'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+    train_set = datasets.MNIST(DATA_PATH, train=True, download=True, transform=norm)
+    val_set = datasets.MNIST(DATA_PATH, train=False, transform=norm)
     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=args.test_batch_size)
-    return train_loader, val_loader, {}
+    return train_loader, val_loader, class_names, {}
 
 
 def load_test_data(args):
     norm = get_transforms()
-    test_set = datasets.FashionMNIST(DATA_PATH, train=False, transform=norm)
+    test_set = datasets.MNIST(DATA_PATH, train=False, transform=norm)
     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
     return test_loader
 
@@ -43,6 +45,12 @@ def get_transforms():
     #                            transforms.Resize(224),
     #                            transforms.ToTensor(),
     #                            transforms.Normalize((0.1307,), (0.3081,))])
+
+
+def get_data_example(train_loader, device):
+    data, target = next(iter(train_loader))
+    data, target = data.to(device), target.to(device)
+    return data, target
 
 
 class MyDataset(Dataset):

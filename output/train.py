@@ -8,7 +8,7 @@ import torchsummary
 
 import util
 from args import init_pipeline
-from dataset import load_train_data, INPUT_SHAPE
+from dataset import load_train_data, get_data_example, INPUT_SHAPE
 from metric_tracker import MetricTracker, Mode
 from models import BasicCNN as Model
 from viz import visualize
@@ -63,11 +63,11 @@ def main():
 
     verify_model(model, train_loader, optimizer, device)
     run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
-    if args.visualize:
-        visualize(model, train_loader, class_labels, optimizer, device, run_name)
-
     metric_checkpoint = checkpoint['metric_obj'] if checkpoint else {}
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
+    metrics.add_network(model, get_data_example(train_loader, device)[0])
+    visualize(model, train_loader, class_labels, device, metrics, run_name)
+
     util.set_rng_state(checkpoint)
 
     start_epoch = metrics.epoch + 1
@@ -100,8 +100,7 @@ def verify_model(model, loader, optimizer, device, test_val=2):
     """
     model.eval()
     torch.set_grad_enabled(True)
-    data, target = next(iter(loader))
-    data, target = data.to(device), target.to(device)
+    data, target = get_data_example(loader, device)
     optimizer.zero_grad()
     data.requires_grad_()
 

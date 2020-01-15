@@ -36,7 +36,7 @@ def init_pipeline():
                         help='folder to save files to checkpoint/')
 
     parser.add_argument('--visualize', action='store_true', default=True,
-                        help='save visualization files ')
+                        help='save visualization files')
 
     args = parser.parse_args()
     checkpoint = util.load_checkpoint(args.checkpoint)
