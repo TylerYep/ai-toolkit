@@ -1,9 +1,11 @@
 import os
 import shutil
 import string
+import argparse
+
 
 SOURCE = 'src/'
-DESTINATION = 'output/'
+DESTINATION = 'output_rnn/'
 RNN_CONFIG = {
     'presets': {
         'datasets': 'dataset_rnn',
@@ -65,5 +67,25 @@ def init_project(source, destination, config):
             shutil.copy(key_src_path, key_dest_path)
 
 
+def init_pipeline():
+    parser = argparse.ArgumentParser(description='PyTorch Project Initializer')
+
+    parser.add_argument('--output_path', type=int, default=100, metavar='N',
+                        help='folder to output the project to')
+
+    parser.add_argument('--config_path', type=str, default='',
+                        help='filepath to the config.json file')
+
+    parser.add_argument('--visualize', action='store_true', default=True,
+                        help='save visualization files')
+
+    return parser.parse_args()
+
+
+def main():
+    pass
+
+
 if __name__ == '__main__':
-    init_project(SOURCE, DESTINATION, CNN_CONFIG)
+    init_project(SOURCE, DESTINATION, RNN_CONFIG)
+    main()
