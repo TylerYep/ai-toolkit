@@ -3,7 +3,6 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-import torchsummary
 
 import util
 from args import init_pipeline
@@ -59,15 +58,14 @@ def main():
     train_loader, val_loader, class_labels, init_params = load_train_data(args)
     model = Model(*init_params).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    util.load_state_dict(checkpoint, model, optimizer)
-    torchsummary.summary(model, INPUT_SHAPE)
     verify_model(model, train_loader, optimizer, device, criterion)
+    util.load_state_dict(checkpoint, model, optimizer)
 
     run_name = checkpoint.get('run_name', util.get_run_name(args))
     metric_checkpoint = checkpoint.get('metric_obj', {})
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
-    metrics.add_network(model, util.get_data_example(train_loader, device)[0])
-    visualize(model, train_loader, class_labels, device, metrics, run_name)
+    metrics.add_network(model, train_loader, device)
+    visualize(model, train_loader, class_labels, device, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
@@ -91,7 +89,7 @@ def main():
             'metric_obj': metrics.json_repr()
         }, run_name, is_best)
 
-    visualize_trained(model, train_loader, class_labels, device)
+    visualize_trained(model, train_loader, class_labels, device, run_name)
 
 
 if __name__ == '__main__':

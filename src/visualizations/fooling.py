@@ -23,7 +23,7 @@ def make_fooling_image(model, X, y, class_labels, target_y, run_name):
     X_fooling.requires_grad_()
 
     learning_rate = 1
-    for i in range(100):
+    for _ in range(100):
         scores = model(X_fooling)
         _, index = torch.max(scores, dim=1)
         if index[0] == target_y:

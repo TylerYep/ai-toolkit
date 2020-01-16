@@ -1,12 +1,8 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
+import torchsummary
 
 import util
-from args import init_pipeline
-from dataset import load_train_data
-from models import BasicCNN as Model
+from dataset import INPUT_SHAPE
 
 from tqdm import tqdm
 
@@ -17,6 +13,7 @@ def verify_model(model, train_loader, optimizer, device, criterion):
     You may need to change the batch_size or max_iters in overfit_example
     in order to overfit the batch.
     """
+    torchsummary.summary(model, INPUT_SHAPE)
     check_batch_dimension(model, train_loader, optimizer, device)
     overfit_example(model, train_loader, optimizer, device, criterion)
     print('Verification complete - all tests passed!')
@@ -66,7 +63,3 @@ def check_batch_dimension(model, loader, optimizer, device, test_val=2):
     assert loss.data != 0
     assert (data.grad[test_val] != 0).any()
     assert (data.grad[:test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all()
-
-
-if __name__ == '__main__':
-    main()

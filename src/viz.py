@@ -2,7 +2,7 @@ import torchvision.models as models
 
 import util
 from args import init_pipeline
-from dataset import load_train_data, INPUT_SHAPE
+from dataset import load_train_data
 from models import BasicCNN as Model
 
 from visualizations import *
@@ -19,14 +19,14 @@ def main():
     visualize_trained(model, train_loader, class_labels, device)
 
 
-def visualize(model, loader, class_labels, device, metrics=None, run_name=''):
+def visualize(model, loader, class_labels, device, run_name='', metrics=None):
     data, target = util.get_data_example(loader, device)
     view_input(data, target, class_labels, run_name)
     data, target = util.get_data_example(loader, device)
     compute_activations(model, data, target, class_labels, run_name)
 
 
-def visualize_trained(model, loader, class_labels, device, metrics=None, run_name=''):
+def visualize_trained(model, loader, class_labels, device, run_name='', metrics=None):
     data, target = util.get_data_example(loader, device)
     make_fooling_image(model, data[5], target[5], class_labels, target[9], run_name)
     data, target = util.get_data_example(loader, device)

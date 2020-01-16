@@ -38,7 +38,7 @@ def main():
     args, device, checkpoint = init_pipeline()
     criterion = $loss_fn
     test_loader = load_test_data(args)
-    init_params = checkpoint['model_init'] if checkpoint else {}
+    init_params = checkpoint.get('model_init', {})
     model = Model(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
     torchsummary.summary(model, INPUT_SHAPE)

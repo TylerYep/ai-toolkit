@@ -3,6 +3,7 @@ from enum import Enum, unique
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
+import util
 from metrics import get_metric
 
 
@@ -43,7 +44,8 @@ class MetricTracker:
     def __getattr__(self, name):
         return self.metric_data[name]
 
-    def add_network(self, model, data):
+    def add_network(self, model, loader, device):
+        data, _ = util.get_data_example(loader, device)
         self.writer.add_graph(model, data)
 
     def update_best_metric(self, val_loss) -> bool:
