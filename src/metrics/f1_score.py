@@ -2,6 +2,7 @@ from torch.nn import functional as F
 
 from .metric import Metric
 
+
 class F1Score(Metric):
     def __init__(self, eps=1e-7):
         super().__init__()

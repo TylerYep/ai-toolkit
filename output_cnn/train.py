@@ -28,9 +28,10 @@ def main():
     criterion = F.nll_loss
     train_loader, val_loader, class_labels, init_params = load_train_data(args)
     model = Model(*init_params).to(device)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    util.load_state_dict(checkpoint, model, optimizer)
     torchsummary.summary(model, INPUT_SHAPE)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    verify_model(model, train_loader, optimizer, device, criterion)
+    util.load_state_dict(checkpoint, model, optimizer)
 
     def train_and_validate(loader, metrics, mode) -> float:
         if mode == Mode.TRAIN:
@@ -61,7 +62,6 @@ def main():
 
         return metrics.get_epoch_results(mode)
 
-    verify_model(model, train_loader, optimizer, device, criterion)
     run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
     metric_checkpoint = checkpoint['metric_obj'] if checkpoint else {}
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)

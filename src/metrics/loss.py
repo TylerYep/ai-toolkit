@@ -2,6 +2,7 @@ import numpy as np
 
 from .metric import Metric
 
+
 class Loss(Metric):
     def __init__(self):
         super().__init__()

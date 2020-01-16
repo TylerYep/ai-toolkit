@@ -1,3 +1,4 @@
+import copy
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -17,8 +18,9 @@ def verify_model(model, train_loader, optimizer, device, criterion):
     You may need to change the batch_size or max_iters in overfit_example
     in order to overfit the batch.
     """
-    check_batch_dimension(model, train_loader, optimizer, device)
-    overfit_example(model, train_loader, optimizer, device, criterion)
+    new_model = copy.deepcopy(model)
+    check_batch_dimension(new_model, train_loader, optimizer, device)
+    overfit_example(new_model, train_loader, optimizer, device, criterion)
     print('Verification complete - all tests passed!')
 
 

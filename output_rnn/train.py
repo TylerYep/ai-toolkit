@@ -29,11 +29,12 @@ def main():
     criterion = nn.CrossEntropyLoss()
     train_loader, val_loader, class_labels, init_params = load_train_data(args)
     model = Model(*init_params).to(device)
+    # torchsummary.summary(model, INPUT_SHAPE)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     util.load_state_dict(checkpoint, model, optimizer)
-    torchsummary.summary(model, INPUT_SHAPE)
+    verify_model(model, train_loader, optimizer, device, criterion)
 
-    def train_and_validate(loader, metrics, run_name, mode) -> float:
+    def train_and_validate(loader, metrics, mode) -> float:
         if mode == Mode.TRAIN:
             model.train()
             torch.set_grad_enabled(True)
@@ -62,7 +63,6 @@ def main():
 
         return metrics.get_epoch_results(mode)
 
-    verify_model(model, train_loader, optimizer, device, criterion)
     run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
     metric_checkpoint = checkpoint['metric_obj'] if checkpoint else {}
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
@@ -75,8 +75,8 @@ def main():
     for epoch in range(start_epoch, start_epoch + args.epochs):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.set_epoch(epoch)
-        train_loss = train_and_validate(train_loader, metrics, run_name, Mode.TRAIN)
-        val_loss = train_and_validate(val_loader, metrics, run_name, Mode.VAL)
+        train_loss = train_and_validate(train_loader, metrics, Mode.TRAIN)
+        val_loss = train_and_validate(val_loader, metrics, Mode.VAL)
 
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({

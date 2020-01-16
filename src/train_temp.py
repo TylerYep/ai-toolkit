@@ -31,6 +31,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     util.load_state_dict(checkpoint, model, optimizer)
     torchsummary.summary(model, INPUT_SHAPE)
+    verify_model(model, train_loader, optimizer, device, criterion)
 
     def train_and_validate(loader, metrics, mode) -> float:
         if mode == Mode.TRAIN:
@@ -61,7 +62,6 @@ def main():
 
         return metrics.get_epoch_results(mode)
 
-    verify_model(model, train_loader, optimizer, device, criterion)
     run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
     metric_checkpoint = checkpoint['metric_obj'] if checkpoint else {}
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
@@ -87,6 +87,7 @@ def main():
             'run_name': run_name,
             'metric_obj': metrics.json_repr()
         }, run_name, is_best)
+
     visualize_trained(model, train_loader, class_labels, device)
 
 
