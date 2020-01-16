@@ -5,7 +5,7 @@ import argparse
 
 
 SOURCE = 'src/'
-DESTINATION = 'output_rnn/'
+DESTINATION = 'output_cnn/'
 RNN_CONFIG = {
     'presets': {
         'datasets': 'dataset_rnn',
@@ -36,21 +36,31 @@ def init_project(source, destination, config):
     for filename in os.listdir(source):
         if 'data' in filename:
             continue
+
+        full_src_path = os.path.join(source, filename)
+        full_dest_path = os.path.join(destination, filename)
+
+        # Remove file if it already exists.
+        if filename in os.listdir(destination):
+            if os.path.isdir(full_dest_path):
+                shutil.rmtree(full_dest_path)
+            else:
+                os.remove(full_dest_path)
+
         # Fill in template files with entries in config.
         if '_temp.py' in filename:
             result = ''
-            with open(os.path.join(source, filename)) as in_file:
+            with open(full_src_path) as in_file:
                 contents = string.Template(in_file.read())
                 result = contents.substitute(config['substitutions'])
 
-            new_filename = filename.replace('_temp', '')
-            with open(os.path.join(destination, new_filename), 'w') as out_file:
+            new_dest_path = full_dest_path.replace('_temp', '')
+            with open(new_dest_path, 'w') as out_file:
                 out_file.write(result)
 
+        # If not a template, copy file over.
         else:
-            full_src_path = os.path.join(source, filename)
             if os.path.isdir(full_src_path):
-                full_dest_path = os.path.join(destination, filename)
                 shutil.copytree(full_src_path, full_dest_path)
             else:
                 shutil.copy(full_src_path, destination)
@@ -87,5 +97,5 @@ def main():
 
 
 if __name__ == '__main__':
-    init_project(SOURCE, DESTINATION, RNN_CONFIG)
-    main()
+    init_project(SOURCE, DESTINATION, CNN_CONFIG)
+    # main()

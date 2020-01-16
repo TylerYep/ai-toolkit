@@ -62,7 +62,7 @@ def main():
 
         return metrics.get_epoch_results(mode)
 
-    verify_model(model, train_loader, optimizer, device)
+    verify_model(model, train_loader, optimizer, device, criterion)
     run_name = checkpoint['run_name'] if checkpoint else util.get_run_name(args)
     metric_checkpoint = checkpoint['metric_obj'] if checkpoint else {}
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)

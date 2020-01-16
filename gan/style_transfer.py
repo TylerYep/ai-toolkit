@@ -1,13 +1,10 @@
 import torch
-import torch.nn as nn
 import torchvision
 import torchvision.transforms as T
 import PIL
 
 import numpy as np
 
-from scipy.misc import imread
-from collections import namedtuple
 import matplotlib.pyplot as plt
 
 from cs231n.image_utils import SQUEEZENET_MEAN, SQUEEZENET_STD
@@ -167,8 +164,8 @@ def tv_loss(img, tv_weight):
     return tv_weight * (first + second)
 
 
-def style_transfer(content_image, style_image, image_size, style_size, content_layer, content_weight,
-                   style_layers, style_weights, tv_weight, init_random = False):
+def style_transfer(content_image, style_image, image_size, style_size, content_layer,
+                   content_weight, style_layers, style_weights, tv_weight, init_random=False):
     """
     Run style transfer!
 
@@ -215,7 +212,7 @@ def style_transfer(content_image, style_image, image_size, style_size, content_l
     # in the img Torch tensor, whose requires_grad flag is set to True
     optimizer = torch.optim.Adam([img], lr=initial_lr)
 
-    f, axarr = plt.subplots(1,2)
+    f, axarr = plt.subplots(1, 2)
     axarr[0].axis('off')
     axarr[1].axis('off')
     axarr[0].set_title('Content Source Img.')
@@ -254,6 +251,3 @@ def style_transfer(content_image, style_image, image_size, style_size, content_l
     plt.axis('off')
     plt.imshow(deprocess(img.data.cpu()))
     plt.show()
-
-
-    

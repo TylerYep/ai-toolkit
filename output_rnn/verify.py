@@ -1,22 +1,51 @@
 import torch
+import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 
 import util
 from args import init_pipeline
-from dataset import load_train_data, INPUT_SHAPE
+from dataset import load_train_data
 from models import BasicCNN as Model
 
+from tqdm import tqdm
 
-def main():
-    args, device, _ = init_pipeline()
-    train_loader, _, class_labels, init_params = load_train_data(args)
-    model = Model(*init_params).to(device)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    verify_model(model, train_loader, optimizer, device, test_val=2)
+
+def verify_model(model, train_loader, optimizer, device, criterion):
+    """
+    Performs all necessary validation on your model to ensure correctness.
+    You may need to change the batch_size or max_iters in overfit_example
+    in order to overfit the batch.
+    """
+    check_batch_dimension(model, train_loader, optimizer, device)
+    overfit_example(model, train_loader, optimizer, device, criterion)
     print('Verification complete - all tests passed!')
 
 
-def verify_model(model, loader, optimizer, device, test_val=2):
+def overfit_example(model, loader, optimizer, device, criterion, batch_size=5, max_iters=50):
+    """
+    Verifies that the provided model can overfit a single batch or example.
+    """
+    model.eval()
+    torch.set_grad_enabled(True)
+    data, target = util.get_data_example(loader, device)
+    data, target = data[:batch_size], target[:batch_size]
+    with tqdm(desc='Verify Model', total=max_iters, ncols=120) as pbar:
+        for _ in range(max_iters):
+            optimizer.zero_grad()
+            output = model(data)
+            loss = criterion(output, target)
+            if torch.allclose(loss, torch.tensor(0.)):
+                break
+            loss.backward()
+            optimizer.step()
+            pbar.set_postfix({'Loss': loss.item()})
+            pbar.update()
+
+    assert torch.allclose(loss, torch.tensor(0.))
+
+
+def check_batch_dimension(model, loader, optimizer, device, test_val=2):
     """
     Verifies that the provided model loads the data correctly. We do this by setting the
     loss to be something trivial (e.g. the sum of all outputs of example i), running the
@@ -26,7 +55,7 @@ def verify_model(model, loader, optimizer, device, test_val=2):
     """
     model.eval()
     torch.set_grad_enabled(True)
-    data, target = util.get_data_example(loader, device)
+    data, _ = util.get_data_example(loader, device)
     optimizer.zero_grad()
     data.requires_grad_()
 

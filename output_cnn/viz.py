@@ -1,8 +1,3 @@
-import os
-import random
-import matplotlib.pyplot as plt
-import numpy as np
-import torch
 import torchvision.models as models
 
 import util
