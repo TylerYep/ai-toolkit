@@ -54,8 +54,8 @@ class MetricTracker:
     def write(self, title: str, val: float, step_num: int):
         self.writer.add_scalar(title, val, step_num)
 
-    def set_epoch(self, new_epoch):
-        self.epoch = new_epoch
+    def next_epoch(self):
+        self.epoch += 1
 
     def set_num_examples(self, num_examples: int):
         self.num_examples = num_examples

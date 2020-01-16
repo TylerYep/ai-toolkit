@@ -19,19 +19,19 @@ def main():
     visualize_trained(model, train_loader, class_labels, device)
 
 
-def visualize(model, train_loader, class_labels, device, metrics=None, run_name=''):
-    data, target = util.get_data_example(train_loader, device)
+def visualize(model, loader, class_labels, device, metrics=None, run_name=''):
+    data, target = util.get_data_example(loader, device)
     view_input(data, target, class_labels, run_name)
-    data, target = util.get_data_example(train_loader, device)
+    data, target = util.get_data_example(loader, device)
     compute_activations(model, data, target, class_labels, run_name)
 
 
-def visualize_trained(model, train_loader, class_labels, device, metrics=None, run_name=''):
-    data, target = util.get_data_example(train_loader, device)
+def visualize_trained(model, loader, class_labels, device, metrics=None, run_name=''):
+    data, target = util.get_data_example(loader, device)
     make_fooling_image(model, data[5], target[5], class_labels, target[9], run_name)
-    data, target = util.get_data_example(train_loader, device)
+    data, target = util.get_data_example(loader, device)
     show_saliency_maps(model, data, target, class_labels, run_name)
-    data, target = util.get_data_example(train_loader, device)
+    data, target = util.get_data_example(loader, device)
     create_class_visualization(model, data, class_labels, target[1], run_name)
 
 
