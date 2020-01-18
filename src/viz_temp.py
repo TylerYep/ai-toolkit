@@ -3,7 +3,7 @@ import torchvision.models as models
 import util
 from args import init_pipeline
 from dataset import load_train_data
-from models import BasicCNN as Model
+from models import $model as Model
 
 from visualizations import *
 

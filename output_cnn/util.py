@@ -51,8 +51,8 @@ def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None
     Args:
         state: (dict) contains model's state_dict, may contain other keys such as
         epoch, optimizer_state_dict
+        run_name: (string) folder where parameters are to be saved
         is_best: (bool) True if it is the best model seen till now
-        checkpoint: (string) folder where parameters are to be saved
     """
     print('Saving checkpoint...')
     save_path = os.path.join(run_name, 'checkpoint.pth.tar')

@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
@@ -22,7 +23,7 @@ else:
 METRIC_NAMES = ['Loss', 'Accuracy']
 
 
-def train_and_validate(model, loader, optimizer, criterion, device, metrics, mode) -> float:
+def train_and_validate(model, loader, optimizer, criterion, device, class_labels, metrics, mode):
     if mode == Mode.TRAIN:
         model.train()
         torch.set_grad_enabled(True)
@@ -34,18 +35,16 @@ def train_and_validate(model, loader, optimizer, criterion, device, metrics, mod
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
             data, target = data.to(device), target.to(device)
-
             if mode == Mode.TRAIN:
                 optimizer.zero_grad()
 
             output = model(data)
             loss = criterion(output, target)
-
             if mode == Mode.TRAIN:
                 loss.backward()
                 optimizer.step()
 
-            tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
+            tqdm_dict = metrics.batch_update(i, data, loss, output, target, class_labels, mode)
             pbar.set_postfix(tqdm_dict)
             pbar.update()
 
@@ -54,10 +53,10 @@ def train_and_validate(model, loader, optimizer, criterion, device, metrics, mod
 
 def main():
     args, device, checkpoint = init_pipeline()
-    criterion = $loss_fn
     train_loader, val_loader, class_labels, init_params = load_train_data(args)
+    criterion = $loss_fn
     model = Model(*init_params).to(device)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = optim.AdamW(model.parameters(), lr=args.lr)
     verify_model(model, train_loader, optimizer, device, criterion)
     util.load_state_dict(checkpoint, model, optimizer)
 
@@ -73,9 +72,9 @@ def main():
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()
         train_loss = train_and_validate(model, train_loader, optimizer, criterion,
-                                        device, metrics, Mode.TRAIN)
+                                        device, class_labels, metrics, Mode.TRAIN)
         val_loss = train_and_validate(model, val_loader, optimizer, criterion,
-                                      device, metrics, Mode.VAL)
+                                      device, class_labels, metrics, Mode.VAL)
 
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({

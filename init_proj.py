@@ -4,8 +4,6 @@ import string
 import argparse
 
 
-SOURCE = 'src/'
-DESTINATION = 'output_cnn/'
 RNN_CONFIG = {
     'presets': {
         'datasets': 'dataset_rnn',
@@ -80,6 +78,9 @@ def init_project(source, destination, config):
 def init_pipeline():
     parser = argparse.ArgumentParser(description='PyTorch Project Initializer')
 
+    parser.add_argument('project', type=str,
+                        help='version of the code to generate')
+
     parser.add_argument('--output_path', type=int, default=100, metavar='N',
                         help='folder to output the project to')
 
@@ -93,9 +94,18 @@ def init_pipeline():
 
 
 def main():
-    pass
+    args = init_pipeline()
+    if args.project == 'rnn':
+        config = RNN_CONFIG
+    elif args.project == 'cnn':
+        config = CNN_CONFIG
+    else:
+        raise ValueError
+    
+    source = 'src/'
+    destination = f'output_{args.project}/'
+    init_project(source, destination, config)
 
 
 if __name__ == '__main__':
-    init_project(SOURCE, DESTINATION, CNN_CONFIG)
-    # main()
+    main()

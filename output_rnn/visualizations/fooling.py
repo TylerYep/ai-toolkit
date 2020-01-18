@@ -23,7 +23,7 @@ def make_fooling_image(model, X, y, class_labels, target_y, run_name):
     X_fooling.requires_grad_()
 
     learning_rate = 1
-    for i in range(100):
+    for _ in range(100):
         scores = model(X_fooling)
         _, index = torch.max(scores, dim=1)
         if index[0] == target_y:
@@ -59,6 +59,6 @@ def make_fooling_image(model, X, y, class_labels, target_y, run_name):
     ax.imshow(rearrange(10 * diff))
     ax.set_title('Magnified difference (10x)')
     ax.axis('off')
-    
+
     plt.gcf().set_size_inches(12, 5)
     save_figure(run_name, 'fooling.png')

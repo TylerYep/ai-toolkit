@@ -71,8 +71,8 @@ class MetricTracker:
 
     def update_all(self, val_dict):
         ret_dict = {}
-        for metric in self.metric_data:
-            ret_dict[metric] = self.metric_data[metric].update(val_dict)
+        for metric, metric_obj in self.metric_data.items():
+            ret_dict[metric] =  metric_obj.update(val_dict)
         return ret_dict
 
     def write_all(self, num_steps, mode):
@@ -80,8 +80,17 @@ class MetricTracker:
             batch_result = metric_obj.get_batch_result(self.log_interval)
             self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
 
-    # Public Methods
-    def batch_update(self, i, data, loss, output, target, mode):
+    def add_images(self, val_dict, class_labels, num_steps):
+        data, output, target = val_dict['data'], val_dict['output'], val_dict['target']
+        for j in range(output.shape[0]):
+            _, pred_ind = torch.max(output.data[j], dim=0)
+            target_ind = int(target.data[j])
+            pred_class = class_labels[pred_ind]
+            target_class = class_labels[target_ind]
+            self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)
+
+    ### Public Methods ###
+    def batch_update(self, i, data, loss, output, target, class_labels, mode):
         names = ('data', 'loss', 'output', 'target')
         variables = (data, loss, output, target)
         val_dict = dict(zip(names, variables))
@@ -92,14 +101,9 @@ class MetricTracker:
             if i > 0:
                 self.write_all(num_steps, mode)
             self.reset_all()
-
-        # TODO make image its own metric, two types of metrics, qual vs quant
-        # elif mode == Mode.VAL:
-        #     for j in range(output.shape[0]):
-        #         _, ind = torch.max(output.data[j], dim=0)
-        #         self.writer.add_image(f'{int(target.data[j])}/Pred:{ind}',
-        #                               data[j],
-        #                               num_steps)
+        elif mode == Mode.VAL:
+            if len(data.size()) == 4: # (N, C, H, W)
+                self.add_images(val_dict, class_labels, num_steps)
         return ret_dict
 
     def get_epoch_results(self, mode) -> float:

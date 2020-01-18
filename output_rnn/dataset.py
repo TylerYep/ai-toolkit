@@ -4,7 +4,6 @@ import os
 import unicodedata
 import string
 import random
-import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
@@ -59,7 +58,7 @@ class LanguageWords(Dataset):
         train_val_split = int(len(self.data) * 0.8)
         if mode == Mode.TRAIN:
             self.data = self.data[:train_val_split]
-        elif mode == Mode.VAL or mode == Mode.TEST:
+        elif mode in (Mode.VAL, Mode.TEST):
             self.data = self.data[train_val_split:]
 
     def get_model_params(self):

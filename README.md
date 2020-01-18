@@ -10,14 +10,19 @@ Thus, this project is for developers or ML scientists who want features of a ful
 
 # Try It Out!
 The first thing you should do is go into one of the output_*/ folders and try training a model.
+We currently have two models:
+- MNIST CNN [(Source)](https://github.com/pytorch/examples/blob/master/mnist/main.py)
+- Character-Level RNN [(Source)](https://pytorch.org/tutorials/intermediate/char_rnn_generation_tutorial.html)
 
-- Notice we perform some verifcation checks on all models to make sure you aren't mixing up your batch dimension.
+
+## Notable Features
+- Notice we perform some verifcation checks on all models to make sure you aren't mixing up your batch dimensions.
 - Try stopping it and starting it after a couple epochs - it should resume training from the same place.
 - On tensorboard, the loss curves should already be plotting seamlessly across runs.
 - All checkpoints should be available in checkpoints/.
 
 
-## Evaluation Criteria
+# Evaluation Criteria
 The goal is for this repository to contain a series of clean ML examples of different levels of understanding that I can draw from and use as examples, test models, etc. I essentially want to gather all of the best-practice code gists I find or have used in the past, and make them modular and easily imported or exported for later use.
 
 The goal is not for this to be some ML framework built on PyTorch, but to focus on a single researcher/developer workflow and make it very easy to begin working. Great for Kaggle competitions, simple data exploration, or experimenting with different models.
@@ -27,13 +32,13 @@ The rough evaluation metric for this repo's success is how fast I can start work
 
 # Current Workflow
 1. Edit `init_proj.py` to your desired configuration.
-2. Run `python init_proj.py`, which creates your files in the `output/` directory.
+2. Run `python init_proj.py <project_type>`, which creates your files in the `output/` directory.
 3. Go into the output directory e.g. `cd output/`
-3. Depending on your dataset, you may need to paste in your `data/` folder and edit `dataset.py`.
-4. Run `train.py`, which saves model checkpoints, output predictions, and tensorboards in the same folder.
-5. Start tensorboard using the `checkpoints/` folder with `tensorboard --logdir=checkpoints/`
-6. Start and stop training using `python train.py --checkpoint=<checkpoint name>`. The code should automatically resume training at the previous epoch and continue logging to the previous tensorboard.
-7. Run `python test.py --checkpoint=<checkpoint name>` to get final predictions.
+4. Depending on your dataset, you may need to paste in your `data/` folder and edit `dataset.py`.
+5. Run `train.py`, which saves model checkpoints, output predictions, and tensorboards in the same folder.
+6. Start tensorboard using the `checkpoints/` folder with `tensorboard --logdir=checkpoints/`
+7. Start and stop training using `python train.py --checkpoint=<checkpoint name>`. The code should automatically resume training at the previous epoch and continue logging to the previous tensorboard.
+8. Run `python test.py --checkpoint=<checkpoint name>` to get final predictions.
 
 
 # Directory Structure

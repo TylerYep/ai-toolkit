@@ -4,7 +4,10 @@ import torchsummary
 import util
 from dataset import INPUT_SHAPE
 
-from tqdm import tqdm
+if torch.cuda.is_available():
+    from tqdm import tqdm_notebook as tqdm
+else:
+    from tqdm import tqdm
 
 
 def verify_model(model, train_loader, optimizer, device, criterion):
