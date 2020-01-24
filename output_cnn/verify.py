@@ -4,7 +4,7 @@ import torchsummary
 import util
 from dataset import INPUT_SHAPE
 
-if torch.cuda.is_available():
+if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm

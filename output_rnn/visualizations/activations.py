@@ -12,7 +12,7 @@ def compute_activations(model, data, target, class_labels, run_name):
     for i in range(NUM_EXAMPLES):
         for j, activ in enumerate(activations):
             activation = torch.abs(activ).mean(dim=1)[i]
-            activation = activation.detach().numpy()
+            activation = activation.detach().cpu().numpy()
             activation /= activation.max()
             activation = plt.get_cmap('inferno')(activation)
             activation = np.delete(activation, 3, 2)  # deletes 4th channel created by cmap

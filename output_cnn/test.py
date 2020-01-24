@@ -8,7 +8,7 @@ from args import init_pipeline
 from dataset import load_test_data, INPUT_SHAPE
 from models import BasicCNN as Model
 
-if torch.cuda.is_available():
+if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm

@@ -13,7 +13,7 @@ from models import BasicRNN as Model
 from verify import verify_model
 from viz import visualize, visualize_trained
 
-if torch.cuda.is_available():
+if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm
@@ -57,14 +57,14 @@ def main():
     criterion = nn.CrossEntropyLoss()
     model = Model(*init_params).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
-    # verify_model(model, train_loader, optimizer, device, criterion)
+    verify_model(model, train_loader, optimizer, device, criterion)
     util.load_state_dict(checkpoint, model, optimizer)
 
     run_name = checkpoint.get('run_name', util.get_run_name(args))
     metric_checkpoint = checkpoint.get('metric_obj', {})
     metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
     metrics.add_network(model, train_loader, device)
-    # visualize(model, train_loader, class_labels, device, run_name)
+    visualize(model, train_loader, class_labels, device, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
@@ -88,7 +88,7 @@ def main():
             'metric_obj': metrics.json_repr()
         }, run_name, is_best)
 
-    # visualize_trained(model, train_loader, class_labels, device, run_name)
+    visualize_trained(model, train_loader, class_labels, device, run_name)
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ from models import $model as Model
 from verify import verify_model
 from viz import visualize, visualize_trained
 
-if torch.cuda.is_available():
+if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm

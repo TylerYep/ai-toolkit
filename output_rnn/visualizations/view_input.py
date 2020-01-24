@@ -7,6 +7,7 @@ def view_input(data, target, class_labels, run_name):
     NUM_EXAMPLES = 15
     NUM_ROWS = 4
     _, axs = plt.subplots(NUM_ROWS, NUM_EXAMPLES // NUM_ROWS + 1)
+    data, target = data.cpu(), target.cpu()
     for i, ax in enumerate(axs.flat):
         img = rearrange(data[i])
         label = class_labels[target[i]]
