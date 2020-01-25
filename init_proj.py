@@ -6,7 +6,8 @@ import argparse
 
 RNN_CONFIG = {
     'presets': {
-        'datasets': 'dataset_rnn',
+        'dataset.py': 'datasets/dataset_rnn.py',
+        'viz.py': 'visualizers/viz_rnn.py'
     },
     'substitutions': {
         'loss_fn': 'nn.CrossEntropyLoss()',
@@ -16,7 +17,8 @@ RNN_CONFIG = {
 
 CNN_CONFIG = {
     'presets': {
-        'datasets': 'dataset_cnn',
+        'dataset.py': 'datasets/dataset_cnn.py',
+        'viz.py': 'visualizers/viz_cnn.py'
     },
     'substitutions': {
         'loss_fn': 'F.nll_loss',
@@ -65,14 +67,12 @@ def init_project(source, destination, config):
 
     # Copy additional files specified in config, such as dataset.py
     presets = config['presets']
-    for key in presets:
-        if os.path.isdir(key):
-            chosen_file = presets[key]
-            if '.py' not in presets[key]:
-                chosen_file += '.py'
-            key_src_path = os.path.join(key, chosen_file)
-            key_dest_path = os.path.join(destination, 'dataset.py')
-            shutil.copy(key_src_path, key_dest_path)
+    for key, src_path in presets.items():
+        if os.path.isfile(src_path):
+            dest_path = os.path.join(destination, key)
+            shutil.copy(src_path, dest_path)
+        else:
+            print("Path not found.")
 
 
 def init_pipeline():
@@ -101,10 +101,13 @@ def main():
         config = CNN_CONFIG
     else:
         raise ValueError
-    
-    source = 'src/'
-    destination = f'output_{args.project}/'
-    init_project(source, destination, config)
+
+    # source = 'src/'
+    # destination = f'output_{args.project}/src/'
+    for folder_name in os.listdir('source'):
+        source = os.path.join('source', folder_name)
+        destination = os.path.join(f'output_{args.project}', folder_name)
+        init_project(source, destination, config)
 
 
 if __name__ == '__main__':
