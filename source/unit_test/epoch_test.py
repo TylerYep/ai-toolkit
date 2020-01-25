@@ -1,11 +1,12 @@
 ''' epoch_test.py '''
-from output_cnn import init_pipeline, load_train_data, load_model, init_metrics, train_and_validate
+from src.train import init_pipeline, load_train_data, load_model, \
+                      init_metrics, train_and_validate, Mode
 
 class TestCNN:
 
     @staticmethod
     def test_epoch_resume():
-        args, device, checkpoint = init_pipeline()
+        args, device, checkpoint = init_pipeline(['--epoch=1'])
         train_loader, val_loader, class_labels, init_params = load_train_data(args)
         model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
         run_name, metrics = init_metrics(args, checkpoint)

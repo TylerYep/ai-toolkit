@@ -10,7 +10,7 @@ from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data, INPUT_SHAPE
 from src.metric_tracker import MetricTracker, Mode
-from src.models import BasicCNN as Model
+from src.models import BasicRNN as Model
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained
 
@@ -60,7 +60,7 @@ def init_metrics(args, checkpoint):
 
 
 def load_model(args, device, checkpoint, init_params, train_loader):
-    criterion = F.nll_loss
+    criterion = nn.CrossEntropyLoss()
     model = Model(*init_params).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
     verify_model(model, train_loader, optimizer, device, criterion)

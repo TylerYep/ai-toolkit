@@ -5,7 +5,7 @@ import torch
 
 from src import util
 
-def init_pipeline():
+def init_pipeline(arg_list=None):
     set_random_seeds()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -38,7 +38,7 @@ def init_pipeline():
     parser.add_argument('--visualize', action='store_true', default=True,
                         help='save visualization files')
 
-    args = parser.parse_args()
+    args = parser.parse_args(arg_list)
     checkpoint = util.load_checkpoint(args.checkpoint)
 
     return args, device, checkpoint

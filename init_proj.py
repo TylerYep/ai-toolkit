@@ -102,12 +102,17 @@ def main():
     else:
         raise ValueError
 
-    # source = 'src/'
-    # destination = f'output_{args.project}/src/'
-    for folder_name in os.listdir('source'):
-        source = os.path.join('source', folder_name)
-        destination = os.path.join(f'output_{args.project}', folder_name)
-        init_project(source, destination, config)
+
+    for filename in os.listdir('source'):
+        source = os.path.join('source', filename)
+        destination = os.path.join(f'output_{args.project}', filename)
+        if os.path.isdir(source):
+            init_project(source, destination, config)
+
+        else:
+            if filename in os.listdir(f'output_{args.project}'):
+                os.remove(destination)
+            shutil.copy(source, destination)
 
 
 if __name__ == '__main__':
