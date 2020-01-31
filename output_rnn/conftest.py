@@ -1,30 +1,13 @@
 ''' conftest.py '''
-# from typing import Tuple
-# from collections import Counter
-# import random
-# import pytest
+import os
+import shutil
+import pytest
 
-# from src import const
-# from fixtures import *
-
-# @pytest.fixture(autouse=True)
-# def reset_const():
-#     const.logger.setLevel(const.TRACE)
-#     const.ROLES = ('Insomniac', 'Villager', 'Robber', 'Villager', 'Drunk', 'Wolf', 'Wolf', 'Seer',
-#                    'Tanner', 'Mason', 'Minion', 'Troublemaker', 'Villager', 'Mason', 'Hunter')
-#     const.ROLE_SET = set(const.ROLES)
-#     const.ROLE_COUNTS = dict(Counter(const.ROLES))
-#     const.NUM_ROLES = len(const.ROLES)
-#     const.NUM_PLAYERS = 12
-#     const.NUM_CENTER = 3
-#     const.CENTER_SEER_PROB = 0.9
-#     const.VILLAGE_ROLES = {'Villager', 'Mason', 'Seer', 'Robber', 'Troublemaker',
-#                            'Drunk', 'Insomniac', 'Hunter'}
-#     const.EVIL_ROLES = {'Tanner', 'Wolf', 'Minion'}
-#     const.USE_VOTING = True
-#     const.USE_REG_WOLF = False
-#     const.USE_EXPECTIMAX_WOLF = False
-#     random.seed(0)
+@pytest.fixture(autouse=True)
+def reset_const():
+    TEST_CHECKPOINT = 'checkpoints/TEST'
+    if os.path.isdir(TEST_CHECKPOINT):
+        shutil.rmtree(TEST_CHECKPOINT)
 
 
 # def debug_spacing_issues(captured: str, expected: str):

@@ -5,7 +5,7 @@ import torch
 
 from src import util
 
-def init_pipeline(arg_list=None):
+def init_pipeline(arg_list):
     set_random_seeds()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

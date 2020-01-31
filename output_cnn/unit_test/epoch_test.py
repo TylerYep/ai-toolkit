@@ -1,18 +1,18 @@
 ''' epoch_test.py '''
-from src.train import init_pipeline, load_train_data, load_model, \
-                      init_metrics, train_and_validate, Mode
+from src.train import train
 
 class TestCNN:
 
     @staticmethod
+    def test_one_epoch():
+        val_loss = train(['--epoch=1', '--name=TEST'])
+        assert round(val_loss, 7) == 1.4522075
+
+    @staticmethod
     def test_epoch_resume():
-        args, device, checkpoint = init_pipeline(['--epoch=1'])
-        train_loader, val_loader, class_labels, init_params = load_train_data(args)
-        model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
-        run_name, metrics = init_metrics(args, checkpoint)
+        val_loss_start = train(['--epoch=2', '--name=TEST'])
+        val_loss_end = train(['--epoch=2', '--checkpoint=TEST'])
 
-        metrics.next_epoch()
-        train_loss = train_and_validate(model, train_loader, optimizer, criterion,
-                                        device, class_labels, metrics, Mode.TRAIN)
+        val_loss_test = train(['--epoch=4'])
 
-        assert True
+        assert val_loss_test == val_loss_end

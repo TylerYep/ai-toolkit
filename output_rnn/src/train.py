@@ -68,13 +68,14 @@ def load_model(args, device, checkpoint, init_params, train_loader):
     return model, criterion, optimizer
 
 
-def main():
-    args, device, checkpoint = init_pipeline()
+def train(arg_list=None):
+    args, device, checkpoint = init_pipeline(arg_list)
     train_loader, val_loader, class_labels, init_params = load_train_data(args)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
     run_name, metrics = init_metrics(args, checkpoint)
-    metrics.add_network(model, train_loader, device)
-    visualize(model, train_loader, class_labels, device, run_name)
+    if args.visualize:
+        metrics.add_network(model, train_loader, device)
+        visualize(model, train_loader, class_labels, device, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
@@ -98,8 +99,10 @@ def main():
             'metric_obj': metrics.json_repr()
         }, run_name, is_best)
 
-    visualize_trained(model, train_loader, class_labels, device, run_name)
-
+    if args.visualize:
+        visualize_trained(model, train_loader, class_labels, device, run_name)
+        
+    return val_loss
 
 if __name__ == '__main__':
-    main()
+    train()
