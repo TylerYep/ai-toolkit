@@ -16,7 +16,7 @@ We currently have two models:
 
 
 ## Notable Features
-- Notice we perform some verifcation checks on all models to make sure you aren't mixing up your batch dimensions.
+- In train.py, the code performs some verifcation checks on all models to make sure you aren't mixing up your batch dimensions.
 - Try stopping it and starting it after a couple epochs - it should resume training from the same place.
 - On tensorboard, the loss curves should already be plotting seamlessly across runs.
 - All checkpoints should be available in checkpoints/.
