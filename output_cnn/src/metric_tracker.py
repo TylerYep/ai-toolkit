@@ -72,7 +72,7 @@ class MetricTracker:
     def update_all(self, val_dict):
         ret_dict = {}
         for metric, metric_obj in self.metric_data.items():
-            ret_dict[metric] =  metric_obj.update(val_dict)
+            ret_dict[metric] = metric_obj.update(val_dict)
         return ret_dict
 
     def write_all(self, num_steps, mode):
@@ -89,7 +89,6 @@ class MetricTracker:
             target_class = class_labels[target_ind]
             self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)
 
-    ### Public Methods ###
     def batch_update(self, i, data, loss, output, target, class_labels, mode):
         names = ('data', 'loss', 'output', 'target')
         variables = (data, loss, output, target)
@@ -102,7 +101,7 @@ class MetricTracker:
                 self.write_all(num_steps, mode)
             self.reset_all()
         elif mode == Mode.VAL:
-            if len(data.size()) == 4: # (N, C, H, W)
+            if len(data.size()) == 4:  # (N, C, H, W)
                 self.add_images(val_dict, class_labels, num_steps)
         return ret_dict
 

@@ -66,4 +66,4 @@ def create_class_visualization(model, data, class_labels, target_y, run_name, **
             # plt.show()
 
     save_figure(run_name, 'class_viz.png')
-    return img.data #deprocess(img.data.cpu())
+    return img.data  # deprocess(img.data.cpu())

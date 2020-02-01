@@ -14,7 +14,4 @@ cd "${0%/*}/.."
 # flake8 .         # python code quality check
 # nosetests        # python nose
 # just put your usual test command here
-pycodestyle .
-mypy .
-find . -iname "*.py" | xargs pylint
-pytest
+cd "output_rnn" && pycodestyle . && pytest unit_test -s

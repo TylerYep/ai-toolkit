@@ -8,7 +8,7 @@ import torch.optim as optim
 
 from src import util
 from src.args import init_pipeline
-from src.dataset import load_train_data, INPUT_SHAPE
+from src.dataset import load_train_data
 from src.metric_tracker import MetricTracker, Mode
 from src.models import BasicRNN as Model
 from src.verify import verify_model
@@ -101,7 +101,7 @@ def train(arg_list=None):
 
     if args.visualize:
         visualize_trained(model, train_loader, class_labels, device, run_name)
-        
+
     return val_loss
 
 if __name__ == '__main__':
