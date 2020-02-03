@@ -2,9 +2,10 @@
 *.csv
 *.json
 *.pkl
-*/**/data/
+*.pth
+data/*
+!data/.gitkeep
 checkpoints/
-# output*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
