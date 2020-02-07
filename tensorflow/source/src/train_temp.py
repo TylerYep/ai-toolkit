@@ -2,7 +2,7 @@ import sys
 import random
 import numpy as np
 import tensorflow as tf
-from tensorflow import keras
+from tf.keras.callbacks import ModelCheckpoint, TensorBoard
 
 # from src import util
 from src.args import init_pipeline
@@ -19,7 +19,12 @@ else:
 
 
 def train_and_validate(model, train_images, train_labels, class_labels):
-    history = model.fit(train_images, train_labels, epochs=10, validation_split=0.2, verbose=0)
+    model_name = f'weights.{epoch:02d}-{val_loss:.2f}.hdf5'
+    history = model.fit(train_images, train_labels, epochs=10, validation_split=0.2, verbose=0,
+                        callbacks[
+                            ModelCheckpoint(model_name, monitor='loss'),
+                            TensorBoard()
+                        ]) # Save model or save weights?
 
 
 # def init_metrics(args, checkpoint):
@@ -30,10 +35,10 @@ def train_and_validate(model, train_images, train_labels, class_labels):
 def load_model(args, checkpoint, init_params, train_images, train_labels):
     optimizer = tf.keras.optimizers.Adam(learning_rate=3e-6)
     loss = tf.keras.losses.SparseCategoricalCrossentropy() #F.nll_loss
-    model = keras.Sequential([
-        keras.layers.Flatten(input_shape=(28, 28)),
-        keras.layers.Dense(128, activation='relu'),
-        keras.layers.Dense(10, activation='softmax')
+    model = tf.keras.Sequential([
+        tf.keras.layers.Flatten(input_shape=(28, 28)),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(10, activation='softmax')
     ])
     model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
     model.summary()
