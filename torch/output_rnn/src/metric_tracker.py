@@ -83,8 +83,8 @@ class MetricTracker:
     def add_images(self, val_dict, class_labels, num_steps):
         data, output, target = val_dict['data'], val_dict['output'], val_dict['target']
         for j in range(output.shape[0]):
-            _, pred_ind = torch.max(output.data[j], dim=0)
-            target_ind = int(target.data[j])
+            _, pred_ind = torch.max(output.detach()[j], dim=0)
+            target_ind = int(target.detach()[j])
             pred_class = class_labels[pred_ind]
             target_class = class_labels[target_ind]
             self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)

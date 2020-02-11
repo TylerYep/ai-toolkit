@@ -49,6 +49,7 @@ class LanguageWords(Dataset):
             for word in lines:
                 self.data.append((word, category))
 
+        assert self.data
         self.n_categories = len(self.all_categories)
         self.n_letters = len(ALL_LETTERS)
         self.n_hidden = 128

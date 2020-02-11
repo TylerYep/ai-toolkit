@@ -11,16 +11,37 @@ else:
     from tqdm import tqdm
 
 
-def verify_model(model, train_loader, optimizer, device, criterion):
+def verify_model(model, loader, optimizer, device, criterion):
     """
     Performs all necessary validation on your model to ensure correctness.
     You may need to change the batch_size or max_iters in overfit_example
     in order to overfit the batch.
     """
     torchsummary.summary(model, INPUT_SHAPE)
-    check_batch_dimension(model, train_loader, optimizer, device)
-    overfit_example(model, train_loader, optimizer, device, criterion)
+    check_batch_dimension(model, loader, optimizer, device)
+    overfit_example(model, loader, optimizer, device, criterion)
+    check_all_layers_training(model, loader, optimizer, device, criterion)
     print('Verification complete - all tests passed!')
+
+
+def check_all_layers_training(model, loader, optimizer, device, criterion):
+    """
+    Verifies that the provided model .
+    """
+    model.train()
+    torch.set_grad_enabled(True)
+    data, target = util.get_data_example(loader, device)
+    before = [param.clone().detach() for param in model.parameters()]
+
+    optimizer.zero_grad()
+    output = model(data)
+    loss = criterion(output, target)
+    loss.backward()
+    optimizer.step()
+
+    after = model.parameters()
+    for start, end in zip(before, after):
+        assert (start != end).any()
 
 
 def overfit_example(model, loader, optimizer, device, criterion, batch_size=5, max_iters=50):
@@ -64,6 +85,6 @@ def check_batch_dimension(model, loader, optimizer, device, test_val=2):
     loss = output[test_val].sum()
     loss.backward()
 
-    assert loss.data != 0
+    assert loss != 0
     assert (data.grad[test_val] != 0).any()
     assert (data.grad[:test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all()
