@@ -3,6 +3,7 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
+from torch.utils.data.dataloader import default_collate
 from torchvision import datasets, transforms
 if 'google.colab' in sys.modules:
     DATA_PATH = '/content/'
@@ -20,22 +21,33 @@ INPUT_SHAPE = (1, 28, 28)
 #     return train_loader, None, [0 for _ in range(10000)], {}
 
 
-def load_train_data(args):
+def get_collate_fn(device):
+    return lambda x: map(lambda b: b.to(device), default_collate(x))
+
+
+def load_train_data(args, device):
     norm = get_transforms()
     # class_names = [str(i) for i in range(10)]
     class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                    'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
     train_set = datasets.FashionMNIST(DATA_PATH, train=True, download=True, transform=norm)
     val_set = datasets.FashionMNIST(DATA_PATH, train=False, transform=norm)
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_set, batch_size=args.test_batch_size)
+    train_loader = DataLoader(train_set,
+                              batch_size=args.batch_size,
+                              shuffle=True,
+                              collate_fn=get_collate_fn(device))
+    val_loader = DataLoader(val_set,
+                            batch_size=args.test_batch_size,
+                            collate_fn=get_collate_fn(device))
     return train_loader, val_loader, class_names, {}
 
 
-def load_test_data(args):
+def load_test_data(args, device):
     norm = get_transforms()
     test_set = datasets.FashionMNIST(DATA_PATH, train=False, transform=norm)
-    test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
+    test_loader = DataLoader(test_set,
+                             batch_size=args.test_batch_size,
+                             collate_fn=get_collate_fn(device))
     return test_loader
 
 

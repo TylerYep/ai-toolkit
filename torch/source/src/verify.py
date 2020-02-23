@@ -24,9 +24,14 @@ def verify_model(model, loader, optimizer, device, criterion):
     print('Verification complete - all tests passed!')
 
 
+def checkNaN(weights):
+    assert not torch.isnan(weights).byte().any()
+    assert torch.isfinite(weights).byte().any()
+
+
 def check_all_layers_training(model, loader, optimizer, device, criterion):
     """
-    Verifies that the provided model .
+    Verifies that the provided model trains all provided layers.
     """
     model.train()
     torch.set_grad_enabled(True)

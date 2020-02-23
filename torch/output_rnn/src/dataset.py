@@ -7,7 +7,8 @@ import random
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
-from torchvision import datasets, transforms
+from torch.utils.data.dataloader import default_collate
+from torch.nn.utils.rnn import pad_sequence
 from src.metric_tracker import Mode
 
 if 'google.colab' in sys.modules:
@@ -19,19 +20,47 @@ INPUT_SHAPE = (1, 19)
 ALL_LETTERS = string.ascii_letters + " .,;'"
 
 
-def load_train_data(args):
+# def pad_collate(batch):
+#     (xx, yy) = zip(*batch)
+#     x_lens = [len(x) for x in xx]
+#     y_lens = [len(y) for y in yy]
+#     xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)
+#     yy_pad = pad_sequence(yy, batch_first=True, padding_value=0)
+#     return xx_pad, yy_pad, x_lens, y_lens
+
+
+def get_collate_fn(device):
+    return lambda x: map(lambda b: b.to(device), default_collate(x))
+
+
+def pad_collate(batch):
+    (xx, yy) = zip(*batch)
+    x_lens = torch.tensor([len(x) for x in xx])
+    xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)
+    yy_pad = torch.stack(yy)
+    return xx_pad, yy_pad, x_lens
+
+
+def load_train_data(args, device):
     class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                    'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
     train_set = LanguageWords(Mode.TRAIN)
     val_set = LanguageWords(Mode.VAL)
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_set, batch_size=args.test_batch_size)
+    train_loader = DataLoader(train_set,
+                              batch_size=args.batch_size,
+                              shuffle=True,
+                              collate_fn=get_collate_fn(device))
+    val_loader = DataLoader(val_set,
+                            batch_size=args.test_batch_size,
+                            collate_fn=get_collate_fn(device))
     return train_loader, val_loader, class_names, train_set.get_model_params()
 
 
-def load_test_data(args):
+def load_test_data(args, device):
     test_set = LanguageWords(Mode.TEST)
-    test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
+    test_loader = DataLoader(test_set,
+                             batch_size=args.test_batch_size,
+                             collate_fn=get_collate_fn(device))
     return test_loader
 
 
@@ -63,7 +92,7 @@ class LanguageWords(Dataset):
             self.data = self.data[train_val_split:]
 
     def get_model_params(self):
-        return self.max_word_length, self.n_hidden, self.n_categories
+        return self.max_word_length, self.n_hidden, self.n_categories  # , self.n_letters
 
     def __len__(self):
         return len(self.data)
@@ -72,6 +101,7 @@ class LanguageWords(Dataset):
         line, category = self.data[index]
         category_tensor = torch.tensor([self.all_categories.index(category)])
         line_tensor = self.lineToTensor(line)
+        # torch.tensor([ALL_LETTERS.index(letter) for letter in line])
         return line_tensor, category_tensor.squeeze()
 
     def read_lines(self, filename):

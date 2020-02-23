@@ -24,7 +24,7 @@ else:
 METRIC_NAMES = ['Loss', 'Accuracy']
 
 
-def train_and_validate(model, loader, optimizer, criterion, device, class_labels, metrics, mode):
+def train_and_validate(model, loader, optimizer, criterion, class_labels, metrics, mode):
     if mode == Mode.TRAIN:
         model.train()
         torch.set_grad_enabled(True)
@@ -35,7 +35,6 @@ def train_and_validate(model, loader, optimizer, criterion, device, class_labels
     metrics.set_num_examples(len(loader))
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
-            data, target = data.to(device), target.to(device)
             if mode == Mode.TRAIN:
                 optimizer.zero_grad()
 
@@ -70,7 +69,7 @@ def load_model(args, device, checkpoint, init_params, train_loader):
 
 def train(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
-    train_loader, val_loader, class_labels, init_params = load_train_data(args)
+    train_loader, val_loader, class_labels, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
     run_name, metrics = init_metrics(args, checkpoint)
     if args.visualize:
@@ -83,9 +82,9 @@ def train(arg_list=None):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()
         train_loss = train_and_validate(model, train_loader, optimizer, criterion,
-                                        device, class_labels, metrics, Mode.TRAIN)
+                                        class_labels, metrics, Mode.TRAIN)
         val_loss = train_and_validate(model, val_loader, optimizer, criterion,
-                                      device, class_labels, metrics, Mode.VAL)
+                                      class_labels, metrics, Mode.VAL)
 
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({

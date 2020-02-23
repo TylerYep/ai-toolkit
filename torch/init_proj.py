@@ -107,7 +107,7 @@ def main():
 
     source = 'source'
     destination = f'output_{args.project}'
-    
+
     # Create destination directory if it doesn't exist
     if not os.path.isdir(destination):
         os.makedirs(destination)
