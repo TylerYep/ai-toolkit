@@ -9,7 +9,6 @@ from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import default_collate
 from torch.nn.utils.rnn import pad_sequence
-from src.metric_tracker import Mode
 
 if 'google.colab' in sys.modules:
     DATA_PATH = '/content/'
@@ -18,7 +17,7 @@ else:
 
 INPUT_SHAPE = (1, 19)
 ALL_LETTERS = string.ascii_letters + " .,;'"
-
+CLASS_LABELS = []
 
 # def pad_collate(batch):
 #     (xx, yy) = zip(*batch)
@@ -42,25 +41,24 @@ def pad_collate(batch):
 
 
 def load_train_data(args, device):
-    class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-                   'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
-    train_set = LanguageWords(Mode.TRAIN)
-    val_set = LanguageWords(Mode.VAL)
+    collate_fn = get_collate_fn(device)
+    train_set = LanguageWords('train')
+    val_set = LanguageWords('val')
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
                               shuffle=True,
-                              collate_fn=get_collate_fn(device))
+                              collate_fn=collate_fn)
     val_loader = DataLoader(val_set,
                             batch_size=args.test_batch_size,
-                            collate_fn=get_collate_fn(device))
-    return train_loader, val_loader, class_names, train_set.get_model_params()
+                            collate_fn=collate_fn)
+    return train_loader, val_loader, train_set.get_model_params()
 
 
 def load_test_data(args, device):
-    test_set = LanguageWords(Mode.TEST)
+    test_set = LanguageWords('test')
     test_loader = DataLoader(test_set,
                              batch_size=args.test_batch_size,
-                             collate_fn=get_collate_fn(device))
+                             collate_fn=collate_fn)
     return test_loader
 
 
@@ -86,9 +84,9 @@ class LanguageWords(Dataset):
 
         random.shuffle(self.data)
         train_val_split = int(len(self.data) * 0.8)
-        if mode == Mode.TRAIN:
+        if mode == 'train':
             self.data = self.data[:train_val_split]
-        elif mode in (Mode.VAL, Mode.TEST):
+        elif mode in ('val', 'test'):
             self.data = self.data[train_val_split:]
 
     def get_model_params(self):

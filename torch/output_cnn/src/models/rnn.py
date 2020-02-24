@@ -32,7 +32,8 @@ class BasicRNN(nn.Module):
 #         out = self.embed(out)
 #         out = pack_padded_sequence(out, seq_lengths, batch_first=True, enforce_sorted=True)
 #         out, _ = self.rnn(out)
-#         out, input_sizes = pad_packed_sequence(out, batch_first=True, total_length=self.max_word_len)
+#         out, input_sizes = pad_packed_sequence(out, batch_first=True,
+# total_length=self.max_word_len)
 #         out = out.reshape((batch_size, -1))
 #         out = self.i2o(out)
 #         return out

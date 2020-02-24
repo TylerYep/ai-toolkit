@@ -5,7 +5,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from src import util
 from src.metrics import get_metric
-
+from src.dataset import CLASS_LABELS
 
 @unique
 class Mode(Enum):
@@ -44,8 +44,8 @@ class MetricTracker:
     def __getattr__(self, name):
         return self.metric_data[name]
 
-    def add_network(self, model, loader, device):
-        data, _ = util.get_data_example(loader, device)
+    def add_network(self, model, loader):
+        data, _ = next(iter(loader))
         self.writer.add_graph(model, data)
 
     def update_best_metric(self, val_loss) -> bool:
@@ -80,16 +80,16 @@ class MetricTracker:
             batch_result = metric_obj.get_batch_result(self.log_interval)
             self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
 
-    def add_images(self, val_dict, class_labels, num_steps):
+    def add_images(self, val_dict, num_steps):
         data, output, target = val_dict['data'], val_dict['output'], val_dict['target']
         for j in range(output.shape[0]):
             _, pred_ind = torch.max(output.detach()[j], dim=0)
             target_ind = int(target.detach()[j])
-            pred_class = class_labels[pred_ind]
-            target_class = class_labels[target_ind]
+            pred_class = CLASS_LABELS[pred_ind]
+            target_class = CLASS_LABELS[target_ind]
             self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)
 
-    def batch_update(self, i, data, loss, output, target, class_labels, mode):
+    def batch_update(self, i, data, loss, output, target, mode):
         names = ('data', 'loss', 'output', 'target')
         variables = (data, loss, output, target)
         val_dict = dict(zip(names, variables))
@@ -102,7 +102,7 @@ class MetricTracker:
             self.reset_all()
         elif mode == Mode.VAL:
             if len(data.size()) == 4:  # (N, C, H, W)
-                self.add_images(val_dict, class_labels, num_steps)
+                self.add_images(val_dict, num_steps)
         return ret_dict
 
     def get_epoch_results(self, mode) -> float:

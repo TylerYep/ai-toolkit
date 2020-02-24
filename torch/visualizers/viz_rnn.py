@@ -19,13 +19,13 @@ def main():
     visualize_trained(model, train_loader, class_labels, device)
 
 
-def visualize(model, loader, class_labels, device, run_name='', metrics=None):
-    data, target = util.get_data_example(loader, device)
+def visualize(model, loader, class_labels, run_name='', metrics=None):
+    data, target = next(iter(loader))
     pass
 
 
-def visualize_trained(model, loader, class_labels, device, run_name='', metrics=None):
-    data, target = util.get_data_example(loader, device)
+def visualize_trained(model, loader, class_labels, run_name='', metrics=None):
+    data, target = next(iter(loader))
     pass
 
 

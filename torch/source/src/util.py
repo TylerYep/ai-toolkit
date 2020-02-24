@@ -32,12 +32,6 @@ def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     return out_dir
 
 
-def get_data_example(train_loader, device):
-    data, target = next(iter(train_loader))
-    data, target = data.to(device), target.to(device)
-    return data, target
-
-
 def set_rng_state(checkpoint):
     if checkpoint:
         random.setstate(checkpoint['rng_state'])

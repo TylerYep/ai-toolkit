@@ -24,7 +24,7 @@ else:
 METRIC_NAMES = ['Loss', 'Accuracy']
 
 
-def train_and_validate(model, loader, optimizer, criterion, class_labels, metrics, mode):
+def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     if mode == Mode.TRAIN:
         model.train()
         torch.set_grad_enabled(True)
@@ -44,7 +44,7 @@ def train_and_validate(model, loader, optimizer, criterion, class_labels, metric
                 loss.backward()
                 optimizer.step()
 
-            tqdm_dict = metrics.batch_update(i, data, loss, output, target, class_labels, mode)
+            tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
             pbar.update()
 
@@ -62,19 +62,19 @@ def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = F.nll_loss
     model = Model(*init_params).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
-    verify_model(model, train_loader, optimizer, device, criterion)
+    verify_model(model, train_loader, optimizer, criterion)
     util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
 
 
 def train(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
-    train_loader, val_loader, class_labels, init_params = load_train_data(args, device)
+    train_loader, val_loader, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
     run_name, metrics = init_metrics(args, checkpoint)
     if args.visualize:
-        metrics.add_network(model, train_loader, device)
-        visualize(model, train_loader, class_labels, device, run_name)
+        metrics.add_network(model, train_loader)
+        visualize(model, train_loader, run_name)
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
@@ -82,9 +82,9 @@ def train(arg_list=None):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()
         train_loss = train_and_validate(model, train_loader, optimizer, criterion,
-                                        class_labels, metrics, Mode.TRAIN)
+                                        metrics, Mode.TRAIN)
         val_loss = train_and_validate(model, val_loader, optimizer, criterion,
-                                      class_labels, metrics, Mode.VAL)
+                                      metrics, Mode.VAL)
 
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({
@@ -99,7 +99,7 @@ def train(arg_list=None):
         }, run_name, is_best)
 
     if args.visualize:
-        visualize_trained(model, train_loader, class_labels, device, run_name)
+        visualize_trained(model, train_loader, run_name)
 
     return val_loss
 
