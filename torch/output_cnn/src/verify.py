@@ -2,7 +2,6 @@ import sys
 import torch
 import torchsummary
 
-from src import util
 from src.dataset import INPUT_SHAPE
 
 if 'google.colab' in sys.modules:

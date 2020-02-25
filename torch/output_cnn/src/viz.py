@@ -10,7 +10,7 @@ from src.visualizations import *
 
 def main():
     args, device, checkpoint = init_pipeline()
-    train_loader, _, init_params = load_train_data(args)
+    train_loader, _, init_params = load_train_data(args, device)
     model = Model(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
     # model = models.resnet18(pretrained=True)

@@ -49,12 +49,13 @@ def load_train_data(args, device):
                               shuffle=True,
                               collate_fn=collate_fn)
     val_loader = DataLoader(val_set,
-                            batch_size=args.test_batch_size,
+                            batch_size=args.batch_size,
                             collate_fn=collate_fn)
     return train_loader, val_loader, train_set.get_model_params()
 
 
 def load_test_data(args, device):
+    collate_fn = get_collate_fn(device)
     test_set = LanguageWords('test')
     test_loader = DataLoader(test_set,
                              batch_size=args.test_batch_size,

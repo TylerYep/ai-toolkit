@@ -34,17 +34,13 @@ def test_model(test_loader, model, criterion):
           f'({100. * correct / len(test_loader.dataset):.2f}%)\n')
 
 
-def main():
+def test():
     args, device, checkpoint = init_pipeline()
     criterion = $loss_fn
-    test_loader = load_test_data(args)
+    test_loader = load_test_data(args, device)
     init_params = checkpoint.get('model_init', {})
     model = Model(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
     torchsummary.summary(model, INPUT_SHAPE)
 
     test_model(test_loader, model, criterion)
-
-
-if __name__ == '__main__':
-    main()

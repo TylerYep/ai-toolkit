@@ -81,10 +81,8 @@ def train(arg_list=None):
     for epoch in range(start_epoch, start_epoch + args.epochs):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()
-        train_loss = train_and_validate(model, train_loader, optimizer, criterion,
-                                        metrics, Mode.TRAIN)
-        val_loss = train_and_validate(model, val_loader, optimizer, criterion,
-                                      metrics, Mode.VAL)
+        tr_loss = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
+        val_loss = train_and_validate(model, val_loader, optimizer, criterion, metrics, Mode.VAL)
 
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({
@@ -102,6 +100,3 @@ def train(arg_list=None):
         visualize_trained(model, train_loader, run_name)
 
     return val_loss
-
-if __name__ == '__main__':
-    train()

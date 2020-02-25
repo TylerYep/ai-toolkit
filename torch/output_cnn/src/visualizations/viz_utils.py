@@ -25,13 +25,16 @@ def rearrange(orig_img):
         img_data_max = 1
     elif img.dtype == torch.int:
         img_data_max = 255
+
     if min_val < 0 or max_val > img_data_max:
         img -= img.min()
         img /= img.max()
 
     if len(img.shape) == 4 and img.shape[0] == 1:
         img = img.squeeze(0)
+
     assert len(img.shape) == 3
+
     if img.shape[0] == 1:
         return torch.cat([img] * 3).permute((1, 2, 0))
     if img.shape[0] == 3:
@@ -40,7 +43,7 @@ def rearrange(orig_img):
         return img
     if img.shape[-1] == 1:
         return torch.cat([img] * 3)
-
+    return img
 
 def jitter(X, ox, oy):
     """

@@ -6,7 +6,7 @@ class TestCNN:
     @staticmethod
     def test_one_epoch():
         val_loss = train(['--epoch=1', '--name=TEST'])
-        assert round(val_loss, 7) == 1.4556155
+        assert round(val_loss, 7) == 1.5757697
 
     @staticmethod
     def test_epoch_resume():

@@ -11,6 +11,9 @@ def init_pipeline(arg_list=None):
 
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
+    parser.add_argument('--checkpoint', type=str, default='',
+                        help='for loading a checkpoint model')
+
     parser.add_argument('--batch-size', type=int, default=100, metavar='N',
                         help='input batch size for training (default: 100)')
 
@@ -28,9 +31,6 @@ def init_pipeline(arg_list=None):
 
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
-
-    parser.add_argument('--checkpoint', type=str, default='',
-                        help='for loading a checkpoint model')
 
     parser.add_argument('--name', type=str, default='',
                         help='folder to save files to checkpoint/')

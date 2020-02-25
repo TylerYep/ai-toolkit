@@ -38,7 +38,7 @@ def load_train_data(args, device):
                               shuffle=True,
                               collate_fn=collate_fn)
     val_loader = DataLoader(val_set,
-                            batch_size=args.test_batch_size,
+                            batch_size=args.batch_size,
                             collate_fn=collate_fn)
     return train_loader, val_loader, {}
 

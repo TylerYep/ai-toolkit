@@ -3,7 +3,6 @@ from enum import Enum, unique
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
-from src import util
 from src.metrics import get_metric
 from src.dataset import CLASS_LABELS
 
