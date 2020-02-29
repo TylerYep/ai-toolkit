@@ -13,22 +13,29 @@ class Mode(Enum):
     TEST = 'Test'
 
 
+# Adding metrics here will automatically search the metrics/ folder for an implementation.
+METRIC_NAMES = ['Loss', 'Accuracy']
+
+
 class MetricTracker:
     def __init__(self,
-                 metric_names,
                  run_name,
+                 train_len,
+                 val_len,
                  log_interval,
                  epoch=0,
-                 num_examples=0,
+                 num_batches=0,
                  metric_data=None,
                  best_metric=None):
-        assert metric_names
+        assert METRIC_NAMES
         self.writer = SummaryWriter(run_name)
         self.epoch = epoch
+        self.train_len = train_len
+        self.val_len = val_len
         self.log_interval = log_interval
-        self.num_examples = num_examples
-        self.metric_names = metric_names
-        self.primary_metric = metric_names[0]
+        self.num_batches = num_batches
+        self.metric_names = METRIC_NAMES
+        self.primary_metric = self.metric_names[0]
         self.metric_data = metric_data if metric_data else \
                            {name: get_metric(name)() for name in self.metric_names}
         self.best_metric = best_metric if best_metric else \
@@ -37,7 +44,7 @@ class MetricTracker:
     def json_repr(self) -> Dict[str, Any]:
         return {'epoch': self.epoch,
                 'metric_data': self.metric_data,
-                'num_examples': self.num_examples,
+                'num_batches': self.num_batches,
                 'best_metric': self.best_metric}
 
     def __getattr__(self, name):
@@ -58,8 +65,8 @@ class MetricTracker:
     def next_epoch(self):
         self.epoch += 1
 
-    def set_num_examples(self, num_examples: int):
-        self.num_examples = num_examples
+    def set_num_batches(self, num_batches: int):
+        self.num_batches = num_batches
 
     def reset_all(self):
         for metric in self.metric_data:
@@ -93,8 +100,8 @@ class MetricTracker:
         variables = (data, loss, output, target)
         val_dict = dict(zip(names, variables))
 
-        ret_dict = self.update_all(val_dict)
-        num_steps = (self.epoch-1) * self.num_examples + i
+        tqdm_dict = self.update_all(val_dict)
+        num_steps = (self.epoch - 1) * self.num_batches + i
         if mode == Mode.TRAIN and i % self.log_interval == 0:
             if i > 0:
                 self.write_all(num_steps, mode)
@@ -102,16 +109,17 @@ class MetricTracker:
         elif mode == Mode.VAL:
             if len(data.size()) == 4:  # (N, C, H, W)
                 self.add_images(val_dict, num_steps)
-        return ret_dict
+        return {}
 
     def get_epoch_results(self, mode) -> float:
         result_str = ''
         for metric, metric_obj in self.metric_data.items():
-            epoch_result = metric_obj.get_epoch_result(self.num_examples)
+            num_examples = self.train_len if mode == Mode.TRAIN else self.val_len
+            epoch_result = metric_obj.get_epoch_result(num_examples)
             result_str += f'{metric_obj.formatted(epoch_result)} '
             self.write(f'{mode}_Epoch_{metric}', epoch_result, self.epoch)
 
         print(f'{mode} {result_str}')
-        ret_val = self.metric_data[self.primary_metric].get_epoch_result(self.num_examples)
+        ret_val = self.metric_data[self.primary_metric].get_epoch_result(num_examples)
         self.reset_hard()
         return ret_val

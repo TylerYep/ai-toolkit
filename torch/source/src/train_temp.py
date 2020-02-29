@@ -20,11 +20,7 @@ else:
     from tqdm import tqdm
 
 
-# Adding metrics here will automatically search the metrics/ folder for an implementation.
-METRIC_NAMES = ['Loss', 'Accuracy']
-
-
-def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
+def train_and_validate(model, loader, optimizer, criterion, metrics, mode,):
     if mode == Mode.TRAIN:
         model.train()
         torch.set_grad_enabled(True)
@@ -32,7 +28,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
         model.eval()
         torch.set_grad_enabled(False)
 
-    metrics.set_num_examples(len(loader))
+    metrics.set_num_batches(len(loader))
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
             if mode == Mode.TRAIN:
@@ -54,7 +50,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
 def init_metrics(args, checkpoint):
     run_name = checkpoint.get('run_name', util.get_run_name(args))
     metric_checkpoint = checkpoint.get('metric_obj', {})
-    metrics = MetricTracker(METRIC_NAMES, run_name, args.log_interval, **metric_checkpoint)
+    metrics = MetricTracker(run_name, args.log_interval, **metric_checkpoint)
     return run_name, metrics
 
 
@@ -62,7 +58,7 @@ def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = $loss_fn
     model = Model(*init_params).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr)
-    verify_model(model, train_loader, optimizer, criterion)
+    verify_model(model, train_loader, optimizer, criterion, device)
     util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
 

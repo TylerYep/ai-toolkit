@@ -13,20 +13,24 @@ SAVE_DIR = 'checkpoints'
 def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
+
+    if args.checkpoint:
+        return os.path.join(save_dir, args.checkpoint)
+
     if args.name:
-        result = args.name
+        return os.path.join(save_dir, args.name)
+
+    dirlist = [f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))]
+    dirlist.sort()
+    dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
+    if not dirlist:
+        result = 'A'
     else:
-        dirlist = [f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))]
-        dirlist.sort()
-        dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
-        if not dirlist:
-            result = 'A'
+        last_run_char = dirlist[-1][-1]
+        if last_run_char == 'Z':
+            result = 'A' * (len(dirlist[-1])+1)
         else:
-            last_run_char = dirlist[-1][-1]
-            if last_run_char == 'Z':
-                result = 'A' * (len(dirlist[-1])+1)
-            else:
-                result = dirlist[-1][:-1] + chr(ord(last_run_char) + 1)
+            result = dirlist[-1][:-1] + chr(ord(last_run_char) + 1)
     out_dir = os.path.join(save_dir, result)
     os.makedirs(out_dir)
     return out_dir

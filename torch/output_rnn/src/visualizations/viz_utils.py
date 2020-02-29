@@ -32,6 +32,8 @@ def rearrange(orig_img):
 
     if len(img.shape) == 4 and img.shape[0] == 1:
         img = img.squeeze(0)
+    elif len(img.shape) == 2:
+        img = img.unsqueeze(0)
 
     assert len(img.shape) == 3
 

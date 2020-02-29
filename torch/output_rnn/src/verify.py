@@ -10,7 +10,7 @@ else:
     from tqdm import tqdm
 
 
-def verify_model(model, loader, optimizer, criterion):
+def verify_model(model, loader, optimizer, criterion, device):
     """
     Performs all necessary validation on your model to ensure correctness.
     You may need to change the batch_size or max_iters in overfit_example
@@ -18,7 +18,7 @@ def verify_model(model, loader, optimizer, criterion):
     """
     torchsummary.summary(model, INPUT_SHAPE)
     check_batch_dimension(model, loader, optimizer)
-    overfit_example(model, loader, optimizer, criterion)
+    overfit_example(model, loader, optimizer, criterion, device)
     check_all_layers_training(model, loader, optimizer, criterion)
     print('Verification complete - all tests passed!')
 
@@ -48,7 +48,7 @@ def check_all_layers_training(model, loader, optimizer, criterion):
         assert (start != end).any()
 
 
-def overfit_example(model, loader, optimizer, criterion, batch_size=5, max_iters=50):
+def overfit_example(model, loader, optimizer, criterion, device, batch_size=5, max_iters=50):
     """
     Verifies that the provided model can overfit a single batch or example.
     """
@@ -61,7 +61,7 @@ def overfit_example(model, loader, optimizer, criterion, batch_size=5, max_iters
             optimizer.zero_grad()
             output = model(data)
             loss = criterion(output, target)
-            if torch.allclose(loss, torch.tensor(0.)):
+            if torch.allclose(loss, torch.tensor(0.).to(device)):
                 break
             loss.backward()
             optimizer.step()

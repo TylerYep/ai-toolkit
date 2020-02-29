@@ -40,7 +40,7 @@ def load_train_data(args, device):
     val_loader = DataLoader(val_set,
                             batch_size=args.batch_size,
                             collate_fn=collate_fn)
-    return train_loader, val_loader, {}
+    return train_loader, val_loader, len(train_set), len(val_set), {}
 
 
 def load_test_data(args, device):
@@ -50,7 +50,7 @@ def load_test_data(args, device):
     test_loader = DataLoader(test_set,
                              batch_size=args.test_batch_size,
                              collate_fn=collate_fn)
-    return test_loader
+    return test_loader, len(test_set)
 
 
 def get_transforms():
