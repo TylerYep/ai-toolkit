@@ -5,7 +5,7 @@ import unicodedata
 import string
 import random
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import default_collate
 from torch.nn.utils.rnn import pad_sequence
@@ -18,6 +18,7 @@ else:
 INPUT_SHAPE = (1, 19)
 ALL_LETTERS = string.ascii_letters + " .,;'"
 CLASS_LABELS = []
+
 
 # def pad_collate(batch):
 #     (xx, yy) = zip(*batch)
@@ -40,10 +41,16 @@ def pad_collate(batch):
     return xx_pad, yy_pad, x_lens
 
 
-def load_train_data(args, device):
+def load_train_data(args, device, num_examples=None, val_split=0.2):
     collate_fn = get_collate_fn(device)
-    train_set = LanguageWords('train')
-    val_set = LanguageWords('val')
+    orig_dataset = LanguageWords()
+    if num_examples:
+        data_split = [num_examples, num_examples, len(orig_dataset) - 2 * num_examples]
+        train_set, val_set = random_split(orig_dataset, data_split)[:-1]
+    else:
+        train_size = int((1 - val_split) * len(orig_dataset))
+        data_split = [train_size, len(orig_dataset) - train_size]
+        train_set, val_set = random_split(orig_dataset, data_split)
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
                               shuffle=True,
@@ -51,12 +58,12 @@ def load_train_data(args, device):
     val_loader = DataLoader(val_set,
                             batch_size=args.batch_size,
                             collate_fn=collate_fn)
-    return train_loader, val_loader, train_set.get_model_params()
+    return train_loader, val_loader, orig_dataset.get_model_params()
 
 
 def load_test_data(args, device):
     collate_fn = get_collate_fn(device)
-    test_set = LanguageWords('test')
+    test_set = LanguageWords()
     test_loader = DataLoader(test_set,
                              batch_size=args.test_batch_size,
                              collate_fn=collate_fn)
@@ -65,7 +72,7 @@ def load_test_data(args, device):
 
 class LanguageWords(Dataset):
     ''' Dataset for training a model on a dataset. '''
-    def __init__(self, mode):
+    def __init__(self):
         super().__init__()
         self.all_categories = []
         self.data = []
@@ -84,11 +91,6 @@ class LanguageWords(Dataset):
         self.max_word_length = len(max(self.data, key=lambda x: len(x[0]))[0])
 
         random.shuffle(self.data)
-        train_val_split = int(len(self.data) * 0.8)
-        if mode == 'train':
-            self.data = self.data[:train_val_split]
-        elif mode in ('val', 'test'):
-            self.data = self.data[train_val_split:]
 
     def get_model_params(self):
         return self.max_word_length, self.n_hidden, self.n_categories  # , self.n_letters

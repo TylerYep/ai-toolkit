@@ -32,6 +32,9 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
 
+    parser.add_argument('--name', type=str, default='',
+                        help='folder to save files to checkpoint/')
+
     parser.add_argument('--visualize', action='store_true', default=True,
                         help='save visualization files')
 

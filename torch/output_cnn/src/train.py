@@ -20,7 +20,7 @@ else:
     from tqdm import tqdm
 
 
-def train_and_validate(model, loader, optimizer, criterion, metrics, mode,):
+def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     if mode == Mode.TRAIN:
         model.train()
         torch.set_grad_enabled(True)
@@ -47,17 +47,17 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode,):
     return metrics.get_epoch_results(mode)
 
 
-def init_metrics(args, checkpoint, train_len, val_len):
+def init_metrics(args, checkpoint):
     run_name = checkpoint.get('run_name', util.get_run_name(args))
     metric_checkpoint = checkpoint.get('metric_obj', {})
-    metrics = MetricTracker(run_name, train_len, val_len, args.log_interval, **metric_checkpoint)
+    metrics = MetricTracker(run_name, args.log_interval, **metric_checkpoint)
     return run_name, metrics
 
 
 def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = F.nll_loss
     model = Model(*init_params).to(device)
-    optimizer = optim.AdamW(model.parameters(), lr=args.lr)
+    optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     verify_model(model, train_loader, optimizer, criterion, device)
     util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
@@ -65,9 +65,9 @@ def load_model(args, device, checkpoint, init_params, train_loader):
 
 def train(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
-    train_loader, val_loader, train_len, val_len, init_params = load_train_data(args, device)
+    train_loader, val_loader, init_params = load_train_data(args, device)
     model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
-    run_name, metrics = init_metrics(args, checkpoint, train_len, val_len)
+    run_name, metrics = init_metrics(args, checkpoint)
     if args.visualize:
         metrics.add_network(model, train_loader)
         visualize(model, train_loader, run_name)
@@ -92,7 +92,7 @@ def train(arg_list=None):
             'metric_obj': metrics.json_repr()
         }, run_name, is_best)
 
-    if args.visualize:
-        visualize_trained(model, train_loader, run_name)
+    # if args.visualize:
+    #     visualize_trained(model, train_loader, run_name)
 
     return val_loss

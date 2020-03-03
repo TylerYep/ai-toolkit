@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import default_collate
 from torchvision import datasets, transforms
@@ -28,11 +28,16 @@ def get_collate_fn(device):
     return lambda x: map(lambda b: b.to(device), default_collate(x))
 
 
-def load_train_data(args, device):
+def load_train_data(args, device, num_examples=None, val_split=0.2):
     norm = get_transforms()
     collate_fn = get_collate_fn(device)
-    train_set = datasets.FashionMNIST(DATA_PATH, train=True, download=True, transform=norm)
-    val_set = datasets.FashionMNIST(DATA_PATH, train=False, transform=norm)
+    orig_dataset = datasets.FashionMNIST(DATA_PATH, train=True, download=True, transform=norm)
+    if num_examples:
+        data_split = [num_examples, num_examples, len(orig_dataset) - 2 * num_examples]
+        train_set, val_set = random_split(orig_dataset, data_split)[:-1]
+    else:
+        data_split = [int(part * len(orig_dataset)) for part in (1 - val_split, val_split)]
+        train_set, val_set = random_split(orig_dataset, data_split)
     train_loader = DataLoader(train_set,
                               batch_size=args.batch_size,
                               shuffle=True,

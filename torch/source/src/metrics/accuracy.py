@@ -24,7 +24,7 @@ class Accuracy(Metric):
         return accuracy
 
     def get_batch_result(self, log_interval, batch_size):
-        return self.running_acc / (batch_size)
+        return self.running_acc / (log_interval * batch_size)
 
     def get_epoch_result(self):
         return self.epoch_acc / self.num_examples

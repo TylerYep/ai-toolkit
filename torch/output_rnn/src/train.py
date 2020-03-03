@@ -20,7 +20,7 @@ else:
     from tqdm import tqdm
 
 
-def train_and_validate(model, loader, optimizer, criterion, metrics, mode,):
+def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     if mode == Mode.TRAIN:
         model.train()
         torch.set_grad_enabled(True)
@@ -57,7 +57,7 @@ def init_metrics(args, checkpoint):
 def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = nn.CrossEntropyLoss()
     model = Model(*init_params).to(device)
-    optimizer = optim.AdamW(model.parameters(), lr=args.lr)
+    optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     verify_model(model, train_loader, optimizer, criterion, device)
     util.load_state_dict(checkpoint, model, optimizer)
     return model, criterion, optimizer
@@ -92,7 +92,7 @@ def train(arg_list=None):
             'metric_obj': metrics.json_repr()
         }, run_name, is_best)
 
-    if args.visualize:
-        visualize_trained(model, train_loader, run_name)
+    # if args.visualize:
+    #     visualize_trained(model, train_loader, run_name)
 
     return val_loss
