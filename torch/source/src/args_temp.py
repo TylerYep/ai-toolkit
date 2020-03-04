@@ -26,10 +26,10 @@ def init_pipeline(arg_list=None):
     parser.add_argument('--epochs', type=int, default=100, metavar='N',
                         help='number of epochs to train (default: 100)')
 
-    parser.add_argument('--loss', type=str, default='F.nll_loss', metavar='N',
+    parser.add_argument('--loss', type=str, default='$loss_fn', metavar='N',
                         help='loss function to use')
 
-    parser.add_argument('--model', type=str, default='BasicCNN', metavar='N',
+    parser.add_argument('--model', type=str, default='$model', metavar='N',
                         help='model architecture to use')
 
     parser.add_argument('--name', type=str, default='',

@@ -3,11 +3,26 @@ from argparse import Namespace
 import os
 import shutil
 import random
+import json
 import numpy as np
 import torch
 import torch.nn as nn
 
+
 SAVE_DIR = 'checkpoints'
+
+
+class Arguments:
+    def __init__(self, args):
+        self.__dict__ = args
+
+    def __repr__(self):
+        return str(self.__dict__)
+
+
+def json_to_args(fname):
+    with open(fname) as f:
+        return Arguments(json.load(f))
 
 
 def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:

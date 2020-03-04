@@ -9,8 +9,9 @@ import torch.optim as optim
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
+from src.losses import get_loss_initializer
 from src.metric_tracker import MetricTracker, Mode
-from src.models import BasicRNN as Model
+from src.models import get_model_initializer
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained
 
@@ -55,8 +56,8 @@ def init_metrics(args, checkpoint):
 
 
 def load_model(args, device, checkpoint, init_params, train_loader):
-    criterion = nn.CrossEntropyLoss()
-    model = Model(*init_params).to(device)
+    criterion = get_loss_initializer(args.loss)
+    model = get_model_initializer(args.model)(*init_params).to(device)
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     verify_model(model, train_loader, optimizer, criterion, device)
     util.load_state_dict(checkpoint, model, optimizer)
