@@ -35,20 +35,27 @@ def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     if args.name:
         return os.path.join(save_dir, args.name)
 
-    dirlist = [f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))]
-    dirlist.sort()
-    dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
+    dirlist = [f for f in os.listdir(save_dir) \
+        if f.isupper() and os.path.isdir(os.path.join(save_dir, f))]
     if not dirlist:
         result = 'A'
     else:
+        dirlist.sort()
+        dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
         last_run_char = dirlist[-1][-1]
         if last_run_char == 'Z':
             result = 'A' * (len(dirlist[-1])+1)
         else:
             result = dirlist[-1][:-1] + chr(ord(last_run_char) + 1)
-    out_dir = os.path.join(save_dir, result)
-    os.makedirs(out_dir)
-    return out_dir
+
+    run_name = os.path.join(save_dir, result)
+    os.makedirs(run_name)
+
+    #  Save the configuration args to checkpoint folder
+    with open(os.path.join(run_name, 'args.json'), 'w') as f:
+        json.dump(args.__dict__, f, indent=4)
+
+    return run_name
 
 
 def set_rng_state(checkpoint):

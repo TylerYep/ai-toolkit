@@ -58,9 +58,17 @@ def load_test_data(args, device):
     return test_loader
 
 
-def get_transforms():
-    return transforms.Compose([transforms.ToTensor(),
-                               transforms.Normalize((0.1307,), (0.3081,))])
+def get_transforms(img_dim=None):
+    # return transforms.Compose([
+    #     transforms.ToTensor(),
+    #     transforms.ToPILImage(),
+    #     transforms.Resize((img_dim, img_dim)),
+    #     transforms.ToTensor(),
+    # ])
+    return transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.1307,), (0.3081,))
+    ])
     # norm = transforms.Compose([transforms.Grayscale(num_output_channels=3),
     #                            transforms.Resize(224),
     #                            transforms.ToTensor(),

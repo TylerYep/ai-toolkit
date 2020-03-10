@@ -48,9 +48,9 @@ def init_pipeline(arg_list=None):
                         help='for loading a checkpoint model')
 
     parser.add_argument('--from-json', type=str, default='',
-                        help='for loading a checkpoint model')
+                        help='load json instead')
 
-    parser.add_argument('--visualize', action='store_true', default=True,
+    parser.add_argument('--no-visualize', action='store_true', default=False,
                         help='save visualization files')
 
     parser.add_argument('--plot', action='store_true', default=False,
@@ -65,11 +65,11 @@ def init_pipeline(arg_list=None):
     return args, device, checkpoint
 
 
-def set_random_seeds():
-    random.seed(0)
-    np.random.seed(0)
-    torch.manual_seed(0)
-    torch.cuda.manual_seed(0)
-    torch.cuda.manual_seed_all(0)
+def set_random_seeds(seed=0):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
