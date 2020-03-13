@@ -10,6 +10,7 @@ import torch.nn as nn
 
 
 SAVE_DIR = 'checkpoints'
+CONFIG_DIR = 'configs'
 
 
 class Arguments:
@@ -20,8 +21,8 @@ class Arguments:
         return str(self.__dict__)
 
 
-def json_to_args(fname):
-    with open(fname) as f:
+def json_to_args(filename):
+    with open(os.path.join(CONFIG_DIR, filename, '.json')) as f:
         return Arguments(json.load(f))
 
 
@@ -75,7 +76,7 @@ def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None
         shutil.copyfile(save_path, os.path.join(run_name, 'model_best.pth.tar'))
 
 
-def load_checkpoint(checkpoint_name: str) -> Dict[str, Any]:
+def load_checkpoint(checkpoint_name: str, use_best: bool = True) -> Dict[str, Any]:
     """ Loads torch checkpoint.
     Args:
         checkpoint: (string) filename which needs to be loaded
@@ -83,7 +84,8 @@ def load_checkpoint(checkpoint_name: str) -> Dict[str, Any]:
     if not checkpoint_name:
         return {}
     print('Loading checkpoint...')
-    return torch.load(os.path.join(SAVE_DIR, checkpoint_name, 'model_best.pth.tar'))
+    load_file = 'model_best.pth.tar' if use_best else 'checkpoint.pth.tar'
+    return torch.load(os.path.join(SAVE_DIR, checkpoint_name, load_file))
 
 
 def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None):

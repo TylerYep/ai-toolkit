@@ -1,6 +1,5 @@
 from .metric import Metric
 
-SMOOTH = 1e-6
 
 class IoU(Metric):
     def __init__(self):
@@ -8,16 +7,21 @@ class IoU(Metric):
         self.epoch_acc = 0.0
         self.running_acc = 0.0
 
+    @staticmethod
+    def calculate_iou(output, target, eps=1e-7):
+        output = output > 0.5
+        output, target = output.squeeze(), target.squeeze()
+        intersection = (output & (target).bool()).float().sum((1, 2)) + eps
+        union = (output | target.bool()).float().sum((1, 2)) + eps
+        accuracy = (intersection / union).sum().item()
+        return accuracy
+
     def reset(self):
         self.running_acc = 0.0
 
     def update(self, val_dict):
         output, target = val_dict['output'], val_dict['target']
-        output = output > 0.5
-        output, target = output.squeeze(), target.squeeze()
-        intersection = (output & (target).bool()).float().sum((1, 2)) + SMOOTH
-        union = (output | target.bool()).float().sum((1, 2)) + SMOOTH
-        accuracy = (intersection / union).sum().item()
+        accuracy = self.calculate_iou(output, target)
         self.epoch_acc += accuracy
         self.running_acc += accuracy
         return accuracy

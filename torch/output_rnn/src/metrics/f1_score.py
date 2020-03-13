@@ -4,20 +4,14 @@ from .metric import Metric
 
 
 class F1Score(Metric):
-    def __init__(self, eps=1e-7):
+    def __init__(self):
         super().__init__()
-        self.epsilon = eps
-        self.epoch_f1 = 0.0
-        self.running_f1 = 0.0
+        self.epoch_acc = 0.0
+        self.running_acc = 0.0
         self.num_examples = 0
 
-    def reset(self):
-        self.running_f1 = 0.0
-
-    def update(self, val_dict):
-        y_pred, y_true = val_dict['output'], val_dict['target']
-        batch_size = val_dict['batch_size']
-
+    @staticmethod
+    def calculate_f1_score(y_pred, y_true, eps=1e-7):
         assert y_pred.ndim == 2
         assert y_true.ndim == 1
         y_true = F.one_hot(y_true, 2)
@@ -28,20 +22,28 @@ class F1Score(Metric):
         fp = ((1 - y_true) * y_pred).sum(dim=0)
         fn = (y_true * (1 - y_pred)).sum(dim=0)
 
-        precision = tp / (tp + fp + self.epsilon)
-        recall = tp / (tp + fn + self.epsilon)
+        precision = tp / (tp + fp + eps)
+        recall = tp / (tp + fn + eps)
 
-        f1 = 2 * (precision * recall) / (precision + recall + self.epsilon)
-        f1 = f1.clamp(min=self.epsilon, max=1-self.epsilon)
+        f1 = 2 * (precision * recall) / (precision + recall + eps)
+        f1 = f1.clamp(min=eps, max=1-eps)
         f1_score = 1 - f1.mean()
+        return f1_score
 
-        self.epoch_f1 += f1_score
-        self.running_f1 += f1_score
+    def reset(self):
+        self.running_acc = 0.0
+
+    def update(self, val_dict):
+        y_pred, y_true = val_dict['output'], val_dict['target']
+        batch_size = val_dict['batch_size']
+        f1_score = self.calculate_f1_score(y_pred, y_true)
+        self.epoch_acc += f1_score
+        self.running_acc += f1_score
         self.num_examples += batch_size
         return f1_score
 
     def get_batch_result(self, log_interval, batch_size):
-        return self.running_f1 / (log_interval * batch_size)
+        return self.running_acc / (log_interval * batch_size)
 
     def get_epoch_result(self):
-        return self.epoch_f1 / self.num_examples
+        return self.epoch_acc / self.num_examples

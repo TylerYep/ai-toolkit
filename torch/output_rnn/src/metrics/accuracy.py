@@ -8,6 +8,10 @@ class Accuracy(Metric):
         self.running_acc = 0.0
         self.num_examples = 0
 
+    @staticmethod
+    def calculate_accuracy(output, target):
+        return (output.argmax(1) == target).float().sum().item()
+
     def formatted(self, computed_val):
         return f'{self.name}: {100. * computed_val:.2f}%'
 
@@ -17,7 +21,7 @@ class Accuracy(Metric):
     def update(self, val_dict):
         output, target = val_dict['output'], val_dict['target']
         batch_size = val_dict['batch_size']
-        accuracy = (output.argmax(1) == target).float().sum().item()
+        accuracy = self.calculate_accuracy(output, target)
         self.epoch_acc += accuracy
         self.running_acc += accuracy
         self.num_examples += batch_size

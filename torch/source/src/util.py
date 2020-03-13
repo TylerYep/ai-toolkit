@@ -10,6 +10,7 @@ import torch.nn as nn
 
 
 SAVE_DIR = 'checkpoints'
+CONFIG_DIR = 'configs'
 
 
 class Arguments:
@@ -20,8 +21,8 @@ class Arguments:
         return str(self.__dict__)
 
 
-def json_to_args(fname):
-    with open(fname) as f:
+def json_to_args(filename):
+    with open(os.path.join(CONFIG_DIR, filename, '.json')) as f:
         return Arguments(json.load(f))
 
 

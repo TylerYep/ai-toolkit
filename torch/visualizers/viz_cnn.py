@@ -8,7 +8,7 @@ from src.models import BasicCNN as Model
 from src.visualizations import *
 
 
-def main():
+def viz():
     args, device, checkpoint = init_pipeline()
     train_loader, _, init_params = load_train_data(args, device)
     model = Model(*init_params).to(device)
@@ -36,4 +36,4 @@ def visualize_trained(model, loader, run_name='', metrics=None):
 
 
 if __name__ == '__main__':
-    main()
+    viz()

@@ -8,6 +8,7 @@ from .dice import DiceLoss
 from .focal import FocalLoss
 from .mixed import MixedLoss
 
+
 def get_loss_initializer(loss_fn):
     ''' Retrieves class initializer from its string name. '''
     if loss_fn == 'nn.CrossEntropyLoss()':
