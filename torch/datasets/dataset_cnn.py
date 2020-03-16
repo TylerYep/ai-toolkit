@@ -12,16 +12,8 @@ else:
 
 
 INPUT_SHAPE = (1, 28, 28)
-# CLASS_LABELS = [str(i) for i in range(10)]
 CLASS_LABELS = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
-
-
-# def load_train_data(args):
-#     norm = get_transforms()
-#     train_set = datasets.ImageFolder('data/tiny-imagenet-200', transform=norm)
-#     train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False)
-#     return train_loader, None, [0 for _ in range(10000)], {}
 
 
 def get_collate_fn(device):
@@ -45,7 +37,7 @@ def load_train_data(args, device, num_examples=None, val_split=0.2):
     val_loader = DataLoader(val_set,
                             batch_size=args.batch_size,
                             collate_fn=collate_fn)
-    return train_loader, val_loader, {}
+    return train_loader, val_loader, []
 
 
 def load_test_data(args, device):

@@ -12,7 +12,7 @@ Thus, this project is for developers or ML scientists who want features of a ful
 The first thing you should do is go into one of the output_*/ folders and try training a model.
 We currently have two models:
 - MNIST CNN [(Source)](https://github.com/pytorch/examples/blob/master/mnist/main.py)
-- Character-Level RNN [(Source)](https://pytorch.org/tutorials/intermediate/char_rnn_generation_tutorial.html)
+- Character-Level RNN [(Source)](https://pytorch.org/tutorials/intermediate/char_rnn_classification_tutorial.html)
 
 
 ## Notable Features

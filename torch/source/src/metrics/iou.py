@@ -6,6 +6,7 @@ class IoU(Metric):
         super().__init__()
         self.epoch_acc = 0.0
         self.running_acc = 0.0
+        self.num_examples = 0
 
     @staticmethod
     def calculate_iou(output, target, eps=1e-7):
@@ -24,10 +25,11 @@ class IoU(Metric):
         accuracy = self.calculate_iou(output, target)
         self.epoch_acc += accuracy
         self.running_acc += accuracy
+        self.num_examples += val_dict['batch_size']
         return accuracy
 
-    def get_batch_result(self, log_interval):
-        return self.running_acc / log_interval
+    def get_batch_result(self, log_interval, batch_size):
+        return self.running_acc / (log_interval * batch_size)
 
-    def get_epoch_result(self, num_examples):
-        return self.epoch_acc / num_examples
+    def get_epoch_result(self):
+        return self.epoch_acc / self.num_examples

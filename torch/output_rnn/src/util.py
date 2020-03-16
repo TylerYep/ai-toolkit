@@ -22,7 +22,7 @@ class Arguments:
 
 
 def json_to_args(filename):
-    with open(os.path.join(CONFIG_DIR, filename, '.json')) as f:
+    with open(os.path.join(CONFIG_DIR, filename + '.json')) as f:
         return Arguments(json.load(f))
 
 
@@ -76,7 +76,7 @@ def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None
         shutil.copyfile(save_path, os.path.join(run_name, 'model_best.pth.tar'))
 
 
-def load_checkpoint(checkpoint_name: str, use_best: bool = True) -> Dict[str, Any]:
+def load_checkpoint(checkpoint_name: str, use_best: bool = False) -> Dict[str, Any]:
     """ Loads torch checkpoint.
     Args:
         checkpoint: (string) filename which needs to be loaded
@@ -88,9 +88,9 @@ def load_checkpoint(checkpoint_name: str, use_best: bool = True) -> Dict[str, An
     return torch.load(os.path.join(SAVE_DIR, checkpoint_name, load_file))
 
 
-def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None):
-    """ Loads model parameters (state_dict) from checkpoint. If optimizer is provided,
-    loads state_dict of optimizer assuming it is present in checkpoint.
+def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None, scheduler=None):
+    """ Loads model parameters (state_dict) from checkpoint. If optimizer or scheduler are
+    provided, loads state_dict of optimizer assuming it is present in checkpoint.
     Args:
         checkpoint: () checkpoint object
         model: (torch.nn.Module) model for which the parameters are loaded
@@ -100,3 +100,5 @@ def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None):
         model.load_state_dict(checkpoint['state_dict'])
         if optimizer is not None:
             optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        if scheduler is not None:
+            scheduler.load_state_dict(checkpoint['scheduler_state_dict'])

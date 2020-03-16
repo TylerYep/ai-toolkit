@@ -15,7 +15,6 @@ if 'google.colab' in sys.modules:
 else:
     DATA_PATH = 'data/'
 
-INPUT_SHAPE = (1, 19)
 ALL_LETTERS = string.ascii_letters + " .,;'"
 CLASS_LABELS = []
 

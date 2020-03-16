@@ -35,11 +35,10 @@ class F1Score(Metric):
 
     def update(self, val_dict):
         y_pred, y_true = val_dict['output'], val_dict['target']
-        batch_size = val_dict['batch_size']
         f1_score = self.calculate_f1_score(y_pred, y_true)
         self.epoch_acc += f1_score
         self.running_acc += f1_score
-        self.num_examples += batch_size
+        self.num_examples += val_dict['batch_size']
         return f1_score
 
     def get_batch_result(self, log_interval, batch_size):

@@ -60,6 +60,9 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--plot', action='store_true', default=False,
                         help='plot training examples')
 
+    parser.add_argument('--scheduler', action='store_true', default=False,
+                        help='use learning rate scheduler')
+
     parser.add_argument('--test-batch-size', type=int, default=128, metavar='N',
                         help='input batch size for testing (default: 128)')
 

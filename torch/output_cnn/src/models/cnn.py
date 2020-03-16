@@ -6,6 +6,7 @@ class BasicCNN(nn.Module):
     """ Neural network """
     def __init__(self):
         super().__init__()
+        self.input_shape = torch.Size((1, 28, 28))
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
         self.dropout1 = nn.Dropout2d(0.25)

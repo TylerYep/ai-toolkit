@@ -16,10 +16,9 @@ class Loss(Metric):
 
     def update(self, val_dict):
         loss = val_dict['loss'].item()
-        batch_size = val_dict['batch_size']
         self.epoch_loss += loss
         self.running_loss += loss
-        self.num_examples += batch_size
+        self.num_examples += val_dict['batch_size']
         return loss
 
     def get_batch_result(self, log_interval, batch_size):

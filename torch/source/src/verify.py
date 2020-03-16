@@ -2,8 +2,6 @@ import sys
 import torch
 import torchsummary
 
-from src.dataset import INPUT_SHAPE
-
 if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
@@ -16,7 +14,7 @@ def verify_model(model, loader, optimizer, criterion, device):
     You may need to change the batch_size or max_iters in overfit_example
     in order to overfit the batch.
     """
-    torchsummary.summary(model, INPUT_SHAPE)
+    torchsummary.summary(model, model.input_shape)
     check_batch_dimension(model, loader, optimizer)
     overfit_example(model, loader, optimizer, criterion, device)
     check_all_layers_training(model, loader, optimizer, criterion)

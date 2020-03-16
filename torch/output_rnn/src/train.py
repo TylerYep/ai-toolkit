@@ -60,14 +60,16 @@ def load_model(args, device, checkpoint, init_params, train_loader):
     model = get_model_initializer(args.model)(*init_params).to(device)
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     verify_model(model, train_loader, optimizer, criterion, device)
-    util.load_state_dict(checkpoint, model, optimizer)
-    return model, criterion, optimizer
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer) if args.scheduler else None
+    util.load_state_dict(checkpoint, model, optimizer, scheduler)
+    return model, criterion, optimizer, scheduler
 
 
 def train(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
     train_loader, val_loader, init_params = load_train_data(args, device)
-    model, criterion, optimizer = load_model(args, device, checkpoint, init_params, train_loader)
+    model, criterion, optimizer, scheduler = load_model(args, device, checkpoint,
+                                                        init_params, train_loader)
     run_name, metrics = init_metrics(args, checkpoint)
     if args.visualize:
         metrics.add_network(model, train_loader)
@@ -81,11 +83,14 @@ def train(arg_list=None):
         tr_loss = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
         val_loss = train_and_validate(model, val_loader, optimizer, criterion, metrics, Mode.VAL)
 
+        if args.scheduler:
+            scheduler.step(val_loss)
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({
             'model_init': init_params,
             'state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
+            'scheduler_state_dict': scheduler.state_dict() if args.scheduler else None,
             'rng_state': random.getstate(),
             'np_rng_state': np.random.get_state(),
             'torch_rng_state': torch.get_rng_state(),
