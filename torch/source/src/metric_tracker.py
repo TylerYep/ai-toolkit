@@ -1,4 +1,5 @@
 from typing import Any, Dict
+from types import SimpleNamespace
 from enum import Enum, unique
 import torch
 from torch.utils.tensorboard import SummaryWriter
@@ -83,7 +84,7 @@ class MetricTracker:
             self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
 
     def add_images(self, val_dict, num_steps):
-        data, output, target = val_dict['data'], val_dict['output'], val_dict['target']
+        data, output, target = val_dict.data, val_dict.output, val_dict.target
         for j in range(output.shape[0]):
             _, pred_ind = torch.max(output.detach()[j], dim=0)
             target_ind = int(target.detach()[j])
@@ -95,7 +96,7 @@ class MetricTracker:
         batch_size = data.shape[0]
         names = ('data', 'loss', 'output', 'target', 'batch_size')
         variables = (data, loss, output, target, batch_size)
-        val_dict = dict(zip(names, variables))
+        val_dict = SimpleNamespace(**dict(zip(names, variables)))
 
         tqdm_dict = self.update_all(val_dict)
         num_steps = (self.epoch - 1) * self.num_batches + i

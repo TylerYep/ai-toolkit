@@ -58,6 +58,9 @@ def init_metrics(args, checkpoint):
 def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = get_loss_initializer(args.loss)
     model = get_model_initializer(args.model)(*init_params).to(device)
+    assert model.input_shape, 'Model should have input_shape as an attribute'
+    # setattr(model, 'summary', functools.partial(summary, model, input_shape))
+
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     verify_model(model, train_loader, optimizer, criterion, device)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer) if args.scheduler else None

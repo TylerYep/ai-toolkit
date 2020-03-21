@@ -6,9 +6,6 @@ from .metric import Metric
 class F1Score(Metric):
     def __init__(self):
         super().__init__()
-        self.epoch_acc = 0.0
-        self.running_acc = 0.0
-        self.num_examples = 0
 
     @staticmethod
     def calculate_f1_score(y_pred, y_true, eps=1e-7):
@@ -30,19 +27,10 @@ class F1Score(Metric):
         f1_score = 1 - f1.mean()
         return f1_score
 
-    def reset(self):
-        self.running_acc = 0.0
-
     def update(self, val_dict):
-        y_pred, y_true = val_dict['output'], val_dict['target']
+        y_pred, y_true = val_dict.output, val_dict.target
         f1_score = self.calculate_f1_score(y_pred, y_true)
         self.epoch_acc += f1_score
         self.running_acc += f1_score
-        self.num_examples += val_dict['batch_size']
+        self.num_examples += val_dict.batch_size
         return f1_score
-
-    def get_batch_result(self, log_interval, batch_size):
-        return self.running_acc / (log_interval * batch_size)
-
-    def get_epoch_result(self):
-        return self.epoch_acc / self.num_examples
