@@ -2,6 +2,7 @@ import sys
 
 from .rnn import BasicRNN
 from .cnn import BasicCNN
+from .dense import DenseNet
 # from .unet import UNet
 # from .efficient_net import EfficientNet
 

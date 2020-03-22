@@ -75,7 +75,8 @@ class MetricTracker:
     def update_all(self, val_dict):
         ret_dict = {}
         for metric, metric_obj in self.metric_data.items():
-            ret_dict[metric] = metric_obj.update(val_dict)
+            metric_obj.update(val_dict)
+            ret_dict[metric] = metric_obj.get_epoch_result()
         return ret_dict
 
     def write_all(self, num_steps, mode, batch_size):
@@ -107,7 +108,7 @@ class MetricTracker:
         elif mode == Mode.VAL:
             if len(data.size()) == 4:  # (N, C, H, W)
                 self.add_images(val_dict, num_steps)
-        return {}
+        return tqdm_dict
 
     def get_epoch_results(self, mode) -> float:
         result_str = ''

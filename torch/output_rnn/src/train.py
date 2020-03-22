@@ -80,6 +80,7 @@ def train(arg_list=None):
 
     util.set_rng_state(checkpoint)
     start_epoch = metrics.epoch + 1
+    print(f'Storing checkpoints in: {run_name}\n')
     for epoch in range(start_epoch, start_epoch + args.epochs):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()

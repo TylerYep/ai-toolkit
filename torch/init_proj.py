@@ -100,13 +100,16 @@ def main():
     args = init_pipeline()
     if args.project == 'rnn':
         config = RNN_CONFIG
+        destination = f'output_{args.project}'
+
     elif args.project == 'cnn':
         config = CNN_CONFIG
+        destination = f'../../example_{args.project}'
     else:
         raise ValueError
 
     source = 'source'
-    destination = f'output_{args.project}'
+    # destination = f'../../example_{args.project}'
 
     # Create destination directory if it doesn't exist
     if not os.path.isdir(destination):

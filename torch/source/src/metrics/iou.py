@@ -8,9 +8,9 @@ class IoU(Metric):
     @staticmethod
     def calculate_iou(output, target, eps=1e-7):
         output = output > 0.5
-        output, target = output.squeeze(), target.squeeze()
-        intersection = (output & (target).bool()).float().sum((1, 2)) + eps
-        union = (output | target.bool()).float().sum((1, 2)) + eps
+        output, target = output.squeeze(), target.squeeze().bool()
+        intersection = (output & target).float().sum((1, 2)) + eps
+        union = (output | target).float().sum((1, 2)) + eps
         accuracy = (intersection / union).sum().item()
         return accuracy
 
