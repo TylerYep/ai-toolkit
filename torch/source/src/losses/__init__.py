@@ -15,4 +15,6 @@ def get_loss_initializer(loss_fn):
         return nn.CrossEntropyLoss()
     if loss_fn == 'F.nll_loss':
         return F.nll_loss
+    assert hasattr(sys.modules[__name__], loss_fn), \
+        f'Metric {loss_fn} not found in metrics folder.'
     return getattr(sys.modules[__name__], loss_fn)

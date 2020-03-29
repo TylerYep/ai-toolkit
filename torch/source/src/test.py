@@ -23,7 +23,8 @@ def test_model(test_loader, model, criterion):
         with tqdm(desc='Test', total=len(test_loader), ncols=120) as pbar:
             for data, target in test_loader:
                 output = model(data)
-                test_loss += criterion(output, target).item()
+                loss = criterion(output, target)
+                test_loss += loss.item() * data.size(0)
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
                 pbar.update()

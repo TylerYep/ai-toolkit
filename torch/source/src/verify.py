@@ -26,6 +26,22 @@ def checkNaN(weights):
     assert torch.isfinite(weights).byte().any()
 
 
+def detect_nan_tensors(self, model, loss):
+    # check if loss is nan
+    if not torch.isfinite(loss).all():
+        raise ValueError(
+            'The loss returned in `training_step` is nan or inf.'
+        )
+    # check if a network weight is nan
+    for name, param in model.named_parameters():
+        if not torch.isfinite(param).all():
+            self.print_nan_gradients()
+            raise ValueError(
+                f'Detected nan and/or inf values in `{name}`.'
+                ' Check your forward pass for numerically unstable operations.'
+            )
+
+
 def check_all_layers_training(model, loader, optimizer, criterion):
     """
     Verifies that the provided model trains all provided layers.

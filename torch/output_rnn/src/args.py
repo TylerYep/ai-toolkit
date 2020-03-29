@@ -66,6 +66,9 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--test-batch-size', type=int, default=128, metavar='N',
                         help='input batch size for testing (default: 128)')
 
+    parser.add_argument('--use-amp', action='store_true', default=True,
+                        help='use Nvidia AMP')
+
     parser.add_argument('--visualize', action='store_true', default=True,
                         help='save visualization files')
 

@@ -20,6 +20,11 @@ if 'google.colab' in sys.modules:
 else:
     from tqdm import tqdm
 
+USE_AMP = False
+if torch.cuda.is_available():
+    from apex import amp
+    USE_AMP = True
+
 
 def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     if mode == Mode.TRAIN:
@@ -38,8 +43,41 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
             output = model(data)
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
-                loss.backward()
+                if USE_AMP:
+                    with amp.scale_loss(loss, optimizer) as scaled_loss:
+                        scaled_loss.backward()
+                else:
+                    loss.backward()
                 optimizer.step()
+
+            tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
+            pbar.set_postfix(tqdm_dict)
+            pbar.update()
+
+    return metrics.get_epoch_results(mode)
+
+
+def train_accumulate_gradient(model, loader, optimizer, criterion, metrics, mode):
+    if mode == Mode.TRAIN:
+        model.train()
+        torch.set_grad_enabled(True)
+    else:
+        model.eval()
+        torch.set_grad_enabled(False)
+
+    metrics.set_num_batches(len(loader))
+    with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
+        for i, (data, target) in enumerate(loader):
+            if mode == Mode.TRAIN and i == 0:
+                optimizer.zero_grad()
+
+            output = model(data)
+            loss = criterion(output, target)
+            if mode == Mode.TRAIN:
+                loss.backward()
+                if (i + 1) % 10 == 0:
+                    optimizer.step()
+                    optimizer.zero_grad()
 
             tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
@@ -65,6 +103,8 @@ def load_model(args, device, checkpoint, init_params, train_loader):
     verify_model(model, train_loader, optimizer, criterion, device)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer) if args.scheduler else None
     util.load_state_dict(checkpoint, model, optimizer, scheduler)
+    if USE_AMP:
+        model, optimizer = amp.initialize(model, optimizer, opt_level="O1")
     return model, criterion, optimizer, scheduler
 
 
