@@ -38,7 +38,7 @@ def test_model(test_loader, model, criterion):
 
 def test(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
-    criterion = get_loss_initializer(args.loss)
+    criterion = get_loss_initializer(args.loss)()
     test_loader = load_test_data(args, device)
     init_params = checkpoint.get('model_init', [])
     model = get_model_initializer(args.model)(*init_params).to(device)

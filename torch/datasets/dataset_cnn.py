@@ -17,7 +17,9 @@ CLASS_LABELS = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
 
 
 def get_collate_fn(device):
-    return lambda x: map(lambda b: b.to(device), default_collate(x))
+    def to_device(b):
+        return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
+    return lambda x: map(to_device, default_collate(x))
 
 
 def load_train_data(args, device, num_examples=None, val_split=0.2):
@@ -51,20 +53,10 @@ def load_test_data(args, device):
 
 
 def get_transforms(img_dim=None):
-    # return transforms.Compose([
-    #     transforms.ToTensor(),
-    #     transforms.ToPILImage(),
-    #     transforms.Resize((img_dim, img_dim)),
-    #     transforms.ToTensor(),
-    # ])
     return transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
     ])
-    # norm = transforms.Compose([transforms.Grayscale(num_output_channels=3),
-    #                            transforms.Resize(224),
-    #                            transforms.ToTensor(),
-    #                            transforms.Normalize((0.1307,), (0.3081,))])
 
 
 class MyDataset(Dataset):

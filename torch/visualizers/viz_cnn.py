@@ -5,7 +5,8 @@ from src.args import init_pipeline
 from src.dataset import load_train_data, CLASS_LABELS
 from src.models import BasicCNN as Model
 
-from src.visualizations import *
+from src.visualizations import view_input, compute_activations, make_fooling_image, \
+    show_saliency_maps, create_class_visualization
 
 
 def viz():

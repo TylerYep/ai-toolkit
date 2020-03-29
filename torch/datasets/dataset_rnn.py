@@ -29,7 +29,9 @@ CLASS_LABELS = []
 
 
 def get_collate_fn(device):
-    return lambda x: map(lambda b: b.to(device), default_collate(x))
+    def to_device(b):
+        return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
+    return lambda x: map(to_device, default_collate(x))
 
 
 def pad_collate(batch):

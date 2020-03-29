@@ -11,7 +11,8 @@ RNN_CONFIG = {
     },
     'substitutions': {
         'loss_fn': 'nn.CrossEntropyLoss()',
-        'model': 'BasicRNN'
+        'model': 'BasicRNN',
+        'visualize': 'False'
     }
 }
 
@@ -22,7 +23,8 @@ CNN_CONFIG = {
     },
     'substitutions': {
         'loss_fn': 'F.nll_loss',
-        'model': 'BasicCNN'
+        'model': 'BasicCNN',
+        'visualize': 'True'
     }
 }
 

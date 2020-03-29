@@ -68,7 +68,7 @@ def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None
         run_name: (string) folder where parameters are to be saved
         is_best: (bool) True if it is the best model seen till now
     """
-    print('Saving checkpoint...')
+    print('Saving checkpoint...\n')
     save_path = os.path.join(run_name, 'checkpoint.pth.tar')
     torch.save(state, save_path)
     if is_best:
