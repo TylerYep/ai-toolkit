@@ -5,15 +5,13 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 
 from src import util
-from src.metrics import get_metric
+from src.metrics import get_metric_initializer
 from src.dataset import CLASS_LABELS
 
 
 @unique
 class Mode(Enum):
-    TRAIN = 'Train'
-    VAL = 'Val'
-    TEST = 'Test'
+    TRAIN, VAL, TEST = 'Train', 'Val', 'Test'
 
 
 class MetricTracker:
@@ -25,6 +23,7 @@ class MetricTracker:
 
         self.log_interval = args.log_interval
         self.primary_metric = args.metrics[0]
+
         metric_checkpoint = checkpoint.get('metric_obj', {})
         self.epoch = metric_checkpoint.get('epoch', 0)
         self.num_batches = metric_checkpoint.get('num_batches', 0)
@@ -33,17 +32,20 @@ class MetricTracker:
                                                  self.metric_data[self.primary_metric].init_val)
         self.end_epoch = self.epoch + args.epochs
 
-    def init_metrics(self, metric_names):
-        return {name: get_metric(name)() for name in metric_names}
+    @staticmethod
+    def init_metrics(metric_names):
+        return {name: get_metric_initializer(name)() for name in metric_names}
 
     def json_repr(self) -> Dict[str, Any]:
-        return {'epoch': self.epoch,
-                'metric_data': self.metric_data,
-                'num_batches': self.num_batches,
-                'best_metric': self.best_metric}
+        return {
+            'epoch': self.epoch,
+            'metric_data': self.metric_data,
+            'num_batches': self.num_batches,
+            'best_metric': self.best_metric
+        }
 
-    def __getattr__(self, name):
-        return self.metric_data[name]
+    # def __getattr__(self, name):
+    #     return self.metric_data[name]
 
     def add_network(self, model, loader):
         data, _ = next(iter(loader))
@@ -69,7 +71,7 @@ class MetricTracker:
             self.metric_data[metric].reset()
 
     def reset_hard(self):
-        self.metric_data = {name: get_metric(name)() for name in self.metric_data.keys()}
+        self.metric_data = self.init_metrics(self.metric_data.keys())
 
     def update_all(self, val_dict):
         ret_dict = {}

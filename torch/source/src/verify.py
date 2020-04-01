@@ -1,7 +1,7 @@
 import sys
 import warnings
-import torch
 import torchsummary
+import torch
 
 if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
@@ -33,7 +33,7 @@ def check_batch_dimension(model, loader, optimizer, test_val=2):
     """
     model.eval()
     torch.set_grad_enabled(True)
-    data, _ = next(iter(loader))
+    data, _ = next(loader)
     optimizer.zero_grad()
     data.requires_grad_()
 
@@ -53,7 +53,7 @@ def overfit_example(model, loader, optimizer, criterion, device, batch_size=5, m
     """
     model.eval()
     torch.set_grad_enabled(True)
-    data, target = next(iter(loader))
+    data, target = next(loader)
     data, target = data[:batch_size], target[:batch_size]
     with tqdm(desc='Verify Model', total=max_iters, ncols=120) as pbar:
         for _ in range(max_iters):
@@ -94,7 +94,7 @@ def check_all_layers_training(model, loader, optimizer, criterion):
     """
     model.train()
     torch.set_grad_enabled(True)
-    data, target = next(iter(loader))
+    data, target = next(loader)
     before = [param.clone().detach() for param in model.parameters()]
 
     optimizer.zero_grad()

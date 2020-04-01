@@ -41,37 +41,43 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     return metrics.get_epoch_results(mode)
 
 
-def get_optimizer_schedulers(args, model):
-    optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer) if args.scheduler else None
-    return optimizer, scheduler
+def get_optimizer(args, model):
+    return optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
 
 
-def load_model(args, device, checkpoint, init_params, train_loader):
+def get_scheduler(args, optimizer):
+    return optim.lr_scheduler.ReduceLROnPlateau(optimizer) if args.scheduler else None
+
+
+def load_model(args, device, init_params, loader):
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
     assert model.input_shape, 'Model must have input_shape as an attribute'
 
-    optimizer, scheduler = get_optimizer_schedulers(args, model)
-    verify_model(model, train_loader, optimizer, criterion, device)
-    util.load_state_dict(checkpoint, model, optimizer, scheduler)
+    optimizer = get_optimizer(args, model)
+    scheduler = get_scheduler(args, optimizer)
+    verify_model(model, loader, optimizer, criterion, device)
     return model, criterion, optimizer, scheduler
 
 
 def train(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
     train_loader, val_loader, init_params = load_train_data(args, device)
-    model, criterion, optimizer, scheduler = load_model(args, device, checkpoint,
-                                                        init_params, train_loader)
+
+    # Important: this cannot generate more batches than the total dataset contains.
+    sample_loader = iter(train_loader)
+
+    model, criterion, optimizer, scheduler = load_model(args, device, init_params, sample_loader)
+    util.load_state_dict(checkpoint, model, optimizer, scheduler)
     metrics = MetricTracker(args, checkpoint)
     if args.visualize:
-        metrics.add_network(model, train_loader)
-        visualize(model, train_loader, metrics.run_name)
+        metrics.add_network(model, next(sample_loader))
+        visualize(model, sample_loader, metrics.run_name)
 
     util.set_rng_state(checkpoint)
     for _ in range(args.epochs):
         metrics.next_epoch()
-        train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
+        _ = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
         val_loss = train_and_validate(model, val_loader, None, criterion, metrics, Mode.VAL)
 
         if args.scheduler:
@@ -91,6 +97,6 @@ def train(arg_list=None):
         }, is_best)
 
     if args.visualize:
-        visualize_trained(model, train_loader, metrics.run_name)
+        visualize_trained(model, sample_loader, metrics.run_name)
 
     return val_loss

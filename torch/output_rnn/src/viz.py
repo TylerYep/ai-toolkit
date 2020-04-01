@@ -1,7 +1,7 @@
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
-from src.models import BasicRNN as Model
+from src.models import get_model_initializer
 
 from src.visualizations import *
 
@@ -18,12 +18,12 @@ def viz():
 
 
 def visualize(model, loader, run_name='', metrics=None):
-    data, target = next(iter(loader))
+    data, target = next(loader)
     pass
 
 
 def visualize_trained(model, loader, run_name='', metrics=None):
-    data, target = next(iter(loader))
+    data, target = next(loader)
     pass
 
 

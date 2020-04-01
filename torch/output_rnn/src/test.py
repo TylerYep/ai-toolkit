@@ -1,6 +1,6 @@
 import sys
-import torch
 import torchsummary
+import torch
 
 from src import util
 from src.args import init_pipeline
