@@ -38,16 +38,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
             tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
             pbar.update()
-
     return metrics.get_epoch_results(mode)
-
-
-def init_metrics(args, checkpoint):
-    run_name = checkpoint.get('run_name', util.get_run_name(args))
-    print(f'Storing checkpoints in: {run_name}\n')
-    metric_checkpoint = checkpoint.get('metric_obj', {})
-    metrics = MetricTracker(run_name, args.log_interval, **metric_checkpoint)
-    return run_name, metrics
 
 
 def get_optimizer_schedulers(args, model):
@@ -72,15 +63,13 @@ def train(arg_list=None):
     train_loader, val_loader, init_params = load_train_data(args, device)
     model, criterion, optimizer, scheduler = load_model(args, device, checkpoint,
                                                         init_params, train_loader)
-    run_name, metrics = init_metrics(args, checkpoint)
+    metrics = MetricTracker(args, checkpoint)
     if args.visualize:
         metrics.add_network(model, train_loader)
-        visualize(model, train_loader, run_name)
+        visualize(model, train_loader, metrics.run_name)
 
     util.set_rng_state(checkpoint)
-    start_epoch = metrics.epoch + 1
-    for epoch in range(start_epoch, start_epoch + args.epochs):
-        print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
+    for _ in range(args.epochs):
         metrics.next_epoch()
         train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
         val_loss = train_and_validate(model, val_loader, None, criterion, metrics, Mode.VAL)
@@ -97,11 +86,11 @@ def train(arg_list=None):
             'rng_state': random.getstate(),
             'np_rng_state': np.random.get_state(),
             'torch_rng_state': torch.get_rng_state(),
-            'run_name': run_name,
+            'run_name': metrics.run_name,
             'metric_obj': metrics.json_repr()
         }, is_best)
 
     if args.visualize:
-        visualize_trained(model, train_loader, run_name)
+        visualize_trained(model, train_loader, metrics.run_name)
 
     return val_loss

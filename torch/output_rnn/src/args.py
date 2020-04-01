@@ -48,6 +48,9 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--lr', type=float, default=3e-3, metavar='LR',
                         help='learning rate (default: 3e-3)')
 
+    parser.add_argument('--metrics', nargs='+', type=str, default=['Loss', 'Accuracy'],
+                        help='metrics in metrics/ folder to use during training (space-separated)')
+
     parser.add_argument('--model', type=str, default='BasicRNN', metavar='N',
                         help='model architecture to use')
 

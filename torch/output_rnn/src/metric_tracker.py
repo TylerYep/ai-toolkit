@@ -4,6 +4,7 @@ from enum import Enum, unique
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
+from src import util
 from src.metrics import get_metric
 from src.dataset import CLASS_LABELS
 
@@ -15,29 +16,25 @@ class Mode(Enum):
     TEST = 'Test'
 
 
-# Adding metrics here will automatically search the metrics/ folder for an implementation.
-METRIC_NAMES = ['Loss', 'Accuracy']
-
-
 class MetricTracker:
-    def __init__(self,
-                 run_name,
-                 log_interval,
-                 epoch=0,
-                 num_batches=0,
-                 metric_data=None,
-                 best_metric=None):
-        assert METRIC_NAMES
-        self.writer = SummaryWriter(run_name)
-        self.epoch = epoch
-        self.log_interval = log_interval
-        self.num_batches = num_batches
-        self.metric_names = METRIC_NAMES
-        self.primary_metric = self.metric_names[0]
-        self.metric_data = metric_data if metric_data else \
-                           {name: get_metric(name)() for name in self.metric_names}
-        self.best_metric = best_metric if best_metric else \
-                           self.metric_data[self.primary_metric].init_val
+    def __init__(self, args, checkpoint):
+        assert args.metrics
+        self.run_name = checkpoint.get('run_name', util.get_run_name(args))
+        self.writer = SummaryWriter(self.run_name)
+        print(f'Storing checkpoints in: {self.run_name}\n')
+
+        self.log_interval = args.log_interval
+        self.primary_metric = args.metrics[0]
+        metric_checkpoint = checkpoint.get('metric_obj', {})
+        self.epoch = metric_checkpoint.get('epoch', 0)
+        self.num_batches = metric_checkpoint.get('num_batches', 0)
+        self.metric_data = metric_checkpoint.get('metric_data', self.init_metrics(args.metrics))
+        self.best_metric = metric_checkpoint.get('best_metric',
+                                                 self.metric_data[self.primary_metric].init_val)
+        self.end_epoch = self.epoch + args.epochs
+
+    def init_metrics(self, metric_names):
+        return {name: get_metric(name)() for name in metric_names}
 
     def json_repr(self) -> Dict[str, Any]:
         return {'epoch': self.epoch,
@@ -62,6 +59,7 @@ class MetricTracker:
 
     def next_epoch(self):
         self.epoch += 1
+        print(f'Epoch [{self.epoch}/{self.end_epoch}]')
 
     def set_num_batches(self, num_batches: int):
         self.num_batches = num_batches
@@ -71,7 +69,7 @@ class MetricTracker:
             self.metric_data[metric].reset()
 
     def reset_hard(self):
-        self.metric_data = {name: get_metric(name)() for name in self.metric_names}
+        self.metric_data = {name: get_metric(name)() for name in self.metric_data.keys()}
 
     def update_all(self, val_dict):
         ret_dict = {}
@@ -113,12 +111,14 @@ class MetricTracker:
 
     def get_epoch_results(self, mode) -> float:
         result_str = ''
+        ret_val = None
         for metric, metric_obj in self.metric_data.items():
             epoch_result = metric_obj.get_epoch_result()
+            if metric == self.primary_metric:
+                ret_val = epoch_result
             result_str += f'{metric_obj.formatted(epoch_result)} '
             self.write(f'{mode}_Epoch_{metric}', epoch_result, self.epoch)
 
         print(f'{mode} {result_str}')
-        ret_val = self.metric_data[self.primary_metric].get_epoch_result()
         self.reset_hard()
         return ret_val
