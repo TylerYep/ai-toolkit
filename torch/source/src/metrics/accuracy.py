@@ -2,9 +2,6 @@ from .metric import Metric
 
 
 class Accuracy(Metric):
-    def __init__(self):
-        super().__init__()
-
     @staticmethod
     def calculate_accuracy(output, target):
         return (output.argmax(1) == target).float().sum().item()

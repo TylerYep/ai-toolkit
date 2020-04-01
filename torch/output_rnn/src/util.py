@@ -44,7 +44,7 @@ def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     else:
         last_run_char = dirlist[-1][-1]
         if last_run_char == 'Z':
-            result = 'A' * (len(dirlist[-1])+1)
+            result = 'A' * (len(dirlist[-1]) + 1)
         else:
             result = dirlist[-1][:-1] + chr(ord(last_run_char) + 1)
     out_dir = os.path.join(save_dir, result)
@@ -59,7 +59,7 @@ def set_rng_state(checkpoint):
         torch.set_rng_state(checkpoint['torch_rng_state'])
 
 
-def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None:
+def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = ''):
     """ Saves model and training parameters at checkpoint + 'last.pth.tar'.
     If is_best is True, also saves best.pth.tar
     Args:
@@ -69,6 +69,7 @@ def save_checkpoint(state: Dict[str, Any], run_name: str, is_best: bool) -> None
         is_best: (bool) True if it is the best model seen till now
     """
     print('Saving checkpoint...\n')
+    run_name = run_name if run_name else state['run_name']
     save_path = os.path.join(run_name, 'checkpoint.pth.tar')
     torch.save(state, save_path)
     if is_best:
@@ -97,7 +98,7 @@ def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None, schedule
         optimizer: (torch.optim) optional: resume optimizer from checkpoint
     """
     if checkpoint:
-        model.load_state_dict(checkpoint['state_dict'])
+        model.load_state_dict(checkpoint['model_state_dict'])
         if optimizer is not None:
             optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         if scheduler is not None:

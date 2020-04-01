@@ -4,9 +4,6 @@ from .metric import Metric
 
 
 class Dice(Metric):
-    def __init__(self):
-        super().__init__()
-
     @staticmethod
     def calculate_dice_coefficent(output, target, eps=1e-7):
         output = (output > 0.5).float()

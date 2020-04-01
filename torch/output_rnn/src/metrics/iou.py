@@ -2,9 +2,6 @@ from .metric import Metric
 
 
 class IoU(Metric):
-    def __init__(self):
-        super().__init__()
-
     @staticmethod
     def calculate_iou(output, target, eps=1e-7):
         output = output > 0.5

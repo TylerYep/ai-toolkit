@@ -1,9 +1,7 @@
-import torchvision.models as models
-
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data, CLASS_LABELS
-from src.models import BasicCNN as Model
+from src.models import get_model_initializer
 
 from src.visualizations import view_input, compute_activations, make_fooling_image, \
     show_saliency_maps, create_class_visualization
@@ -12,9 +10,9 @@ from src.visualizations import view_input, compute_activations, make_fooling_ima
 def viz():
     args, device, checkpoint = init_pipeline()
     train_loader, _, init_params = load_train_data(args, device)
-    model = Model(*init_params).to(device)
+    init_params = checkpoint.get('model_init', init_params)
+    model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
-    # model = models.resnet18(pretrained=True)
 
     visualize(model, train_loader)
     visualize_trained(model, train_loader)

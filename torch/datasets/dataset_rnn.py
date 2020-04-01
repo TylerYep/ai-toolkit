@@ -15,6 +15,7 @@ if 'google.colab' in sys.modules:
 else:
     DATA_PATH = 'data/'
 
+
 ALL_LETTERS = string.ascii_letters + " .,;'"
 CLASS_LABELS = []
 
@@ -42,11 +43,12 @@ def pad_collate(batch):
     return xx_pad, yy_pad, x_lens
 
 
-def load_train_data(args, device, num_examples=None, val_split=0.2):
+def load_train_data(args, device, val_split=0.2):
     collate_fn = get_collate_fn(device)
     orig_dataset = LanguageWords()
-    if num_examples:
-        data_split = [num_examples, num_examples, len(orig_dataset) - 2 * num_examples]
+    if args.num_examples:
+        n = args.num_examples
+        data_split = [n, n, len(orig_dataset) - 2 * n]
         train_set, val_set = random_split(orig_dataset, data_split)[:-1]
     else:
         train_size = int((1 - val_split) * len(orig_dataset))
@@ -75,6 +77,7 @@ class LanguageWords(Dataset):
     ''' Dataset for training a model on a dataset. '''
     def __init__(self):
         super().__init__()
+        self.input_shape = torch.Size((1, 19))
         self.all_categories = []
         self.data = []
         # Build the category_lines dictionary, a list of names per language
@@ -94,7 +97,8 @@ class LanguageWords(Dataset):
         random.shuffle(self.data)
 
     def get_model_params(self):
-        return self.max_word_length, self.n_hidden, self.n_categories  # , self.n_letters
+        return self.input_shape, self.max_word_length, self.n_hidden, self.n_categories
+        # , self.n_letters
 
     def __len__(self):
         return len(self.data)
@@ -106,7 +110,8 @@ class LanguageWords(Dataset):
         # torch.tensor([ALL_LETTERS.index(letter) for letter in line])
         return line_tensor, category_tensor.squeeze()
 
-    def read_lines(self, filename):
+    @staticmethod
+    def read_lines(filename):
         def unicodeToAscii(s):
             return ''.join(
                 c for c in unicodedata.normalize('NFD', s)

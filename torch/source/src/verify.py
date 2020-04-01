@@ -37,14 +37,14 @@ def check_batch_dimension(model, loader, optimizer, test_val=2):
     optimizer.zero_grad()
     data.requires_grad_()
 
-    output = model(data)
+    output = model(*data) if isinstance(data, (list, tuple)) else model(data)
     loss = output[test_val].sum()
     loss.backward()
 
-    assert loss != 0, "Loss is not exactly zero."
+    assert loss != 0, "Loss should be greater than zero."
     assert (data.grad[test_val] != 0).any(), "The gradient of the test input is not nonzero."
     assert (data.grad[:test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all(), \
-        "All other inputs in the batch are not zero."
+        "There are nonzero gradients in the batch, when they should all be zero."
 
 
 def overfit_example(model, loader, optimizer, criterion, device, batch_size=5, max_iters=50):
@@ -58,7 +58,7 @@ def overfit_example(model, loader, optimizer, criterion, device, batch_size=5, m
     with tqdm(desc='Verify Model', total=max_iters, ncols=120) as pbar:
         for _ in range(max_iters):
             optimizer.zero_grad()
-            output = model(data)
+            output = model(*data) if isinstance(data, (list, tuple)) else model(data)
             loss = criterion(output, target)
             if torch.allclose(loss, torch.tensor(0.).to(device)):
                 break
@@ -98,7 +98,7 @@ def check_all_layers_training(model, loader, optimizer, criterion):
     before = [param.clone().detach() for param in model.parameters()]
 
     optimizer.zero_grad()
-    output = model(data)
+    output = model(*data) if isinstance(data, (list, tuple)) else model(data)
     loss = criterion(output, target)
     loss.backward()
     optimizer.step()

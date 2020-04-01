@@ -2,11 +2,12 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
+
 class BasicCNN(nn.Module):
     """ Neural network """
-    def __init__(self):
+    def __init__(self, input_shape):
         super().__init__()
-        self.input_shape = torch.Size((1, 28, 28))
+        self.input_shape = input_shape
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
         self.dropout1 = nn.Dropout2d(0.25)

@@ -1,5 +1,3 @@
-import torchvision.models as models
-
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
@@ -11,9 +9,9 @@ from src.visualizations import *
 def viz():
     args, device, checkpoint = init_pipeline()
     train_loader, _, init_params = load_train_data(args, device)
-    model = Model(*init_params).to(device)
+    init_params = checkpoint.get('model_init', init_params)
+    model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
-    # model = models.resnet18(pretrained=True)
 
     visualize(model, train_loader)
     visualize_trained(model, train_loader)

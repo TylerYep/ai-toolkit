@@ -1,12 +1,11 @@
-import torch
 import torch.nn as nn
-from torch.nn import functional as F
+
 
 class DenseNet(nn.Module):
     """ Neural network """
-    def __init__(self):
+    def __init__(self, input_shape):
         super().__init__()
-        self.input_shape = torch.Size((1, 28, 28))
+        self.input_shape = input_shape
         hidden_sizes = [128, 64]
         output_size = 10
         self.model = nn.Sequential(

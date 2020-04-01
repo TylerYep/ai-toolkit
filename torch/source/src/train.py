@@ -2,8 +2,6 @@ import sys
 import random
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 
 from src import util
@@ -21,7 +19,7 @@ else:
     from tqdm import tqdm
 
 
-def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode):
+def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     model.train() if mode == Mode.TRAIN else model.eval()
     torch.set_grad_enabled(mode == Mode.TRAIN)
 
@@ -61,7 +59,7 @@ def get_optimizer_schedulers(args, model):
 def load_model(args, device, checkpoint, init_params, train_loader):
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
-    assert model.input_shape, 'Model should have input_shape as an attribute'
+    assert model.input_shape, 'Model must have input_shape as an attribute'
 
     optimizer, scheduler = get_optimizer_schedulers(args, model)
     verify_model(model, train_loader, optimizer, criterion, device)
@@ -84,15 +82,16 @@ def train(arg_list=None):
     for epoch in range(start_epoch, start_epoch + args.epochs):
         print(f'Epoch [{epoch}/{start_epoch + args.epochs - 1}]')
         metrics.next_epoch()
-        train_and_validate(args, model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
-        val_loss = train_and_validate(args, model, val_loader, None, criterion, metrics, Mode.VAL)
+        train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
+        val_loss = train_and_validate(model, val_loader, None, criterion, metrics, Mode.VAL)
 
         if args.scheduler:
             scheduler.step(val_loss)
+
         is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({
             'model_init': init_params,
-            'state_dict': model.state_dict(),
+            'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             'scheduler_state_dict': scheduler.state_dict() if args.scheduler else None,
             'rng_state': random.getstate(),
@@ -100,7 +99,7 @@ def train(arg_list=None):
             'torch_rng_state': torch.get_rng_state(),
             'run_name': run_name,
             'metric_obj': metrics.json_repr()
-        }, run_name, is_best)
+        }, is_best)
 
     if args.visualize:
         visualize_trained(model, train_loader, run_name)
