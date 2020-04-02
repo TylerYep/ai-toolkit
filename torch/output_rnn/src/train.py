@@ -23,7 +23,6 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     model.train() if mode == Mode.TRAIN else model.eval()
     torch.set_grad_enabled(mode == Mode.TRAIN)
 
-    metrics.set_num_batches(len(loader))
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
             if mode == Mode.TRAIN:
@@ -35,7 +34,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
                 loss.backward()
                 optimizer.step()
 
-            tqdm_dict = metrics.batch_update(i, data, loss, output, target, mode)
+            tqdm_dict = metrics.batch_update(i, len(loader), data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
             pbar.update()
     return metrics.get_epoch_results(mode)

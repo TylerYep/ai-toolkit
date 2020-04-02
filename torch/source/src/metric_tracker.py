@@ -26,7 +26,6 @@ class MetricTracker:
 
         metric_checkpoint = checkpoint.get('metric_obj', {})
         self.epoch = metric_checkpoint.get('epoch', 0)
-        self.num_batches = metric_checkpoint.get('num_batches', 0)
         self.metric_data = metric_checkpoint.get('metric_data', self.init_metrics(args.metrics))
         self.best_metric = metric_checkpoint.get('best_metric',
                                                  self.metric_data[self.primary_metric].init_val)
@@ -40,7 +39,6 @@ class MetricTracker:
         return {
             'epoch': self.epoch,
             'metric_data': self.metric_data,
-            'num_batches': self.num_batches,
             'best_metric': self.best_metric
         }
 
@@ -94,14 +92,14 @@ class MetricTracker:
             target_class = CLASS_LABELS[target_ind]
             self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)
 
-    def batch_update(self, i, data, loss, output, target, mode):
+    def batch_update(self, i, num_batches, data, loss, output, target, mode):
         batch_size = data.shape[0]
         names = ('data', 'loss', 'output', 'target', 'batch_size')
         variables = (data, loss, output, target, batch_size)
         val_dict = SimpleNamespace(**dict(zip(names, variables)))
 
         tqdm_dict = self.update_all(val_dict)
-        num_steps = (self.epoch - 1) * self.num_batches + i
+        num_steps = (self.epoch - 1) * num_batches + i
         if mode == Mode.TRAIN and i % self.log_interval == 0:
             if i > 0:
                 self.write_all(num_steps, mode, batch_size)
