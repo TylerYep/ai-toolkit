@@ -1,12 +1,12 @@
-''' epoch_test.py '''
+''' train_test.py '''
 from src.train import train
 
-class TestRNN:
+class TestTrain:
 
     @staticmethod
     def test_one_epoch():
         val_loss = train(['--epoch=1', '--name=TEST'])
-        assert round(val_loss, 7) == 1.6929825
+        assert round(val_loss, 7) == 1.6898811
 
     @staticmethod
     def test_epoch_resume():

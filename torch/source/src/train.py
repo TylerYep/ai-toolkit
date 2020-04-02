@@ -62,15 +62,12 @@ def load_model(args, device, init_params, loader):
 def train(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
     train_loader, val_loader, init_params = load_train_data(args, device)
-
-    # Important: this cannot generate more batches than the total dataset contains.
-    sample_loader = iter(train_loader)
-
+    sample_loader = util.get_sample_loader(train_loader)
     model, criterion, optimizer, scheduler = load_model(args, device, init_params, sample_loader)
     util.load_state_dict(checkpoint, model, optimizer, scheduler)
     metrics = MetricTracker(args, checkpoint)
     if args.visualize:
-        metrics.add_network(model, next(sample_loader))
+        metrics.add_network(model, sample_loader)
         visualize(model, sample_loader, metrics.run_name)
 
     util.set_rng_state(checkpoint)

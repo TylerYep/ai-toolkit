@@ -42,11 +42,11 @@ class MetricTracker:
             'best_metric': self.best_metric
         }
 
-    # def __getattr__(self, name):
-    #     return self.metric_data[name]
+    def __getattr__(self, name):
+        return self.metric_data[name]
 
     def add_network(self, model, loader):
-        data, _ = next(iter(loader))
+        data, _ = next(loader)
         self.writer.add_graph(model, data)
 
     def update_best_metric(self, val_loss) -> bool:
@@ -60,9 +60,6 @@ class MetricTracker:
     def next_epoch(self):
         self.epoch += 1
         print(f'Epoch [{self.epoch}/{self.end_epoch}]')
-
-    def set_num_batches(self, num_batches: int):
-        self.num_batches = num_batches
 
     def reset_all(self):
         for metric in self.metric_data:
@@ -80,7 +77,7 @@ class MetricTracker:
 
     def write_all(self, num_steps, mode, batch_size):
         for metric, metric_obj in self.metric_data.items():
-            batch_result = metric_obj.get_batch_result(self.log_interval, batch_size)
+            batch_result = metric_obj.get_batch_result(batch_size, self.log_interval)
             self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
 
     def add_images(self, val_dict, num_steps):
@@ -116,7 +113,7 @@ class MetricTracker:
             epoch_result = metric_obj.get_epoch_result()
             if metric == self.primary_metric:
                 ret_val = epoch_result
-            result_str += f'{metric_obj.formatted(epoch_result)} '
+            result_str += str(metric_obj)
             self.write(f'{mode}_Epoch_{metric}', epoch_result, self.epoch)
 
         print(f'{mode} {result_str}')

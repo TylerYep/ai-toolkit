@@ -13,6 +13,15 @@ SAVE_DIR = 'checkpoints'
 CONFIG_DIR = 'configs'
 
 
+def get_sample_loader(train_loader):
+    sample_loader = iter(train_loader)
+    while True:
+        try:
+            yield next(sample_loader)
+        except StopIteration:
+            sample_loader = iter(train_loader)
+
+
 class Arguments:
     def __init__(self, args):
         self.__dict__ = args

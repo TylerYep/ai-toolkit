@@ -16,6 +16,10 @@ CLASS_LABELS = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
 
 
 def get_collate_fn(device):
+    '''
+    for indices in batch_sampler:
+        yield collate_fn([dataset[i] for i in indices])
+    '''
     def to_device(b):
         return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
     return lambda x: map(to_device, default_collate(x))

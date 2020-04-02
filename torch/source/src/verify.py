@@ -3,6 +3,8 @@ import warnings
 import torchsummary
 import torch
 
+from src import util
+
 if 'google.colab' in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
@@ -47,7 +49,7 @@ def check_batch_dimension(model, loader, optimizer, test_val=2):
         "There are nonzero gradients in the batch, when they should all be zero."
 
 
-def overfit_example(model, loader, optimizer, criterion, device, batch_size=5, max_iters=50):
+def overfit_example(model, loader, optimizer, criterion, device, batch_size=2, max_iters=50):
     """
     Verifies that the provided model can overfit a single batch or example.
     """
@@ -68,7 +70,7 @@ def overfit_example(model, loader, optimizer, criterion, device, batch_size=5, m
             pbar.update()
 
     if not torch.allclose(loss, torch.tensor(0.).to(device)):
-        warnings.warn(f"Overfit Loss is not sufficiently close to 0: {loss}"
+        warnings.warn(f"\nOverfit Loss is not sufficiently close to 0: {loss}\n"
                       f"This may indicate an error with your model.", RuntimeWarning)
 
 
