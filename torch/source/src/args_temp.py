@@ -28,7 +28,7 @@ def get_parsed_arguments(arg_list):
                         help='for loading a checkpoint model')
 
     parser.add_argument('--config', type=str, default='',
-                        help='run model using given json config file: configs/<name>.json')
+                        help='use given config file as args: <checkpoints, configs>/<name>.json')
 
     parser.add_argument('--epochs', type=int, default=100, metavar='N',
                         help='number of epochs to train (default: 100)')
@@ -69,7 +69,7 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--test-batch-size', type=int, default=128, metavar='N',
                         help='input batch size for testing (default: 128)')
 
-    parser.add_argument('--visualize', action='store_true', default=$visualize,
+    parser.add_argument('--visualize', action='store_true', default=True,
                         help='save visualization files')
 
     return parser.parse_args(arg_list)

@@ -1,5 +1,7 @@
 import sys
 import pandas as pd
+import tensorflow as tf
+
 if 'google.colab' in sys.modules:
     DATA_PATH = '/content/'
 else:
@@ -10,7 +12,7 @@ INPUT_SHAPE = (1, 28, 28)
 
 
 def load_train_data(args):
-    (train_images, train_labels), (test_images, test_labels) = keras.datasets.fashion_mnist.load_data()
+    (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.fashion_mnist.load_data()
     class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                    'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 

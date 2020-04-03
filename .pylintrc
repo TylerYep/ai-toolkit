@@ -148,6 +148,9 @@ disable=print-statement,
         invalid-name,
         import-error,
         too-many-locals,
+        not-callable,
+        arguments-differ,
+        no-member
 
 
 # Enable the message, report, category or checker with the given id(s). You can

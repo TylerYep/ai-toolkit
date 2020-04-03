@@ -31,7 +31,7 @@ class TestAccuracy:
             'batch_size': 3
         })
 
-        accuracy = metric.update(val_dict)
+        _ = metric.update(val_dict)
 
         assert metric.get_batch_result(3) == 2/3
 
@@ -48,6 +48,6 @@ class TestAccuracy:
             'batch_size': 3
         })
 
-        accuracy = metric.update(val_dict)
+        _ = metric.update(val_dict)
 
         assert str(metric) == 'Accuracy: 66.67%'

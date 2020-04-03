@@ -40,7 +40,7 @@ def gradient_check(model, train_images, train_labels, test_val=3):
     assert (grad[:test_val] == 0.).all() and (grad[test_val+1:] == 0.).all()
 
 
-def overfit_example(model, train_images, train_labels, batch_size=5, max_iters=500):
+def overfit_example(model, train_images, train_labels, batch_size=5, max_iters=50):
     """
     Verifies that the provided model can overfit a single batch or example.
     """

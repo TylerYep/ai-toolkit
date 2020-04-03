@@ -1,6 +1,8 @@
 from typing import Any, Dict
 from types import SimpleNamespace
 from enum import Enum, unique
+import os
+import json
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
@@ -20,6 +22,8 @@ class MetricTracker:
         self.run_name = checkpoint.get('run_name', util.get_run_name(args))
         self.writer = SummaryWriter(self.run_name)
         print(f'Storing checkpoints in: {self.run_name}\n')
+        with open(os.path.join(self.run_name, 'args.json'), 'w') as f:
+            json.dump(args.__dict__, f, indent=4)
 
         self.log_interval = args.log_interval
         self.primary_metric = args.metrics[0]

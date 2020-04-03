@@ -13,15 +13,6 @@ SAVE_DIR = 'checkpoints'
 CONFIG_DIR = 'configs'
 
 
-def get_sample_loader(train_loader):
-    sample_loader = iter(train_loader)
-    while True:
-        try:
-            yield next(sample_loader)
-        except StopIteration:
-            sample_loader = iter(train_loader)
-
-
 class Arguments:
     def __init__(self, args):
         self.__dict__ = args
@@ -31,7 +22,10 @@ class Arguments:
 
 
 def json_to_args(filename):
-    with open(os.path.join(CONFIG_DIR, filename + '.json')) as f:
+    found_json = os.path.join(CONFIG_DIR, filename + '.json')
+    if not os.path.isfile(found_json):
+        found_json = os.path.join(SAVE_DIR, filename, 'args.json')
+    with open(found_json) as f:
         return Arguments(json.load(f))
 
 
@@ -59,6 +53,16 @@ def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
     out_dir = os.path.join(save_dir, result)
     os.makedirs(out_dir)
     return out_dir
+
+
+def get_sample_loader(loader):
+    """ Returns a generator that outputs a single batch of data. """
+    sample_loader = iter(loader)
+    while True:
+        try:
+            yield next(sample_loader)
+        except StopIteration:
+            sample_loader = iter(loader)
 
 
 def set_rng_state(checkpoint):

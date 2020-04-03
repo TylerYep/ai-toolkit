@@ -12,7 +12,6 @@ RNN_CONFIG = {
     'substitutions': {
         'loss_fn': 'nn.CrossEntropyLoss()',
         'model': 'BasicRNN',
-        'visualize': 'False'
     }
 }
 
@@ -24,7 +23,6 @@ CNN_CONFIG = {
     'substitutions': {
         'loss_fn': 'F.nll_loss',
         'model': 'BasicCNN',
-        'visualize': 'True'
     }
 }
 
@@ -35,7 +33,7 @@ def init_pipeline():
     parser.add_argument('project', type=str,
                         help='version of the code to generate')
 
-    parser.add_argument('--output_path', type=int, default=100, metavar='N',
+    parser.add_argument('--output_path', type=str, default='',
                         help='folder to output the project to')
 
     parser.add_argument('--config_path', type=str, default='',
