@@ -3,6 +3,7 @@ import random
 import numpy as np
 import torch
 import torch.optim as optim
+import torch.optim.lr_scheduler as lr_scheduler
 
 from src import util
 from src.args import init_pipeline
@@ -26,6 +27,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
             if mode == Mode.TRAIN:
+                # If you have multiple optimizers, use model.zero_grad() instead.
                 optimizer.zero_grad()
 
             output = model(*data) if isinstance(data, (list, tuple)) else model(data)
@@ -45,7 +47,7 @@ def get_optimizer(args, model):
 
 
 def get_scheduler(args, optimizer):
-    return optim.lr_scheduler.ReduceLROnPlateau(optimizer) if args.scheduler else None
+    return lr_scheduler.ReduceLROnPlateau(optimizer)
 
 
 def load_model(args, device, init_params, loader):
@@ -54,7 +56,7 @@ def load_model(args, device, init_params, loader):
     assert model.input_shape, 'Model must have input_shape as an attribute'
 
     optimizer = get_optimizer(args, model)
-    scheduler = get_scheduler(args, optimizer)
+    scheduler = get_scheduler(args, optimizer) if args.scheduler else None
     verify_model(model, loader, optimizer, criterion, device)
     return model, criterion, optimizer, scheduler
 
@@ -66,7 +68,7 @@ def train(arg_list=None):
     model, criterion, optimizer, scheduler = load_model(args, device, init_params, sample_loader)
     util.load_state_dict(checkpoint, model, optimizer, scheduler)
     metrics = MetricTracker(args, checkpoint)
-    if args.visualize:
+    if not args.no_visualize:
         metrics.add_network(model, sample_loader)
         visualize(model, sample_loader, metrics.run_name)
 
@@ -92,7 +94,7 @@ def train(arg_list=None):
             'metric_obj': metrics.json_repr()
         }, is_best)
 
-    if args.visualize:
+    if not args.no_visualize:
         visualize_trained(model, sample_loader, metrics.run_name)
 
     return val_loss

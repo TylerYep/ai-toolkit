@@ -7,7 +7,7 @@ class Metric:
         self.num_examples = 0
 
     def __repr__(self):
-        return f'{self.name}: {self.get_epoch_result():.4f} '
+        return f'{self.name}: {self.get_epoch_result():.4f}'
 
     def reset(self):
         self.running_avg = 0.0

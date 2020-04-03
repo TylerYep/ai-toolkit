@@ -117,7 +117,7 @@ class MetricTracker:
             epoch_result = metric_obj.get_epoch_result()
             if metric == self.primary_metric:
                 ret_val = epoch_result
-            result_str += str(metric_obj)
+            result_str += str(metric_obj) + ' '
             self.write(f'{mode}_Epoch_{metric}', epoch_result, self.epoch)
 
         print(f'{mode} {result_str}')

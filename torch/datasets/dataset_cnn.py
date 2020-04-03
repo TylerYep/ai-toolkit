@@ -43,7 +43,8 @@ def load_train_data(args, device, val_split=0.2):
     val_loader = DataLoader(val_set,
                             batch_size=args.batch_size,
                             collate_fn=collate_fn)
-    return train_loader, val_loader, [torch.Size((1, 28, 28))]
+    init_params = [torch.Size((1, 28, 28))]
+    return train_loader, val_loader, init_params
 
 
 def load_test_data(args, device):

@@ -36,12 +36,15 @@ def train_and_validate(model, train_images, train_labels, class_labels):
 
 
 def load_model(args, checkpoint, init_params, train_images, train_labels):
+    '''
+    Note: It is possible to bake this tf.nn.softmax in as the activation function for the last layer of the network. While this can make the model output more directly interpretable, this approach is discouraged as it's impossible to provide an exact and numerically stable loss calculation for all models when using a softmax output.
+    '''
     optimizer = tf.keras.optimizers.Adam(learning_rate=3e-6)
-    loss = tf.keras.losses.SparseCategoricalCrossentropy() # from_logits=True
+    loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
     model = tf.keras.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
         tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(10, activation='softmax')
+        tf.keras.layers.Dense(10)
     ])
     model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
     model.summary()
@@ -59,6 +62,10 @@ def train(arg_list=None):
     # visualize(model, train_loader, class_labels, device, run_name)
     # util.set_rng_state(checkpoint)
     train_and_validate(model, train_images, train_labels, class_labels)
+    # probability_model = tf.keras.Sequential([
+    #     model,
+    #     tf.keras.layers.Softmax()
+    # ])
     # visualize_trained(model, train_loader, class_labels, device, run_name)
     # return val_loss
 
