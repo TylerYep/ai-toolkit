@@ -81,17 +81,18 @@ def train(arg_list=None):
         if args.scheduler:
             scheduler.step()
 
-        util.save_checkpoint({
-            'model_init': init_params,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'scheduler_state_dict': scheduler.state_dict() if args.scheduler else None,
-            'rng_state': random.getstate(),
-            'np_rng_state': np.random.get_state(),
-            'torch_rng_state': torch.get_rng_state(),
-            'run_name': metrics.run_name,
-            'metric_obj': metrics.json_repr()
-        }, metrics.is_best)
+        if not args.no_save:
+            util.save_checkpoint({
+                'model_init': init_params,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'scheduler_state_dict': scheduler.state_dict() if args.scheduler else None,
+                'rng_state': random.getstate(),
+                'np_rng_state': np.random.get_state(),
+                'torch_rng_state': torch.get_rng_state(),
+                'run_name': metrics.run_name,
+                'metric_obj': metrics.json_repr()
+            }, metrics.is_best)
 
     if not args.no_visualize:
         visualize_trained(model, sample_loader, metrics.run_name)

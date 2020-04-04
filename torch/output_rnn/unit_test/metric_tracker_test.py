@@ -6,7 +6,7 @@ from src.metric_tracker import MetricTracker, Mode
 class TestMetricTracker:
     @staticmethod
     def test_init_metrics():
-        arg_list = ['--name=TEST', '--no-visualize', '--num-examples=100', '--epochs=1']
+        arg_list = ['--no-save', '--no-visualize', '--num-examples=100', '--epochs=1']
         args, _, _ = init_pipeline(arg_list)
 
         metrics = MetricTracker(args, {})
@@ -17,7 +17,7 @@ class TestMetricTracker:
     def test_one_batch_update(example_batch):
         data, loss, output, target = \
             example_batch.data, example_batch.loss, example_batch.output, example_batch.target
-        arg_list = ['--name=TEST', '--no-visualize', '--epochs=1']
+        arg_list = ['--no-save', '--no-visualize', '--epochs=1']
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
 
@@ -33,7 +33,7 @@ class TestMetricTracker:
     def test_many_batch_update(example_batch):
         data, loss, output, target = \
             example_batch.data, example_batch.loss, example_batch.output, example_batch.target
-        arg_list = ['--name=TEST', '--no-visualize', '--epochs=1', '--log-interval=3']
+        arg_list = ['--no-save', '--no-visualize', '--epochs=1', '--log-interval=3']
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
         num_batches = 4
@@ -52,7 +52,7 @@ class TestMetricTracker:
     def test_epoch_update(capsys, example_batch):
         data, loss, output, target = \
             example_batch.data, example_batch.loss, example_batch.output, example_batch.target
-        arg_list = ['--name=TEST', '--no-visualize', '--epochs=1', '--log-interval=3']
+        arg_list = ['--no-save', '--no-visualize', '--epochs=1', '--log-interval=3']
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
         num_batches = 4
@@ -61,8 +61,8 @@ class TestMetricTracker:
 
         metrics.epoch_update(Mode.TRAIN)
 
-        captured = capsys.readouterr().out.split('\n')[2]
-        assert captured == 'Mode.TRAIN Loss: 0.2100 Accuracy: 66.67% '
+        captured = capsys.readouterr().out
+        assert captured == 'Mode.TRAIN Loss: 0.2100 Accuracy: 66.67% \n'
 
     @staticmethod
     def test_checkpoint_continue():

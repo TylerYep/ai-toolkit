@@ -5,7 +5,7 @@ class TestTrain:
 
     @staticmethod
     def test_one_epoch():
-        config = ['--no-visualize', '--num-examples=100']
+        config = ['--no-visualize', '--num-examples=100', '--no-save']
 
         metrics = train(['--epoch=1', '--name=TEST'] + config)
 

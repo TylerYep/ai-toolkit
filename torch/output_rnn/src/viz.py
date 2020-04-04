@@ -18,13 +18,15 @@ def viz():
 
 
 def visualize(model, loader, run_name=''):
-    data, target = next(loader)
-    pass
+    if run_name is not None:
+        data, target = next(loader)
+        pass
 
 
 def visualize_trained(model, loader, run_name=''):
-    data, target = next(loader)
-    pass
+    if run_name is not None:
+        data, target = next(loader)
+        pass
 
 
 if __name__ == '__main__':

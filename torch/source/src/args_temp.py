@@ -57,6 +57,9 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--name', type=str, default='',
                         help='folder to save files to checkpoint/')
 
+    parser.add_argument('--no-save', action='store_true', default=False,
+                        help='do not save any checkpoints')
+
     parser.add_argument('--num-examples', type=int, default=None, metavar='N',
                         help='number of training examples')
 

@@ -19,15 +19,16 @@ class Mode(Enum):
 class MetricTracker:
     def __init__(self, args, checkpoint):
         assert args.metrics
-        self.run_name = checkpoint.get('run_name', util.get_run_name(args))
-        print(f'Storing checkpoints in: {self.run_name}\n')
-        with open(os.path.join(self.run_name, 'args.json'), 'w') as f:
-            json.dump(args.__dict__, f, indent=4)
+        self.run_name, self.writer = None, None
+        if not args.no_save:
+            self.run_name = checkpoint.get('run_name', util.get_run_name(args))
+            self.writer = SummaryWriter(self.run_name)
+            print(f'Storing checkpoints in: {self.run_name}\n')
+            with open(os.path.join(self.run_name, 'args.json'), 'w') as f:
+                json.dump(args.__dict__, f, indent=4)
 
-        self.writer = SummaryWriter(self.run_name)
         self.is_best = True
         self.log_interval = args.log_interval
-
         metric_checkpoint = checkpoint.get('metric_obj', {})
         self.epoch = metric_checkpoint.get('epoch', 0)
         self.metric_data = metric_checkpoint.get('metric_data', self.init_metrics(args.metrics))
@@ -56,11 +57,13 @@ class MetricTracker:
         return True
 
     def add_network(self, model, loader):
-        data, _ = next(loader)
-        self.writer.add_graph(model, data)
+        if self.run_name is not None:
+            data, _ = next(loader)
+            self.writer.add_graph(model, data)
 
     def write(self, title: str, val: float, step_num: int):
-        self.writer.add_scalar(title, val, step_num)
+        if self.run_name is not None:
+            self.writer.add_scalar(title, val, step_num)
 
     def next_epoch(self):
         self.epoch += 1
@@ -121,10 +124,11 @@ class MetricTracker:
         print(result_str)
 
     def add_images(self, val_dict, num_steps):
-        data, output, target = val_dict.data, val_dict.output, val_dict.target
-        for j in range(output.shape[0]):
-            _, pred_ind = torch.max(output.detach()[j], dim=0)
-            target_ind = int(target.detach()[j])
-            pred_class = CLASS_LABELS[pred_ind]
-            target_class = CLASS_LABELS[target_ind]
-            self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)
+        if self.run_name is not None:
+            data, output, target = val_dict.data, val_dict.output, val_dict.target
+            for j in range(output.shape[0]):
+                _, pred_ind = torch.max(output.detach()[j], dim=0)
+                target_ind = int(target.detach()[j])
+                pred_class = CLASS_LABELS[pred_ind]
+                target_class = CLASS_LABELS[target_ind]
+                self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)
