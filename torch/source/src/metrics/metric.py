@@ -1,7 +1,7 @@
 class Metric:
-    def __init__(self, value=None):
+    def __init__(self):
         self.name = type(self).__name__
-        self.value = 0.0 if value is None else value
+        self.value = 0.0
         self.epoch_avg = 0.0
         self.running_avg = 0.0
         self.num_examples = 0

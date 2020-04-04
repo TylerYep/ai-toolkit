@@ -9,7 +9,7 @@ class TestTrain:
 
         metrics = train(['--epoch=1', '--name=TEST'] + config)
 
-        assert round(metrics.get_primary_metric(), 7) == 4.4841685
+        assert round(metrics.get_primary_metric(), 7) == 4.5108116
 
     @staticmethod
     def test_epoch_resume():

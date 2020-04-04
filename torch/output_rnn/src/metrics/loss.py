@@ -4,9 +4,9 @@ from .metric import Metric
 
 
 class Loss(Metric):
-    def __init__(self, value=None):
+    def __init__(self):
         super().__init__()
-        self.value = np.inf if value is None else value
+        self.value = np.inf
 
     def update(self, val_dict):
         loss = val_dict.loss.item()

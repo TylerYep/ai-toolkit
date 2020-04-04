@@ -25,12 +25,12 @@ class MetricTracker:
         with open(os.path.join(self.run_name, 'args.json'), 'w') as f:
             json.dump(args.__dict__, f, indent=4)
 
+        self.is_best = True
         self.log_interval = args.log_interval
         metric_checkpoint = checkpoint.get('metric_obj', {})
         self.epoch = metric_checkpoint.get('epoch', 0)
         self.metric_data = metric_checkpoint.get('metric_data', self.init_metrics(args.metrics))
         self.primary_metric = metric_checkpoint.get('primary_metric', args.metrics[0])
-        self.is_best = True
         self.end_epoch = self.epoch + args.epochs
 
     @staticmethod
@@ -57,10 +57,16 @@ class MetricTracker:
     def next_epoch(self):
         self.epoch += 1
         print(f'Epoch [{self.epoch}/{self.end_epoch}]')
+        self.reset_hard()
 
-    def reset_all(self):
-        for metric in self.metric_data:
-            self.metric_data[metric].reset()
+    def get_primary_metric(self):
+        return self.metric_data[self.primary_metric].value
+
+    def set_primary_metric(self, mode, ret_val):
+        if mode == Mode.VAL:
+            self.is_best = ret_val < self.get_primary_metric()
+            if self.is_best:
+                self.metric_data[self.primary_metric].value = ret_val
 
     def reset_hard(self):
         self.metric_data = self.init_metrics(self.metric_data.keys())
@@ -72,19 +78,13 @@ class MetricTracker:
             ret_dict[metric] = metric_obj.get_epoch_result()
         return ret_dict
 
-    def write_all(self, num_steps, mode, batch_size):
+    def write_reset(self, num_steps, mode, batch_size):
         for metric, metric_obj in self.metric_data.items():
             batch_result = metric_obj.get_batch_result(batch_size, self.log_interval)
             self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
 
-    def add_images(self, val_dict, num_steps):
-        data, output, target = val_dict.data, val_dict.output, val_dict.target
-        for j in range(output.shape[0]):
-            _, pred_ind = torch.max(output.detach()[j], dim=0)
-            target_ind = int(target.detach()[j])
-            pred_class = CLASS_LABELS[pred_ind]
-            target_class = CLASS_LABELS[target_ind]
-            self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)
+        for metric in self.metric_data.values():
+            metric.reset()
 
     def batch_update(self, i, num_batches, data, loss, output, target, mode):
         batch_size = data.shape[0]
@@ -94,10 +94,9 @@ class MetricTracker:
 
         tqdm_dict = self.update_all(val_dict)
         num_steps = (self.epoch - 1) * num_batches + i
-        if mode == Mode.TRAIN and i % self.log_interval == 0:
-            if i > 0:
-                self.write_all(num_steps, mode, batch_size)
-            self.reset_all()
+        if mode == Mode.TRAIN and i > 0 and i % self.log_interval == 0:
+            self.write_reset(num_steps, mode, batch_size)
+
         elif mode == Mode.VAL:
             if len(data.size()) == 4:  # (N, C, H, W)
                 self.add_images(val_dict, num_steps)
@@ -105,23 +104,19 @@ class MetricTracker:
 
     def epoch_update(self, mode):
         result_str = f'{mode} '
-        ret_val = None
         for metric, metric_obj in self.metric_data.items():
             epoch_result = metric_obj.get_epoch_result()
-            if metric == self.primary_metric:
-                ret_val = epoch_result
-            result_str += str(metric_obj) + ' '
             self.write(f'{mode}_Epoch_{metric}', epoch_result, self.epoch)
+            if metric == self.primary_metric:
+                self.set_primary_metric(mode, epoch_result)
+            result_str += str(metric_obj) + ' '
         print(result_str)
 
-        self.reset_hard()
-        if mode == Mode.VAL:
-            self.set_primary_metric(ret_val)
-
-    def get_primary_metric(self):
-        return self.metric_data[self.primary_metric].value
-
-    def set_primary_metric(self, new_val):
-        self.is_best = new_val < self.get_primary_metric()
-        if self.is_best:
-            self.metric_data[self.primary_metric].value = new_val
+    def add_images(self, val_dict, num_steps):
+        data, output, target = val_dict.data, val_dict.output, val_dict.target
+        for j in range(output.shape[0]):
+            _, pred_ind = torch.max(output.detach()[j], dim=0)
+            target_ind = int(target.detach()[j])
+            pred_class = CLASS_LABELS[pred_ind]
+            target_class = CLASS_LABELS[target_ind]
+            self.writer.add_image(f'{target_class}/Predicted_{pred_class}', data[j], num_steps)
