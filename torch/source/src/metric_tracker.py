@@ -26,13 +26,11 @@ class MetricTracker:
             json.dump(args.__dict__, f, indent=4)
 
         self.log_interval = args.log_interval
-        self.primary_metric = args.metrics[0]
-
         metric_checkpoint = checkpoint.get('metric_obj', {})
         self.epoch = metric_checkpoint.get('epoch', 0)
         self.metric_data = metric_checkpoint.get('metric_data', self.init_metrics(args.metrics))
-        self.best_metric = metric_checkpoint.get('best_metric',
-                                                 self.metric_data[self.primary_metric].init_val)
+        self.primary_metric = metric_checkpoint.get('primary_metric', args.metrics[0])
+        self.is_best = True
         self.end_epoch = self.epoch + args.epochs
 
     @staticmethod
@@ -43,7 +41,7 @@ class MetricTracker:
         return {
             'epoch': self.epoch,
             'metric_data': self.metric_data,
-            'best_metric': self.best_metric
+            'primary_metric': self.primary_metric
         }
 
     def __getattr__(self, name):
@@ -52,11 +50,6 @@ class MetricTracker:
     def add_network(self, model, loader):
         data, _ = next(loader)
         self.writer.add_graph(model, data)
-
-    def update_best_metric(self, val_loss) -> bool:
-        is_best = val_loss < self.best_metric
-        self.best_metric = min(val_loss, self.best_metric)
-        return is_best
 
     def write(self, title: str, val: float, step_num: int):
         self.writer.add_scalar(title, val, step_num)
@@ -110,8 +103,8 @@ class MetricTracker:
                 self.add_images(val_dict, num_steps)
         return tqdm_dict
 
-    def get_epoch_results(self, mode) -> float:
-        result_str = ''
+    def epoch_update(self, mode):
+        result_str = f'{mode} '
         ret_val = None
         for metric, metric_obj in self.metric_data.items():
             epoch_result = metric_obj.get_epoch_result()
@@ -119,7 +112,16 @@ class MetricTracker:
                 ret_val = epoch_result
             result_str += str(metric_obj) + ' '
             self.write(f'{mode}_Epoch_{metric}', epoch_result, self.epoch)
+        print(result_str)
 
-        print(f'{mode} {result_str}')
         self.reset_hard()
-        return ret_val
+        if mode == Mode.VAL:
+            self.set_primary_metric(ret_val)
+
+    def get_primary_metric(self):
+        return self.metric_data[self.primary_metric].value
+
+    def set_primary_metric(self, new_val):
+        self.is_best = new_val < self.get_primary_metric()
+        if self.is_best:
+            self.metric_data[self.primary_metric].value = new_val

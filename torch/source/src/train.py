@@ -39,7 +39,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
             tqdm_dict = metrics.batch_update(i, len(loader), data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
             pbar.update()
-    return metrics.get_epoch_results(mode)
+    metrics.epoch_update(mode)
 
 
 def get_optimizer(args, model):
@@ -47,7 +47,7 @@ def get_optimizer(args, model):
 
 
 def get_scheduler(args, optimizer):
-    return lr_scheduler.ReduceLROnPlateau(optimizer)
+    return lr_scheduler.StepLR(optimizer, step_size=1)
 
 
 def load_model(args, device, init_params, loader):
@@ -75,13 +75,11 @@ def train(arg_list=None):
     util.set_rng_state(checkpoint)
     for _ in range(args.epochs):
         metrics.next_epoch()
-        _ = train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
-        val_loss = train_and_validate(model, val_loader, None, criterion, metrics, Mode.VAL)
-
+        train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
+        train_and_validate(model, val_loader, None, criterion, metrics, Mode.VAL)
         if args.scheduler:
-            scheduler.step(val_loss)
+            scheduler.step()
 
-        is_best = metrics.update_best_metric(val_loss)
         util.save_checkpoint({
             'model_init': init_params,
             'model_state_dict': model.state_dict(),
@@ -92,9 +90,9 @@ def train(arg_list=None):
             'torch_rng_state': torch.get_rng_state(),
             'run_name': metrics.run_name,
             'metric_obj': metrics.json_repr()
-        }, is_best)
+        }, metrics.is_best)
 
     if not args.no_visualize:
         visualize_trained(model, sample_loader, metrics.run_name)
 
-    return val_loss
+    return metrics
