@@ -11,10 +11,10 @@ class BasicRNN(nn.Module):
         self.i2o = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
-        out, _ = self.rnn(x)
-        out = out.squeeze()
-        out = self.i2o(out)
-        return out
+        x, _ = self.rnn(x)
+        x = x.squeeze()
+        x = self.i2o(x)
+        return x
 
 
 # class BasicRNN(nn.Module):

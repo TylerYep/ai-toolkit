@@ -17,13 +17,12 @@ class Mode(Enum):
 
 
 class MetricTracker:
-    def __init__(self, args, checkpoint, testing=False):
+    def __init__(self, args, checkpoint):
         assert args.metrics
         self.run_name = checkpoint.get('run_name', util.get_run_name(args))
-        if not testing:
-            print(f'Storing checkpoints in: {self.run_name}\n')
-            with open(os.path.join(self.run_name, 'args.json'), 'w') as f:
-                json.dump(args.__dict__, f, indent=4)
+        print(f'Storing checkpoints in: {self.run_name}\n')
+        with open(os.path.join(self.run_name, 'args.json'), 'w') as f:
+            json.dump(args.__dict__, f, indent=4)
 
         self.writer = SummaryWriter(self.run_name)
         self.is_best = True
@@ -50,8 +49,11 @@ class MetricTracker:
         return self.metric_data[name]
 
     def __eq__(self, other):
-        # TODO
-        return self.get_primary_metric() == other.get_primary_metric()
+        for metric in self.metric_data:
+            if metric not in other.metric_data or \
+                    self.metric_data[metric] != other.metric_data[metric]:
+                return False
+        return True
 
     def add_network(self, model, loader):
         data, _ = next(loader)
@@ -64,12 +66,12 @@ class MetricTracker:
         self.epoch += 1
         print(f'Epoch [{self.epoch}/{self.end_epoch}]')
 
-    def get_primary_metric(self):
+    def get_primary_value(self):
         return self.metric_data[self.primary_metric].value
 
     def set_primary_metric(self, mode, ret_val):
         if mode == Mode.VAL:
-            self.is_best = ret_val < self.get_primary_metric()
+            self.is_best = ret_val < self.get_primary_value()
             if self.is_best:
                 self.metric_data[self.primary_metric].value = ret_val
 

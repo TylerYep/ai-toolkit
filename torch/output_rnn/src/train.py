@@ -48,7 +48,7 @@ def get_optimizer(args, model):
 
 
 def get_scheduler(args, optimizer):
-    return lr_scheduler.StepLR(optimizer, step_size=1)
+    return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)
 
 
 def load_model(args, device, init_params, loader):

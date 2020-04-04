@@ -13,5 +13,5 @@ class EfficientNet(nn.Module):
 
     def forward(self, x):
         """ Forward pass for your network. """
-        out = self.efficient_net(x)
-        return out
+        x = self.efficient_net(x)
+        return x

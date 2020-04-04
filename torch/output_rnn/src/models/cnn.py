@@ -10,40 +10,40 @@ class BasicCNN(nn.Module):
         self.input_shape = input_shape
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
-        self.dropout1 = nn.Dropout2d(0.25)
-        self.dropout2 = nn.Dropout2d(0.5)
+        self.dropx1 = nn.Dropout2d(0.25)
+        self.dropx2 = nn.Dropout2d(0.5)
         self.fc1 = nn.Linear(9216, 128)
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
         """ Forward pass for your feedback prediction network. """
-        out = self.conv1(x)
-        out = F.relu(out)
-        out = self.conv2(out)
-        out = F.max_pool2d(out, 2)
-        out = self.dropout1(out)
-        out = torch.flatten(out, 1)
-        out = self.fc1(out)
-        out = F.relu(out)
-        out = self.dropout2(out)
-        out = self.fc2(out)
-        out = F.log_softmax(out, dim=1)
-        return out
+        x = self.conv1(x)
+        x = F.relu(x)
+        x = self.conv2(x)
+        x = F.max_pool2d(x, 2)
+        x = self.dropx1(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.dropx2(x)
+        x = self.fc2(x)
+        x = F.log_softmax(x, dim=1)
+        return x
 
     def forward_with_activations(self, x):
-        out = self.conv1(x)
-        first_activation = out
-        out = F.relu(out)
-        second_activation = out
-        out = self.conv2(out)
-        third_activation = out
-        out = F.max_pool2d(out, 2)
-        fourth_activation = out
-        out = self.dropout1(out)
-        out = torch.flatten(out, 1)
-        out = self.fc1(out)
-        out = F.relu(out)
-        out = self.dropout2(out)
-        out = self.fc2(out)
-        out = F.log_softmax(out, dim=1)
-        return out, [first_activation, second_activation, third_activation, fourth_activation]
+        x = self.conv1(x)
+        first_activation = x
+        x = F.relu(x)
+        second_activation = x
+        x = self.conv2(x)
+        third_activation = x
+        x = F.max_pool2d(x, 2)
+        fourth_activation = x
+        x = self.dropx1(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.dropx2(x)
+        x = self.fc2(x)
+        x = F.log_softmax(x, dim=1)
+        return x, [first_activation, second_activation, third_activation, fourth_activation]

@@ -17,12 +17,12 @@ def viz():
     visualize_trained(model, train_loader)
 
 
-def visualize(model, loader, run_name='', metrics=None):
+def visualize(model, loader, run_name=''):
     data, target = next(loader)
     pass
 
 
-def visualize_trained(model, loader, run_name='', metrics=None):
+def visualize_trained(model, loader, run_name=''):
     data, target = next(loader)
     pass
 

@@ -1,5 +1,4 @@
 ''' accuracy_test.py '''
-import torch
 from src.metrics import Accuracy
 
 

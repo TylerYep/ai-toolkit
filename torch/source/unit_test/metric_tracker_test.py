@@ -1,8 +1,7 @@
 ''' train_test.py '''
-import torch
-
 from src.args import init_pipeline
 from src.metric_tracker import MetricTracker, Mode
+
 
 class TestMetricTracker:
     @staticmethod
