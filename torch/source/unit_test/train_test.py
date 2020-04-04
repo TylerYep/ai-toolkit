@@ -9,7 +9,7 @@ class TestTrain:
 
         metrics = train(['--epoch=1', '--name=TEST'] + config)
 
-        assert round(metrics.get_primary_metric(), 7) == 4.5108116
+        assert round(metrics.get_primary_metric(), 7) == 4.4841685
 
     @staticmethod
     def test_epoch_resume():
@@ -19,5 +19,4 @@ class TestTrain:
 
         metrics_test = train(['--epoch=4'] + config)
 
-        assert metrics_test.get_primary_metric() == metrics_end.get_primary_metric()
-        # TODO override equality operator
+        assert metrics_test == metrics_end

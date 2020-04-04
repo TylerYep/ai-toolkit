@@ -17,16 +17,18 @@ class Mode(Enum):
 
 
 class MetricTracker:
-    def __init__(self, args, checkpoint):
+    def __init__(self, args, checkpoint, testing=False):
         assert args.metrics
         self.run_name = checkpoint.get('run_name', util.get_run_name(args))
-        self.writer = SummaryWriter(self.run_name)
-        print(f'Storing checkpoints in: {self.run_name}\n')
-        with open(os.path.join(self.run_name, 'args.json'), 'w') as f:
-            json.dump(args.__dict__, f, indent=4)
+        if not testing:
+            print(f'Storing checkpoints in: {self.run_name}\n')
+            with open(os.path.join(self.run_name, 'args.json'), 'w') as f:
+                json.dump(args.__dict__, f, indent=4)
 
+        self.writer = SummaryWriter(self.run_name)
         self.is_best = True
         self.log_interval = args.log_interval
+
         metric_checkpoint = checkpoint.get('metric_obj', {})
         self.epoch = metric_checkpoint.get('epoch', 0)
         self.metric_data = metric_checkpoint.get('metric_data', self.init_metrics(args.metrics))
@@ -47,6 +49,10 @@ class MetricTracker:
     def __getattr__(self, name):
         return self.metric_data[name]
 
+    def __eq__(self, other):
+        # TODO
+        return self.get_primary_metric() == other.get_primary_metric()
+
     def add_network(self, model, loader):
         data, _ = next(loader)
         self.writer.add_graph(model, data)
@@ -57,7 +63,6 @@ class MetricTracker:
     def next_epoch(self):
         self.epoch += 1
         print(f'Epoch [{self.epoch}/{self.end_epoch}]')
-        self.reset_hard()
 
     def get_primary_metric(self):
         return self.metric_data[self.primary_metric].value
@@ -78,26 +83,27 @@ class MetricTracker:
             ret_dict[metric] = metric_obj.get_epoch_result()
         return ret_dict
 
-    def write_reset(self, num_steps, mode, batch_size):
+    def write_all(self, num_steps, mode, batch_size):
         for metric, metric_obj in self.metric_data.items():
             batch_result = metric_obj.get_batch_result(batch_size, self.log_interval)
             self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
-
-        for metric in self.metric_data.values():
-            metric.reset()
 
     def batch_update(self, i, num_batches, data, loss, output, target, mode):
         batch_size = data.shape[0]
         names = ('data', 'loss', 'output', 'target', 'batch_size')
         variables = (data, loss, output, target, batch_size)
         val_dict = SimpleNamespace(**dict(zip(names, variables)))
-
         tqdm_dict = self.update_all(val_dict)
         num_steps = (self.epoch - 1) * num_batches + i
-        if mode == Mode.TRAIN and i > 0 and i % self.log_interval == 0:
-            self.write_reset(num_steps, mode, batch_size)
 
-        elif mode == Mode.VAL:
+        # Only reset batch statistics after log_interval batches
+        if i > 0 and i % self.log_interval == 0:
+            if mode == Mode.TRAIN:
+                self.write_all(num_steps, mode, batch_size)
+            for metric in self.metric_data.values():
+                metric.reset()
+
+        if mode == Mode.VAL:
             if len(data.size()) == 4:  # (N, C, H, W)
                 self.add_images(val_dict, num_steps)
         return tqdm_dict

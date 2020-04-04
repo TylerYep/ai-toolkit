@@ -24,6 +24,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     model.train() if mode == Mode.TRAIN else model.eval()  # pylint: disable=expression-not-assigned
     torch.set_grad_enabled(mode == Mode.TRAIN)
 
+    metrics.reset_hard()
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
             if mode == Mode.TRAIN:

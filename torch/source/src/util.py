@@ -37,7 +37,10 @@ def get_run_name(args: Namespace, save_dir: str = SAVE_DIR) -> str:
         return os.path.join(save_dir, args.checkpoint)
 
     if args.name:
-        return os.path.join(save_dir, args.name)
+        full_name = os.path.join(save_dir, args.name)
+        if not os.path.isdir(full_name):
+            os.makedirs(full_name)
+        return full_name
 
     dirlist = [f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))]
     dirlist.sort()

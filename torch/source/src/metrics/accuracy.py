@@ -16,3 +16,9 @@ class Accuracy(Metric):
         self.running_avg += accuracy
         self.num_examples += val_dict.batch_size
         return accuracy
+
+    def get_epoch_result(self):
+        assert self.num_examples > 0
+        self.value = self.epoch_avg / self.num_examples
+        assert 0. <= self.value <= 100.
+        return self.value
