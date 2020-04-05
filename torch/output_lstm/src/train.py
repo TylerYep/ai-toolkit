@@ -32,14 +32,14 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
                 # If you want to freeze layers, use optimizer.zero_grad().
                 optimizer.zero_grad()
 
-            batch_size = data.shape[0]
+            batch_size = data[1].shape[0]
             output = model(*data) if isinstance(data, (list, tuple)) else model(data)
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
                 optimizer.step()
 
-            tqdm_dict = metrics.batch_update(i, len(loader), batch_size,
+            tqdm_dict = metrics.batch_update(i, len(loader), batch_size, \
                                              data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
             pbar.update()

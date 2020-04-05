@@ -3,29 +3,40 @@ import shutil
 import string
 import argparse
 
-
-RNN_CONFIG = {
-    'presets': {
-        'src/dataset.py': 'datasets/dataset_rnn.py',
-        'src/viz.py': 'visualizers/viz_rnn.py'
+CONFIGS = {
+    'rnn': {
+        'presets': {
+            'src/dataset.py': 'datasets/dataset_rnn.py',
+            'src/viz.py': 'visualizers/viz_rnn.py'
+        },
+        'substitutions': {
+            'loss_fn': 'nn.CrossEntropyLoss',
+            'model': 'BasicRNN',
+        }
     },
-    'substitutions': {
-        'loss_fn': 'nn.CrossEntropyLoss()',
-        'model': 'BasicRNN',
+
+    'lstm': {
+        'presets': {
+            'src/dataset.py': 'datasets/dataset_lstm.py',
+            'src/viz.py': 'visualizers/viz_rnn.py'
+        },
+        'substitutions': {
+            'loss_fn': 'nn.NLLLoss',
+            'model': 'BasicLSTM',
+        }
+    },
+
+    'cnn': {
+        'presets': {
+            'src/dataset.py': 'datasets/dataset_cnn.py',
+            'src/viz.py': 'visualizers/viz_cnn.py'
+        },
+        'substitutions': {
+            'loss_fn': 'F.nll_loss',
+            'model': 'BasicCNN',
+        }
     }
 }
-
-CNN_CONFIG = {
-    'presets': {
-        'src/dataset.py': 'datasets/dataset_cnn.py',
-        'src/viz.py': 'visualizers/viz_cnn.py'
-    },
-    'substitutions': {
-        'loss_fn': 'F.nll_loss',
-        'model': 'BasicCNN',
-    }
-}
-
 
 def init_pipeline():
     parser = argparse.ArgumentParser(description='PyTorch Project Initializer')
@@ -99,12 +110,16 @@ def add_config_files(destination, config):
 def main():
     args = init_pipeline()
     if args.project == 'rnn':
-        config = RNN_CONFIG
+        config = CONFIGS[args.project]
         destination = f'output_{args.project}'
 
     elif args.project == 'cnn':
-        config = CNN_CONFIG
+        config = CONFIGS[args.project]
         destination = f'../../example_{args.project}'
+
+    elif args.project == 'lstm':
+        config = CONFIGS[args.project]
+        destination = f'output_{args.project}'
     else:
         raise ValueError
 

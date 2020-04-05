@@ -42,7 +42,7 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--log-interval', type=int, default=10, metavar='NB',
                         help='how many batches to wait before logging training status')
 
-    parser.add_argument('--loss', type=str, default='nn.CrossEntropyLoss', metavar='LOSS',
+    parser.add_argument('--loss', type=str, default='nn.NLLLoss', metavar='LOSS',
                         help='loss function to use')
 
     parser.add_argument('--lr', type=float, default=3e-3, metavar='LR',
@@ -51,7 +51,7 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--metrics', nargs='+', type=str, default=['Loss', 'Accuracy'],
                         help='metrics in metrics/ folder to use during training (space-separated)')
 
-    parser.add_argument('--model', type=str, default='BasicRNN', metavar='MODEL',
+    parser.add_argument('--model', type=str, default='BasicLSTM', metavar='MODEL',
                         help='model architecture to use')
 
     parser.add_argument('--name', type=str, default='', metavar='NAME',

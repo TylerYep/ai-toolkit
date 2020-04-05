@@ -28,16 +28,19 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
     with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
             if mode == Mode.TRAIN:
-                # If you have multiple optimizers, use model.zero_grad() instead.
+                # If you have multiple optimizers, use model.zero_grad().
+                # If you want to freeze layers, use optimizer.zero_grad().
                 optimizer.zero_grad()
 
+            batch_size = data.shape[0]
             output = model(*data) if isinstance(data, (list, tuple)) else model(data)
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
                 optimizer.step()
 
-            tqdm_dict = metrics.batch_update(i, len(loader), data, loss, output, target, mode)
+            tqdm_dict = metrics.batch_update(i, len(loader), batch_size,
+                                             data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
             pbar.update()
     metrics.epoch_update(mode)
@@ -58,7 +61,8 @@ def load_model(args, device, init_params, loader):
 
     optimizer = get_optimizer(args, model)
     scheduler = get_scheduler(args, optimizer) if args.scheduler else None
-    verify_model(model, loader, optimizer, criterion, device)
+    if not args.no_verify:
+        verify_model(model, loader, optimizer, criterion, device)
     return model, criterion, optimizer, scheduler
 
 

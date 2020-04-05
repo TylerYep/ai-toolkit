@@ -28,12 +28,12 @@ class MetricTracker:
                 json.dump(args.__dict__, f, indent=4)
 
         self.is_best = True
-        self.log_interval = args.log_interval
         metric_checkpoint = checkpoint.get('metric_obj', {})
         self.epoch = metric_checkpoint.get('epoch', 0)
         self.metric_data = metric_checkpoint.get('metric_data', self.init_metrics(args.metrics))
         self.primary_metric = metric_checkpoint.get('primary_metric', args.metrics[0])
         self.end_epoch = self.epoch + args.epochs
+        self.args = args
 
     @staticmethod
     def init_metrics(metric_names):
@@ -90,11 +90,10 @@ class MetricTracker:
 
     def write_all(self, num_steps, mode, batch_size):
         for metric, metric_obj in self.metric_data.items():
-            batch_result = metric_obj.get_batch_result(batch_size, self.log_interval)
+            batch_result = metric_obj.get_batch_result(batch_size, self.args.log_interval)
             self.write(f'{mode}_Batch_{metric}', batch_result, num_steps)
 
-    def batch_update(self, i, num_batches, data, loss, output, target, mode):
-        batch_size = data.shape[0]
+    def batch_update(self, i, num_batches, batch_size, data, loss, output, target, mode):
         names = ('data', 'loss', 'output', 'target', 'batch_size')
         variables = (data, loss, output, target, batch_size)
         val_dict = SimpleNamespace(**dict(zip(names, variables)))
@@ -102,13 +101,13 @@ class MetricTracker:
         num_steps = (self.epoch - 1) * num_batches + i
 
         # Only reset batch statistics after log_interval batches
-        if i > 0 and i % self.log_interval == 0:
+        if i > 0 and i % self.args.log_interval == 0:
             if mode == Mode.TRAIN:
                 self.write_all(num_steps, mode, batch_size)
             for metric in self.metric_data.values():
                 metric.reset()
 
-        if mode == Mode.VAL:
+        if mode == Mode.VAL and not self.args.no_visualize:
             if len(data.size()) == 4:  # (N, C, H, W)
                 self.add_images(val_dict, num_steps)
         return tqdm_dict

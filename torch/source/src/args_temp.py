@@ -21,28 +21,28 @@ def init_pipeline(arg_list: Optional[List[str]] = None):
 def get_parsed_arguments(arg_list):
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
-    parser.add_argument('--batch-size', type=int, default=128, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=128, metavar='B',
                         help='input batch size for training (default: 128)')
 
-    parser.add_argument('--checkpoint', type=str, default='',
+    parser.add_argument('--checkpoint', type=str, default='', metavar="CKPT",
                         help='for loading a checkpoint model')
 
     parser.add_argument('--config', type=str, default='',
                         help='use given config file as args: <checkpoints, configs>/<name>.json')
 
-    parser.add_argument('--epochs', type=int, default=100, metavar='N',
+    parser.add_argument('--epochs', type=int, default=100, metavar='E',
                         help='number of epochs to train (default: 100)')
 
-    parser.add_argument('--gamma', type=float, default=0.7, metavar='M',
+    parser.add_argument('--gamma', type=float, default=0.7, metavar='G',
                         help='Learning rate step gamma (default: 0.7)')
 
     parser.add_argument('--img-dim', type=int, default=256, metavar='N',
                         help='set image size')
 
-    parser.add_argument('--log-interval', type=int, default=10, metavar='N',
+    parser.add_argument('--log-interval', type=int, default=10, metavar='NB',
                         help='how many batches to wait before logging training status')
 
-    parser.add_argument('--loss', type=str, default='$loss_fn', metavar='N',
+    parser.add_argument('--loss', type=str, default='$loss_fn', metavar='LOSS',
                         help='loss function to use')
 
     parser.add_argument('--lr', type=float, default=3e-3, metavar='LR',
@@ -51,11 +51,11 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--metrics', nargs='+', type=str, default=['Loss', 'Accuracy'],
                         help='metrics in metrics/ folder to use during training (space-separated)')
 
-    parser.add_argument('--model', type=str, default='$model', metavar='N',
+    parser.add_argument('--model', type=str, default='$model', metavar='MODEL',
                         help='model architecture to use')
 
-    parser.add_argument('--name', type=str, default='',
-                        help='folder to save files to checkpoint/')
+    parser.add_argument('--name', type=str, default='', metavar='NAME',
+                        help='existing folder in checkpoint/ to save files to')
 
     parser.add_argument('--no-save', action='store_true', default=False,
                         help='do not save any checkpoints')
@@ -72,8 +72,11 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
                         help='input batch size for testing (default: 1000)')
 
+    parser.add_argument('--no-verify', action='store_true', default=False,
+                        help='do not perform model verification')
+
     parser.add_argument('--no-visualize', action='store_true', default=False,
-                        help='save visualization files')
+                        help='do not save visualization files')
 
     return parser.parse_args(arg_list)
 
