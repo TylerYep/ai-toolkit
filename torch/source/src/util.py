@@ -100,7 +100,6 @@ def load_checkpoint(checkpoint_name: str, use_best: bool = False) -> Dict[str, A
     """
     if not checkpoint_name:
         return {}
-    print('Loading checkpoint...')
     load_file = 'model_best.pth.tar' if use_best else 'checkpoint.pth.tar'
     return torch.load(os.path.join(SAVE_DIR, checkpoint_name, load_file))
 
@@ -114,6 +113,7 @@ def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None, schedule
         optimizer: (torch.optim) optional: resume optimizer from checkpoint
     """
     if checkpoint:
+        print('Loading checkpoint...')
         model.load_state_dict(checkpoint['model_state_dict'])
         if optimizer is not None:
             optimizer.load_state_dict(checkpoint['optimizer_state_dict'])

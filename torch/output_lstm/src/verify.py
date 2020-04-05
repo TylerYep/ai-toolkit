@@ -19,7 +19,7 @@ def verify_model(model, loader, optimizer, criterion, device, batch_dim):
     dtypes = [tensor.dtype for tensor in data] if isinstance(data, (list, tuple)) else None
     torchsummary.summary(model, model.input_shape, batch_dim=batch_dim, dtypes=dtypes)
     check_batch_dimension(model, loader, optimizer, batch_dim)
-    overfit_example(model, loader, optimizer, criterion, device)
+    overfit_example(model, loader, optimizer, criterion, device, batch_dim)
     check_all_layers_training(model, loader, optimizer, criterion)
     detect_NaN_tensors(model)
     print('Verification complete - all tests passed!')
@@ -37,26 +37,27 @@ def check_batch_dimension(model, loader, optimizer, batch_dim=0, test_val=2):
     torch.set_grad_enabled(True)
     data, _ = next(loader)
     optimizer.zero_grad()
-    data.requires_grad_()
 
-    output = model(*data) if isinstance(data, (list, tuple)) else model(data)
-    loss = output[test_val].sum()
-    loss.backward()
+    if not isinstance(data, (list, tuple)):
+        data.requires_grad_()
+        output = model(data)
+        loss = output[test_val].sum()
+        loss.backward()
 
-    assert loss != 0, "Loss should be greater than zero."
-    assert (data.grad[test_val] != 0).any(), "The gradient of the test input is not nonzero."
-    assert (data.grad[:test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all(), \
-        "There are nonzero gradients in the batch, when they should all be zero."
+        assert loss != 0, "Loss should be greater than zero."
+        assert (data.grad[test_val] != 0).any(), "The gradient of the test input is not nonzero."
+        assert (data.grad[:test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all(), \
+            "There are nonzero gradients in the batch, when they should all be zero."
 
 
-def overfit_example(model, loader, optimizer, criterion, device, batch_size=2, max_iters=50):
+def overfit_example(model, loader, optimizer, criterion, device,
+                    batch_dim=0, batch_size=2, max_iters=50):
     """
     Verifies that the provided model can overfit a single batch or example.
     """
     model.eval()
     torch.set_grad_enabled(True)
     data, target = next(loader)
-    data, target = data[:batch_size], target[:batch_size]
     with tqdm(desc='Verify Model', total=max_iters, ncols=120) as pbar:
         for _ in range(max_iters):
             optimizer.zero_grad()

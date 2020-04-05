@@ -26,5 +26,4 @@ class Metric:
 
     def get_epoch_result(self):
         assert self.num_examples > 0
-        self.value = self.epoch_avg / self.num_examples
-        return self.value
+        return self.epoch_avg / self.num_examples
