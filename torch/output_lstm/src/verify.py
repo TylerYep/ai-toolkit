@@ -55,9 +55,22 @@ def overfit_example(model, loader, optimizer, criterion, device,
     """
     Verifies that the provided model can overfit a single batch or example.
     """
+    def batch_slice(input_data, batch_size, batch_dim):
+        if isinstance(input_data, (list, tuple)):
+            return [batch_slice(data, batch_size, batch_dim) for data in input_data]
+        if input_data.ndim == 1:
+            return input_data[:batch_size]
+        none_slice = (slice(None),)
+        batch_dim_slice = none_slice * batch_dim + (slice(batch_size, ),) \
+            + none_slice * (input_data.ndim - batch_dim - 1)
+        return input_data[batch_dim_slice]
+
     model.eval()
     torch.set_grad_enabled(True)
     data, target = next(loader)
+    data = batch_slice(data, batch_size, batch_dim)
+    target = batch_slice(target, batch_size, batch_dim)
+
     with tqdm(desc='Verify Model', total=max_iters, ncols=120) as pbar:
         for _ in range(max_iters):
             optimizer.zero_grad()
