@@ -15,13 +15,14 @@ class TestMetricTracker:
 
     @staticmethod
     def test_one_batch_update(example_batch):
-        data, loss, output, target = \
-            example_batch.data, example_batch.loss, example_batch.output, example_batch.target
+        data, loss, output, target, batch_size = \
+            example_batch.data, example_batch.loss, \
+            example_batch.output, example_batch.target, example_batch.batch_size
         arg_list = ['--no-save', '--no-visualize', '--epochs=1']
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
 
-        tqdm_dict = metrics.batch_update(0, 1, data, loss, output, target, Mode.TRAIN)
+        tqdm_dict = metrics.batch_update(0, 1, batch_size, data, loss, output, target, Mode.TRAIN)
 
         for key in tqdm_dict:
             tqdm_dict[key] = round(tqdm_dict[key], 2)
@@ -31,15 +32,17 @@ class TestMetricTracker:
 
     @staticmethod
     def test_many_batch_update(example_batch):
-        data, loss, output, target = \
-            example_batch.data, example_batch.loss, example_batch.output, example_batch.target
+        data, loss, output, target, batch_size = \
+            example_batch.data, example_batch.loss, \
+            example_batch.output, example_batch.target, example_batch.batch_size
         arg_list = ['--no-save', '--no-visualize', '--epochs=1', '--log-interval=3']
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
         num_batches = 4
 
         for i in range(num_batches):
-            tqdm_dict = metrics.batch_update(i, num_batches, data, loss, output, target, Mode.TRAIN)
+            tqdm_dict = metrics.batch_update(i, num_batches, batch_size,
+                                             data, loss, output, target, Mode.TRAIN)
 
         for key in tqdm_dict:
             tqdm_dict[key] = round(tqdm_dict[key], 2)
@@ -50,14 +53,16 @@ class TestMetricTracker:
 
     @staticmethod
     def test_epoch_update(capsys, example_batch):
-        data, loss, output, target = \
-            example_batch.data, example_batch.loss, example_batch.output, example_batch.target
+        data, loss, output, target, batch_size = \
+            example_batch.data, example_batch.loss, \
+            example_batch.output, example_batch.target, example_batch.batch_size
         arg_list = ['--no-save', '--no-visualize', '--epochs=1', '--log-interval=3']
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
         num_batches = 4
         for i in range(num_batches):
-            _ = metrics.batch_update(i, num_batches, data, loss, output, target, Mode.TRAIN)
+            _ = metrics.batch_update(i, num_batches, batch_size,
+                                     data, loss, output, target, Mode.TRAIN)
 
         metrics.epoch_update(Mode.TRAIN)
 

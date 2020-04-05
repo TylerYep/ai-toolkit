@@ -21,6 +21,9 @@ def init_pipeline(arg_list: Optional[List[str]] = None):
 def get_parsed_arguments(arg_list):
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
+    parser.add_argument('--batch-dim', type=int, default=$batch_dim, metavar='B',
+                        help='batch dimension for training (default: 0)')
+
     parser.add_argument('--batch-size', type=int, default=128, metavar='B',
                         help='input batch size for training (default: 128)')
 
