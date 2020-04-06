@@ -14,26 +14,25 @@ def viz():
     model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
 
-    visualize(model, train_loader)
-    visualize_trained(model, train_loader)
+    sample_loader = iter(train_loader)
+    visualize(model, sample_loader)
+    visualize_trained(model, sample_loader)
 
 
-def visualize(model, loader, run_name=''):
-    if run_name is not None:
-        data, target = next(loader)
-        view_input(data, target, CLASS_LABELS, run_name)
-        data, target = next(loader)
-        compute_activations(model, data, target, CLASS_LABELS, run_name)
+def visualize(model, loader, run_name=None):
+    data, target = next(loader)
+    view_input(data, target, CLASS_LABELS, run_name)
+    data, target = next(loader)
+    compute_activations(model, data, target, CLASS_LABELS, run_name)
 
 
-def visualize_trained(model, loader, run_name=''):
-    if run_name is not None:
-        data, target = next(loader)
-        make_fooling_image(model, data[5], target[5], CLASS_LABELS, target[9], run_name)
-        data, target = next(loader)
-        show_saliency_maps(model, data, target, CLASS_LABELS, run_name)
-        data, target = next(loader)
-        create_class_visualization(model, data, CLASS_LABELS, target[1], run_name)
+def visualize_trained(model, loader, run_name=None):
+    data, target = next(loader)
+    make_fooling_image(model, data[5], target[5], CLASS_LABELS, target[9], run_name)
+    data, target = next(loader)
+    show_saliency_maps(model, data, target, CLASS_LABELS, run_name)
+    data, target = next(loader)
+    create_class_visualization(model, data, CLASS_LABELS, target[1], run_name)
 
 
 if __name__ == '__main__':

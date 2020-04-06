@@ -13,8 +13,9 @@ def viz():
     model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
 
-    visualize(model, train_loader)
-    visualize_trained(model, train_loader)
+    sample_loader = iter(train_loader)
+    visualize(model, sample_loader)
+    visualize_trained(model, sample_loader)
 
 
 def visualize(model, loader, run_name=''):
