@@ -2,6 +2,7 @@
 # http://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
 import os
 import sys
+import random
 import numpy as np
 import torch
 from PIL import Image
@@ -11,10 +12,9 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import default_collate
 
 import torchvision
-from torchvision import transforms
+from torchvision.transforms import functional as F
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
-
 
 if 'google.colab' in sys.modules:
     DATA_PATH = '/content/'
@@ -24,16 +24,63 @@ else:
 
 CLASS_LABELS = ['YES', 'NO']
 
+# output = model(data, target)
+# loss = sum(l for l in output.values())
+
+
+def _flip_coco_person_keypoints(kps, width):
+    flip_inds = [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15]
+    flipped_data = kps[:, flip_inds]
+    flipped_data[..., 0] = width - flipped_data[..., 0]
+    # Maintain COCO convention that if visibility == 0, then x, y = 0
+    inds = flipped_data[..., 2] == 0
+    flipped_data[inds] = 0
+    return flipped_data
+
+
+class Compose(object):
+    def __init__(self, transforms):
+        self.transforms = transforms
+
+    def __call__(self, image, target):
+        for t in self.transforms:
+            image, target = t(image, target)
+        return image, target
+
+
+class RandomHorizontalFlip(object):
+    def __init__(self, prob):
+        self.prob = prob
+
+    def __call__(self, image, target):
+        if random.random() < self.prob:
+            height, width = image.shape[-2:]
+            image = image.flip(-1)
+            bbox = target["boxes"]
+            bbox[:, [0, 2]] = width - bbox[:, [2, 0]]
+            target["boxes"] = bbox
+            if "masks" in target:
+                target["masks"] = target["masks"].flip(-1)
+            if "keypoints" in target:
+                keypoints = target["keypoints"]
+                keypoints = _flip_coco_person_keypoints(keypoints, width)
+                target["keypoints"] = keypoints
+        return image, target
+
+
+class ToTensor(object):
+    def __call__(self, image, target):
+        image = F.to_tensor(image)
+        return image, target
 
 
 def get_collate_fn(device):
-    '''
-    for indices in batch_sampler:
-        yield collate_fn([dataset[i] for i in indices])
-    '''
-    def to_device(b):
-        return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
-    return lambda x: map(to_device, default_collate(x))
+    def collate(x):
+        data, target = tuple(zip(*x))
+        data = list(image.to(device) for image in data)
+        target = [{k: v.to(device) for k, v in t.items()} for t in target]
+        return (data, target)
+    return collate
 
 
 def load_train_data(args, device, val_split=0.2):
@@ -68,20 +115,18 @@ def load_test_data(args, device):
 
 def get_transforms(train):
     if train:
-        return transforms.Compose([
-            transforms.ToTensor(),
-            transforms.RandomHorizontalFlip(0.5)
+        return Compose([
+            ToTensor(),
+            RandomHorizontalFlip(0.5)
         ])
-    return transforms.Compose([
-        transforms.ToTensor(),
-    ])
+    return Compose([ToTensor()])
 
 
 class PennFudanDataset(Dataset):
-    def __init__(self, root, transforms):
+    def __init__(self, root, transform=None):
         super().__init__()
         self.root = root
-        self.transforms = transforms
+        self.transform = transform
         # load all image files, sorting them to
         # ensure that they are aligned
         self.imgs = list(sorted(os.listdir(os.path.join(root, "PNGImages"))))
@@ -136,8 +181,8 @@ class PennFudanDataset(Dataset):
         target["area"] = area
         target["iscrowd"] = iscrowd
 
-        if self.transforms is not None:
-            img, target = self.transforms(img, target)
+        if self.transform is not None:
+            img, target = self.transform(img, target)
 
         return img, target
 

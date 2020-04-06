@@ -23,12 +23,10 @@ class MaskRCNN(nn.Module):
         self.model_ft.roi_heads.mask_predictor = MaskRCNNPredictor(in_features_mask,
                                                                    hidden_size,
                                                                    num_classes)
-        for param in self.model_ft.parameters():
-            param.requires_grad = True
 
-    def forward(self, x):
+    def forward(self, images, targets):
         """ Forward pass for your feedback prediction network. """
-        out = self.model_ft(x)
+        out = self.model_ft(images, targets)
         return out
 
     def forward_with_activations(self, x):

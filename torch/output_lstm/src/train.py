@@ -33,8 +33,7 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
                 optimizer.zero_grad()
 
             output = model(*data) if isinstance(data, (list, tuple)) else model(data)
-            # loss = criterion(output, target)
-            loss = sum(l for l in output.values())
+            loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
                 optimizer.step()
@@ -49,12 +48,12 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
 
 def get_optimizer(args, model):
     params = filter(lambda p: p.requires_grad, model.parameters())
-    return optim.SGD(params, lr=args.lr, momentum=0.9, weight_decay=0.0005)
-    # return optim.AdamW(params, lr=args.lr)
+    return optim.AdamW(params, lr=args.lr)
+    # return optim.SGD(params, lr=args.lr, momentum=0.9, weight_decay=0.0005)
 
 
 def get_scheduler(args, optimizer):
-    return lr_scheduler.StepLR(optimizer, step_size=3, gamma=args.gamma) # step_size=1
+    return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)  # step_size=3
 
 
 def load_model(args, device, init_params, loader):

@@ -18,7 +18,8 @@
 #     y_true = list()
 #     y_pred = list()
 
-#     for batch, targets, lengths, raw_data in utils.create_dataset(test, x_to_ix, y_to_ix, batch_size=1):
+#     for batch, targets, lengths, raw_data in \
+#         utils.create_dataset(test, x_to_ix, y_to_ix, batch_size=1):
 #         batch, targets, lengths = utils.sort_batch(batch, targets, lengths)
 
 #         pred = model(torch.autograd.Variable(batch), lengths.cpu().numpy())
