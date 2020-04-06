@@ -1,0 +1,22 @@
+{
+    "batch_size": 128,
+    "checkpoint": "",
+    "config": "",
+    "epochs": 100,
+    "gamma": 0.7,
+    "img_dim": 256,
+    "log_interval": 10,
+    "loss": "F.nll_loss",
+    "lr": 0.003,
+    "metrics": [
+        "Loss",
+        "Accuracy"
+    ],
+    "model": "BasicCNN",
+    "name": "",
+    "num_examples": null,
+    "plot": false,
+    "scheduler": false,
+    "test_batch_size": 128,
+    "visualize": true
+}

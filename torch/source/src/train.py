@@ -33,7 +33,8 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
                 optimizer.zero_grad()
 
             output = model(*data) if isinstance(data, (list, tuple)) else model(data)
-            loss = criterion(output, target)
+            # loss = criterion(output, target)
+            loss = sum(l for l in output.values())
             if mode == Mode.TRAIN:
                 loss.backward()
                 optimizer.step()
@@ -47,17 +48,19 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
 
 
 def get_optimizer(args, model):
-    return optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
+    params = filter(lambda p: p.requires_grad, model.parameters())
+    return optim.SGD(params, lr=args.lr, momentum=0.9, weight_decay=0.0005)
+    # return optim.AdamW(params, lr=args.lr)
 
 
 def get_scheduler(args, optimizer):
-    return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)
+    return lr_scheduler.StepLR(optimizer, step_size=3, gamma=args.gamma) # step_size=1
 
 
 def load_model(args, device, init_params, loader):
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
-    assert model.input_shape, 'Model must have input_shape as an attribute'
+    # assert model.input_shape, 'Model must have input_shape as an attribute'
 
     optimizer = get_optimizer(args, model)
     scheduler = get_scheduler(args, optimizer) if args.scheduler else None

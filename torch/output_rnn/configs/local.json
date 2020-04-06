@@ -1,0 +1,16 @@
+{
+    "img_dim": 64,
+    "n": 16,
+    "loss": "mixed",
+    "model": "unet",
+    "name": "",
+    "batch_size": 8,
+    "checkpoint": "",
+    "epochs": 500,
+    "gamma": 0.7,
+    "log_interval": 20,
+    "lr": 3e-3,
+    "plot": false,
+    "test_batch_size": 128,
+    "visualize": true
+}

@@ -88,16 +88,10 @@ def overfit_example(model, loader, optimizer, criterion, device,
                       f"This may indicate an error with your model.", RuntimeWarning)
 
 
-def checkNaN(weights):
-    assert not torch.isnan(weights).byte().any()
-    assert torch.isfinite(weights).byte().any()
-
-
 def detect_NaN_tensors(model):
     """
     Verifies that the provided model does not have any exploding gradients.
     """
-    # assert torch.isfinite(loss).all(), 'The loss returned in `training_step` is NaN or inf.'
     for name, param in model.named_parameters():
         assert torch.isfinite(param).all(), \
             (f'Detected NaN and/or inf values in model weights: {name}. '

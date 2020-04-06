@@ -22,10 +22,10 @@ class BasicLSTM(nn.Module):
             torch.randn(1, batch_size, self.hidden_size)
 
     def forward(self, batch, lengths):
-        self.hidden = self.init_hidden(batch.size(-1))
+        hidden = self.init_hidden(batch.size(-1))
         embeds = self.embedding(batch)
         packed_input = pack_padded_sequence(embeds, lengths)
-        outputs, (ht, ct) = self.lstm(packed_input, self.hidden)
+        _, (ht, _) = self.lstm(packed_input, hidden)
 
         # ht is the last hidden state of the sequences
         # ht = (1 x batch_size x hidden_size)

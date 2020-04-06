@@ -95,6 +95,8 @@ class MetricTracker:
             self.write(f'{Mode.TRAIN}_Batch_{metric}', batch_result, num_steps)
 
     def batch_update(self, i, num_batches, batch_size, data, loss, output, target, mode):
+        assert torch.isfinite(loss).all(), 'The loss returned in training is NaN or inf.'
+
         names = ('data', 'loss', 'output', 'target', 'batch_size')
         variables = (data, loss, output, target, batch_size)
         val_dict = SimpleNamespace(**dict(zip(names, variables)))

@@ -1,15 +1,11 @@
 import os
 import sys
-import random
-from collections import defaultdict, Counter
+from collections import defaultdict
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 from torch.utils.data import DataLoader, random_split
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import default_collate
-from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 
 if 'google.colab' in sys.modules:
@@ -97,8 +93,6 @@ class LanguageWords(Dataset):
         self.target_tensor = torch.LongTensor([self.tag2id[y] for _, y in self.all_data])
 
         assert self.data_tensor.size(0) == self.target_tensor.size(0) == self.seq_lengths.size(0)
-        # print(self.data_tensor[0].shape, self.seq_lengths[0].shape, self. target_tensor[0].shape)
-        # print(type(self.seq_lengths[0]))
 
     def __getitem__(self, index):
         return (self.data_tensor[index], self.seq_lengths[index]), self.target_tensor[index]
@@ -109,16 +103,20 @@ class LanguageWords(Dataset):
     def get_model_params(self):
         return self.input_shape, len(self.token2id), len(self.tag2id)
 
-    def vectorized_data(self, data, item2id):
-	    return [[item2id[token] if token in item2id else item2id['UNK'] for token in seq] for seq, _ in data]
+    @staticmethod
+    def vectorized_data(data, item2id):
+        return [[item2id[token] if token in item2id \
+            else item2id['UNK'] for token in seq] for seq, _ in data]
 
-    def pad_sequences(self, vectorized_seqs, seq_lengths):
+    @staticmethod
+    def pad_sequences(vectorized_seqs, seq_lengths):
         seq_tensor = torch.zeros((len(vectorized_seqs), seq_lengths.max())).long()
         for idx, (seq, seqlen) in enumerate(zip(vectorized_seqs, seq_lengths)):
             seq_tensor[idx, :seqlen] = torch.LongTensor(seq)
         return seq_tensor
 
-    def load_data(self, data_dir):
+    @staticmethod
+    def load_data(data_dir):
         filenames = os.listdir(data_dir)
         token_set = set()
         data = defaultdict(list)
@@ -135,7 +133,8 @@ class LanguageWords(Dataset):
                         token_set.add(token)
         return token_set, data
 
-    def set2id(self, item_set, pad=None, unk=None):
+    @staticmethod
+    def set2id(item_set, pad=None, unk=None):
         item2id = defaultdict(int)
         if pad is not None:
             item2id[pad] = 0

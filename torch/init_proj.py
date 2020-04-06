@@ -4,6 +4,18 @@ import string
 import argparse
 
 CONFIGS = {
+    'maskrcnn': {
+        'destination': 'output_maskrcnn',
+        'presets': {
+            'src/dataset.py': 'datasets/dataset_penn.py',
+            'src/viz.py': 'visualizers/viz_cnn.py'
+        },
+        'substitutions': {
+            'batch_dim': '0',
+            'loss_fn': 'nn.CrossEntropyLoss',
+            'model': 'MaskRCNN',
+        }
+    },
     'rnn': {
         'destination': 'output_rnn',
         'presets': {
@@ -16,7 +28,6 @@ CONFIGS = {
             'model': 'BasicRNN',
         }
     },
-
     'lstm': {
         'destination': 'output_lstm',
         'presets': {
@@ -29,7 +40,6 @@ CONFIGS = {
             'model': 'BasicLSTM',
         }
     },
-
     'cnn': {
         'destination': '../../example_cnn',
         'presets': {
@@ -135,13 +145,12 @@ def create_project_folder(config):
 def main():
     args = init_pipeline()
     if args.all:
-        for proj in ('rnn', 'cnn', 'lstm'):
+        for proj in CONFIGS:
             create_project_folder(CONFIGS[proj])
 
-    elif args.project in ('rnn', 'cnn', 'lstm'):
+    elif args.project in CONFIGS:
         if args.output_path == '':
             create_project_folder(CONFIGS[args.project])
-
         else:
             print("SPECIFY DESTINATION")
 
