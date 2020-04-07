@@ -51,7 +51,7 @@ def load_train_data(args, device, val_split=0.2):
     val_loader = DataLoader(val_set,
                             batch_size=args.batch_size,
                             collate_fn=collate_fn)
-    return train_loader, val_loader, orig_dataset.get_model_params()
+    return train_loader, val_loader, orig_dataset.get_model_params() + (device,)
 
 
 def load_test_data(args, device):

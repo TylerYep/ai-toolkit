@@ -111,7 +111,7 @@ class MetricTracker:
                 metric.reset()
 
         if mode == Mode.VAL and not self.args.no_visualize:
-            if len(data.size()) == 4:  # (N, C, H, W)
+            if hasattr(data, 'size') and len(data.size()) == 4:  # (N, C, H, W)
                 self.add_images(val_dict, num_steps)
         return tqdm_dict
 

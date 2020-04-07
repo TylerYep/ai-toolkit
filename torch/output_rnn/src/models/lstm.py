@@ -5,9 +5,11 @@ from torch.nn.utils.rnn import pack_padded_sequence
 
 
 class BasicLSTM(nn.Module):
-    def __init__(self, input_shape, vocab_size, output_size, embedding_size=128, hidden_size=32):
+    def __init__(self, input_shape, vocab_size, output_size, device,
+                 embedding_size=128, hidden_size=32):
         super().__init__()
         self.input_shape = input_shape
+        self.device = device
         self.embedding_size = embedding_size
         self.hidden_size = hidden_size
         self.vocab_size = vocab_size
@@ -18,8 +20,8 @@ class BasicLSTM(nn.Module):
         self.dropout_layer = nn.Dropout(p=0.2)
 
     def init_hidden(self, batch_size):
-        return torch.randn(1, batch_size, self.hidden_size), \
-            torch.randn(1, batch_size, self.hidden_size)
+        return torch.randn(1, batch_size, self.hidden_size).to(self.device), \
+            torch.randn(1, batch_size, self.hidden_size).to(self.device)
 
     def forward(self, batch, lengths):
         hidden = self.init_hidden(batch.size(-1))

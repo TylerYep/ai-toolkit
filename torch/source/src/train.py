@@ -38,7 +38,7 @@ def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode)
                 loss.backward()
                 optimizer.step()
 
-            batch_size = data[1].shape[args.batch_dim] if isinstance(data, (list, tuple)) \
+            batch_size = data[0].shape[args.batch_dim] if isinstance(data, (list, tuple)) \
                 else data.shape[args.batch_dim]
             tqdm_dict = metrics.batch_update(i, num_batches, batch_size,
                                              data, loss, output, target, mode)
