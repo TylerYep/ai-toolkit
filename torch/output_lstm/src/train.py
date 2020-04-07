@@ -20,12 +20,12 @@ else:
     from tqdm import tqdm
 
 
-def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
+def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode):
     model.train() if mode == Mode.TRAIN else model.eval()  # pylint: disable=expression-not-assigned
     torch.set_grad_enabled(mode == Mode.TRAIN)
-
     metrics.reset_hard()
-    with tqdm(desc=str(mode), total=len(loader), ncols=120) as pbar:
+    num_batches = len(loader)
+    with tqdm(desc=str(mode), total=num_batches, ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
             if mode == Mode.TRAIN:
                 # If you have multiple optimizers, use model.zero_grad().
@@ -38,8 +38,9 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
                 loss.backward()
                 optimizer.step()
 
-            batch_size = data[1].shape[0] if isinstance(data, (list, tuple)) else data.shape[0]
-            tqdm_dict = metrics.batch_update(i, len(loader), batch_size,
+            batch_size = data[1].shape[args.batch_dim] if isinstance(data, (list, tuple)) \
+                else data.shape[args.batch_dim]
+            tqdm_dict = metrics.batch_update(i, num_batches, batch_size,
                                              data, loss, output, target, mode)
             pbar.set_postfix(tqdm_dict)
             pbar.update()
@@ -49,22 +50,18 @@ def train_and_validate(model, loader, optimizer, criterion, metrics, mode):
 def get_optimizer(args, model):
     params = filter(lambda p: p.requires_grad, model.parameters())
     return optim.AdamW(params, lr=args.lr)
-    # return optim.SGD(params, lr=args.lr, momentum=0.9, weight_decay=0.0005)
 
 
 def get_scheduler(args, optimizer):
-    return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)  # step_size=3
+    return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)
 
 
 def load_model(args, device, init_params, loader):
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
-    # assert model.input_shape, 'Model must have input_shape as an attribute'
-
     optimizer = get_optimizer(args, model)
     scheduler = get_scheduler(args, optimizer) if args.scheduler else None
-    if not args.no_verify:
-        verify_model(model, loader, optimizer, criterion, device, args.batch_dim)
+    verify_model(args, model, loader, optimizer, criterion, device)
     return model, criterion, optimizer, scheduler
 
 
@@ -82,8 +79,8 @@ def train(arg_list=None):
     util.set_rng_state(checkpoint)
     for _ in range(args.epochs):
         metrics.next_epoch()
-        train_and_validate(model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
-        train_and_validate(model, val_loader, None, criterion, metrics, Mode.VAL)
+        train_and_validate(args, model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
+        train_and_validate(args, model, val_loader, None, criterion, metrics, Mode.VAL)
         if args.scheduler:
             scheduler.step()
 

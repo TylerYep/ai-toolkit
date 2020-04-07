@@ -10,9 +10,10 @@ This project is for developers or ML scientists who want features of a fully-fun
 
 # Try It Out!
 The first thing you should do is go into one of the output_*/ folders and try training a model.
-We currently have two models:
+We currently have the following models:
 - MNIST CNN [(Source)](https://github.com/pytorch/examples/blob/master/mnist/main.py)
-- Character-Level RNN [(Source)](https://pytorch.org/tutorials/intermediate/char_rnn_classification_tutorial.html)
+- Character-Level RNN+LSTM [(Source)](https://pytorch.org/tutorials/intermediate/char_rnn_classification_tutorial.html)
+- Object Detection [(Source)](https://pytorch.org/tutorials/intermediate/torchvision_tutorial.html)
 
 
 ## Notable Features
