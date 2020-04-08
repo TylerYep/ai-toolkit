@@ -16,7 +16,7 @@ def verify_model(args, model, loader, optimizer, criterion, device):
     in order to overfit the batch.
     """
     if not args.no_verify:
-        model_summary(model, loader, args.batch_dim)
+        model_summary(args, model, loader)
         check_batch_dimension(model, loader, optimizer)
         overfit_example(model, loader, optimizer, criterion, device, args.batch_dim)
         check_all_layers_training(model, loader, optimizer, criterion)
@@ -24,17 +24,12 @@ def verify_model(args, model, loader, optimizer, criterion, device):
         print('Verification complete - all tests passed!')
 
 
-def model_summary(model, loader, batch_dim):
+def model_summary(args, model, loader):
     """
     Prints out model using torchsummary.
     """
-    if hasattr(model, 'input_shape'):
-        data, _ = next(loader)
-        dtypes = [tensor.dtype for tensor in data] if isinstance(data, (list, tuple)) else None
-        torchsummary.summary(model, model.input_shape, batch_dim=batch_dim, dtypes=dtypes)
-    else:
-        warnings.warn("Model should have input_shape as an attribute "
-                      "for torchsummary to work correctly.", RuntimeWarning)
+    data, _ = next(loader)
+    torchsummary.summary(model, data, batch_dim=args.batch_dim)
 
 
 def check_batch_dimension(model, loader, optimizer, test_val=2):
@@ -46,7 +41,6 @@ def check_batch_dimension(model, loader, optimizer, test_val=2):
     See details at http://karpathy.github.io/2019/04/25/recipe/.
     """
     model.eval()
-    torch.set_grad_enabled(True)
     data, _ = next(loader)
     optimizer.zero_grad()
 
@@ -77,8 +71,6 @@ def overfit_example(model, loader, optimizer, criterion, device,
             + none_slice * (input_data.ndim - batch_dim - 1)
         return input_data[batch_dim_slice]
 
-    model.eval()
-    torch.set_grad_enabled(True)
     data, target = next(loader)
     data = batch_slice(data, batch_size, batch_dim)
     target = batch_slice(target, batch_size, batch_dim)
@@ -115,7 +107,6 @@ def check_all_layers_training(model, loader, optimizer, criterion):
     Verifies that the provided model trains all provided layers.
     """
     model.train()
-    torch.set_grad_enabled(True)
     data, target = next(loader)
     before = [param.clone().detach() for param in model.parameters()]
 

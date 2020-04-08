@@ -97,8 +97,8 @@ def train(arg_list=None):
                 'metric_obj': metrics.json_repr()
             }, metrics.is_best)
 
+    torch.set_grad_enabled(True)
     if not args.no_visualize:
-        torch.set_grad_enabled(True)
         visualize_trained(model, sample_loader, metrics.run_name)
 
     return metrics

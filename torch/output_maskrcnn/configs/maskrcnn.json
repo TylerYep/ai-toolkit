@@ -1,6 +1,6 @@
 {
     "batch_dim": 0,
-    "batch_size": 2,
+    "batch_size": 4,
     "checkpoint": "",
     "config": "",
     "epochs": 10,
