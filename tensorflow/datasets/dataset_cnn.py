@@ -1,11 +1,4 @@
-import sys
-import pandas as pd
 import tensorflow as tf
-
-if 'google.colab' in sys.modules:
-    DATA_PATH = '/content/'
-else:
-    DATA_PATH = 'data/'
 
 
 INPUT_SHAPE = (1, 28, 28)
@@ -22,7 +15,5 @@ def load_train_data(args):
 
 
 # def load_test_data(args):
-#     norm = get_transforms()
 #     test_set = datasets.FashionMNIST(DATA_PATH, train=False, transform=norm)
-#     test_loader = DataLoader(test_set, batch_size=args.test_batch_size)
 #     return test_loader

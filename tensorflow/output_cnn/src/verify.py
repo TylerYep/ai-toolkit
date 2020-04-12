@@ -1,10 +1,4 @@
-import sys
 import tensorflow as tf
-
-if 'google.colab' in sys.modules:
-    from tqdm import tqdm_notebook as tqdm
-else:
-    from tqdm import tqdm
 
 
 def verify_model(model, train_images, train_labels):

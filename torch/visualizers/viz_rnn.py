@@ -3,7 +3,7 @@ from src.args import init_pipeline
 from src.dataset import load_train_data
 from src.models import get_model_initializer
 
-from src.visualizations import *
+# from src.visualizations import *
 
 
 def viz():
@@ -19,14 +19,18 @@ def viz():
 
 
 def visualize(model, loader, run_name=''):
+    del model
+    del loader
     if run_name is not None:
-        data, target = next(loader)
+        # data, target = next(loader)
         pass
 
 
 def visualize_trained(model, loader, run_name=''):
+    del model
+    del loader
     if run_name is not None:
-        data, target = next(loader)
+        # data, target = next(loader)
         pass
 
 

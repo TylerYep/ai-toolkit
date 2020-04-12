@@ -1,12 +1,7 @@
 import setuptools
 from setuptools import setup
 
-# name is the package name, tweeter in my example
-# version is the package version
-# description is a short summary of the package's purpose
-# author is of course the package's author
-# packages is the name of your package
-# install_requires is a list of dependencies for the package, much like "dependencies" in package.json
+
 with open("README.md") as f:
     long_description = f.read()
 

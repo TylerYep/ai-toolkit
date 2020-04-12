@@ -79,7 +79,7 @@ class Unflatten(nn.Module):
     to produce an output of shape (N, C, H, W).
     """
     def __init__(self, N=-1, C=128, H=7, W=7):
-        super(Unflatten, self).__init__()
+        super().__init__()
         self.N = N
         self.C = C
         self.H = H
@@ -89,7 +89,7 @@ class Unflatten(nn.Module):
 
 
 def initialize_weights(m):
-    if isinstance(m, nn.Linear) or isinstance(m, nn.ConvTranspose2d):
+    if isinstance(m, (nn.ConvTranspose2d, nn.Linear)):
         init.xavier_uniform_(m.weight.data)
 
 

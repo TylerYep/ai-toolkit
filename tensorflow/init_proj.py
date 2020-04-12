@@ -3,37 +3,28 @@ import shutil
 import string
 import argparse
 
-
-RNN_CONFIG = {
-    'presets': {
-        'src/dataset.py': 'datasets/dataset_rnn.py',
-        'src/viz.py': 'visualizers/viz_rnn.py'
-    },
-    'substitutions': {
-        'loss_fn': 'nn.CrossEntropyLoss()',
-        'model': 'BasicRNN'
+CONFIGS = {
+    'cnn': {
+        'destination': 'output_cnn',
+        'presets': {
+            'src/dataset.py': 'datasets/dataset_cnn.py',
+            'src/viz.py': 'visualizers/viz_cnn.py'
+        },
+        'substitutions': {
+        }
     }
 }
-
-CNN_CONFIG = {
-    'presets': {
-        'src/dataset.py': 'datasets/dataset_cnn.py',
-        'src/viz.py': 'visualizers/viz_cnn.py'
-    },
-    'substitutions': {
-        'loss_fn': 'F.nll_loss',
-        'model': 'BasicCNN'
-    }
-}
-
 
 def init_pipeline():
     parser = argparse.ArgumentParser(description='PyTorch Project Initializer')
 
-    parser.add_argument('project', type=str,
+    parser.add_argument('--project', type=str,
                         help='version of the code to generate')
 
-    parser.add_argument('--output_path', type=int, default=100, metavar='N',
+    parser.add_argument('--all', action='store_true', default=False,
+                        help='generate all projects')
+
+    parser.add_argument('--output_path', type=str, default='',
                         help='folder to output the project to')
 
     parser.add_argument('--config_path', type=str, default='',
@@ -96,18 +87,10 @@ def add_config_files(destination, config):
             print("Path not found.")
 
 
-def main():
-    args = init_pipeline()
-    if args.project == 'rnn':
-        config = RNN_CONFIG
-    elif args.project == 'cnn':
-        config = CNN_CONFIG
-    else:
-        raise ValueError
-
+def create_project_folder(config):
     source = 'source'
-    destination = f'output_{args.project}'
-    
+    destination = config['destination']
+
     # Create destination directory if it doesn't exist
     if not os.path.isdir(destination):
         os.makedirs(destination)
@@ -118,6 +101,22 @@ def main():
 
     fill_template_files(destination, config)
     add_config_files(destination, config)
+
+
+def main():
+    args = init_pipeline()
+    if args.all:
+        for proj in CONFIGS:
+            create_project_folder(CONFIGS[proj])
+
+    elif args.project in CONFIGS:
+        if args.output_path == '':
+            create_project_folder(CONFIGS[args.project])
+        else:
+            print("SPECIFY DESTINATION")
+
+    else:
+        raise ValueError
 
 
 if __name__ == '__main__':

@@ -1,10 +1,7 @@
-import torch
-import torch.nn as nn
-from torch.nn import functional as F
-import torchvision
 from torchvision.models.detection import maskrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
+import torch.nn as nn
 
 
 class MaskRCNN(nn.Module):

@@ -1,39 +1,39 @@
-import torchvision.models as models
+# from src import util
+# from src.args import init_pipeline
+# from src.dataset import load_train_data, CLASS_LABELS
+# from src.models import get_model_initializer
 
-from src import util
-from src.args import init_pipeline
-from src.dataset import load_train_data
-from src.models import BasicCNN as Model
-
-from src.visualizations import *
-
-
-def main():
-    args, device, checkpoint = init_pipeline()
-    train_loader, _, class_labels, init_params = load_train_data(args)
-    model = Model(*init_params).to(device)
-    util.load_state_dict(checkpoint, model)
-    # model = models.resnet18(pretrained=True)
-
-    visualize(model, train_loader, class_labels, device)
-    visualize_trained(model, train_loader, class_labels, device)
+# from src.visualizations import view_input, compute_activations, make_fooling_image, \
+#     show_saliency_maps, create_class_visualization
 
 
-def visualize(model, loader, class_labels, device, run_name='', metrics=None):
-    data, target = util.get_data_example(loader, device)
-    view_input(data, target, class_labels, run_name)
-    data, target = util.get_data_example(loader, device)
-    compute_activations(model, data, target, class_labels, run_name)
+# def viz():
+#     args, device, checkpoint = init_pipeline()
+#     train_loader, _, init_params = load_train_data(args, device)
+#     init_params = checkpoint.get('model_init', init_params)
+#     model = get_model_initializer(args.model)(*init_params).to(device)
+#     util.load_state_dict(checkpoint, model)
+
+#     sample_loader = iter(train_loader)
+#     visualize(model, sample_loader)
+#     visualize_trained(model, sample_loader)
 
 
-def visualize_trained(model, loader, class_labels, device, run_name='', metrics=None):
-    data, target = util.get_data_example(loader, device)
-    make_fooling_image(model, data[5], target[5], class_labels, target[9], run_name)
-    data, target = util.get_data_example(loader, device)
-    show_saliency_maps(model, data, target, class_labels, run_name)
-    data, target = util.get_data_example(loader, device)
-    create_class_visualization(model, data, class_labels, target[1], run_name)
+# def visualize(model, loader, run_name=None):
+#     data, target = next(loader)
+#     view_input(data, target, CLASS_LABELS, run_name)
+#     data, target = next(loader)
+#     compute_activations(model, data, target, CLASS_LABELS, run_name)
 
 
-if __name__ == '__main__':
-    main()
+# def visualize_trained(model, loader, run_name=None):
+#     data, target = next(loader)
+#     make_fooling_image(model, data[5], target[5], CLASS_LABELS, target[9], run_name)
+#     data, target = next(loader)
+#     show_saliency_maps(model, data, target, CLASS_LABELS, run_name)
+#     data, target = next(loader)
+#     create_class_visualization(model, data, CLASS_LABELS, target[1], run_name)
+
+
+# if __name__ == '__main__':
+#     viz()

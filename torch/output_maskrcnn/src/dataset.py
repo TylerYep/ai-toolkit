@@ -4,17 +4,14 @@ import os
 import sys
 import random
 import numpy as np
-import torch
 from PIL import Image
 
 from torch.utils.data import DataLoader, random_split
 from torch.utils.data.dataset import Dataset
-from torch.utils.data.dataloader import default_collate
-
-import torchvision
 from torchvision.transforms import functional as F
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
+
+import torch
+
 
 if 'google.colab' in sys.modules:
     DATA_PATH = '/content/'
@@ -38,7 +35,7 @@ def _flip_coco_person_keypoints(kps, width):
     return flipped_data
 
 
-class Compose(object):
+class Compose():
     def __init__(self, transforms):
         self.transforms = transforms
 
@@ -48,7 +45,7 @@ class Compose(object):
         return image, target
 
 
-class RandomHorizontalFlip(object):
+class RandomHorizontalFlip():
     def __init__(self, prob):
         self.prob = prob
 
@@ -68,7 +65,7 @@ class RandomHorizontalFlip(object):
         return image, target
 
 
-class ToTensor(object):
+class ToTensor():
     def __call__(self, image, target):
         image = F.to_tensor(image)
         return image, target
