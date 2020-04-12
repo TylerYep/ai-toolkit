@@ -12,8 +12,8 @@ class TestTrain:
         assert round(metrics.get_primary_value(), 7) == 4.6288586
 
     @staticmethod
-    def test_epoch_resume():
-        config = ['--no-visualize', '--num-examples=100']
+    def test_epoch_resume(tmp_path):
+        config = ['--no-visualize', '--num-examples=100', f'--save-dir={tmp_path}']
         _ = train(['--epoch=2', '--name=TEST'] + config)
         metrics_end = train(['--epoch=2', '--checkpoint=TEST'] + config)
 

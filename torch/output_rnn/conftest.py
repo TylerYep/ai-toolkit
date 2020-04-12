@@ -6,11 +6,11 @@ import pytest
 import torch
 
 
-@pytest.fixture(autouse=True)
-def reset_const():
-    TEST_CHECKPOINT = os.path.join('checkpoints', 'TEST')
-    if os.path.isdir(TEST_CHECKPOINT):
-        shutil.rmtree(TEST_CHECKPOINT)
+# @pytest.fixture(autouse=True)
+# def create_test_directory(tmp_path):
+#     checkpoint_path = os.path.join(tmp_path, 'TEST')
+#     if os.path.isdir(checkpoint_path):
+#         shutil.rmtree(checkpoint_path)
 
 
 @pytest.fixture
