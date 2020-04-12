@@ -1,16 +1,7 @@
 ''' conftest.py '''
 from types import SimpleNamespace
-import os
-import shutil
 import pytest
 import torch
-
-
-# @pytest.fixture(autouse=True)
-# def create_test_directory(tmp_path):
-#     checkpoint_path = os.path.join(tmp_path, 'TEST')
-#     if os.path.isdir(checkpoint_path):
-#         shutil.rmtree(checkpoint_path)
 
 
 @pytest.fixture

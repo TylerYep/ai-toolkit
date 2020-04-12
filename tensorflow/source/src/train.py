@@ -50,7 +50,7 @@ def load_model(checkpoint, init_params, train_images, train_labels):
 def train(arg_list=None):
     args, checkpoint = init_pipeline(arg_list)
     (train_images, train_labels), (test_images, test_labels), class_labels, init_params = \
-        load_train_data(args)
+        load_train_data()
     model = load_model(checkpoint, init_params, train_images, train_labels)
     # add_network(model, train_loader, device)
     # visualize(model, train_loader, class_labels, device, run_name)

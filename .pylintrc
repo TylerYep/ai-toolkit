@@ -150,7 +150,8 @@ disable=print-statement,
         too-many-locals,
         not-callable,
         arguments-differ,
-        no-member
+        no-member,
+        duplicate-code
 
 
 # Enable the message, report, category or checker with the given id(s). You can

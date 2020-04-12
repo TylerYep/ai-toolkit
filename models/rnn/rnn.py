@@ -4,7 +4,7 @@ from .layers import *
 from .rnn_layers import *
 
 
-class CaptioningRNN(object):
+class CaptioningRNN():
     """
     A CaptioningRNN produces captions from image features using a recurrent
     neural network.
