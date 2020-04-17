@@ -1,7 +1,6 @@
 import setuptools
 from setuptools import setup
 
-
 with open("README.md") as f:
     long_description = f.read()
 
@@ -21,5 +20,5 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
 )

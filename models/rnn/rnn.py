@@ -4,7 +4,7 @@ from .layers import *
 from .rnn_layers import *
 
 
-class CaptioningRNN():
+class CaptioningRNN:
     """
     A CaptioningRNN produces captions from image features using a recurrent
     neural network.
@@ -16,8 +16,15 @@ class CaptioningRNN():
     Note that we don't use any regularization for the CaptioningRNN.
     """
 
-    def __init__(self, word_to_idx, input_dim=512, wordvec_dim=128,
-                 hidden_dim=128, cell_type='rnn', dtype=np.float32):
+    def __init__(
+        self,
+        word_to_idx,
+        input_dim=512,
+        wordvec_dim=128,
+        hidden_dim=128,
+        cell_type="rnn",
+        dtype=np.float32,
+    ):
         """
         Construct a new CaptioningRNN instance.
 
@@ -31,7 +38,7 @@ class CaptioningRNN():
         - dtype: numpy datatype to use; use float32 for training and float64 for
           numeric gradient checking.
         """
-        if cell_type not in {'rnn', 'lstm'}:
+        if cell_type not in {"rnn", "lstm"}:
             raise ValueError('Invalid cell_type "%s"' % cell_type)
 
         self.cell_type = cell_type
@@ -42,36 +49,35 @@ class CaptioningRNN():
 
         vocab_size = len(word_to_idx)
 
-        self._null = word_to_idx['<NULL>']
-        self._start = word_to_idx.get('<START>', None)
-        self._end = word_to_idx.get('<END>', None)
+        self._null = word_to_idx["<NULL>"]
+        self._start = word_to_idx.get("<START>", None)
+        self._end = word_to_idx.get("<END>", None)
 
         # Initialize word vectors
-        self.params['W_embed'] = np.random.randn(vocab_size, wordvec_dim)
-        self.params['W_embed'] /= 100
+        self.params["W_embed"] = np.random.randn(vocab_size, wordvec_dim)
+        self.params["W_embed"] /= 100
 
         # Initialize CNN -> hidden state projection parameters
-        self.params['W_proj'] = np.random.randn(input_dim, hidden_dim)
-        self.params['W_proj'] /= np.sqrt(input_dim)
-        self.params['b_proj'] = np.zeros(hidden_dim)
+        self.params["W_proj"] = np.random.randn(input_dim, hidden_dim)
+        self.params["W_proj"] /= np.sqrt(input_dim)
+        self.params["b_proj"] = np.zeros(hidden_dim)
 
         # Initialize parameters for the RNN
-        dim_mul = {'lstm': 4, 'rnn': 1}[cell_type]
-        self.params['Wx'] = np.random.randn(wordvec_dim, dim_mul * hidden_dim)
-        self.params['Wx'] /= np.sqrt(wordvec_dim)
-        self.params['Wh'] = np.random.randn(hidden_dim, dim_mul * hidden_dim)
-        self.params['Wh'] /= np.sqrt(hidden_dim)
-        self.params['b'] = np.zeros(dim_mul * hidden_dim)
+        dim_mul = {"lstm": 4, "rnn": 1}[cell_type]
+        self.params["Wx"] = np.random.randn(wordvec_dim, dim_mul * hidden_dim)
+        self.params["Wx"] /= np.sqrt(wordvec_dim)
+        self.params["Wh"] = np.random.randn(hidden_dim, dim_mul * hidden_dim)
+        self.params["Wh"] /= np.sqrt(hidden_dim)
+        self.params["b"] = np.zeros(dim_mul * hidden_dim)
 
         # Initialize output to vocab weights
-        self.params['W_vocab'] = np.random.randn(hidden_dim, vocab_size)
-        self.params['W_vocab'] /= np.sqrt(hidden_dim)
-        self.params['b_vocab'] = np.zeros(vocab_size)
+        self.params["W_vocab"] = np.random.randn(hidden_dim, vocab_size)
+        self.params["W_vocab"] /= np.sqrt(hidden_dim)
+        self.params["b_vocab"] = np.zeros(vocab_size)
 
         # Cast parameters to correct dtype
         for k, v in self.params.items():
             self.params[k] = v.astype(self.dtype)
-
 
     def loss(self, features, captions):
         """
@@ -98,20 +104,20 @@ class CaptioningRNN():
         captions_out = captions[:, 1:]
 
         # You'll need this
-        mask = (captions_out != self._null)
+        mask = captions_out != self._null
 
         # Weight and bias for the affine transform from image features to initial
         # hidden state
-        W_proj, b_proj = self.params['W_proj'], self.params['b_proj']
+        W_proj, b_proj = self.params["W_proj"], self.params["b_proj"]
 
         # Word embedding matrix
-        W_embed = self.params['W_embed']
+        W_embed = self.params["W_embed"]
 
         # Input-to-hidden, hidden-to-hidden, and biases for the RNN
-        Wx, Wh, b = self.params['Wx'], self.params['Wh'], self.params['b']
+        Wx, Wh, b = self.params["Wx"], self.params["Wh"], self.params["b"]
 
         # Weight and bias for the hidden-to-vocab transformation.
-        W_vocab, b_vocab = self.params['W_vocab'], self.params['b_vocab']
+        W_vocab, b_vocab = self.params["W_vocab"], self.params["b_vocab"]
 
         loss, grads = 0.0, {}
         ############################################################################
@@ -144,7 +150,7 @@ class CaptioningRNN():
 
         h0, proj_cache = affine_forward(features, W_proj, b_proj)
         out, emb_cache = word_embedding_forward(captions_in, W_embed)
-        if self.cell_type == 'lstm':
+        if self.cell_type == "lstm":
             out, lstm_cache = lstm_forward(out, h0, Wx, Wh, b)
         else:
             out, rnn_cache = rnn_forward(out, h0, Wx, Wh, b)
@@ -153,25 +159,24 @@ class CaptioningRNN():
 
         ### BACKWARD ###
 
-        dout, grads['W_vocab'], grads['b_vocab'] = temporal_affine_backward(dout, affine_cache)
+        dout, grads["W_vocab"], grads["b_vocab"] = temporal_affine_backward(dout, affine_cache)
 
-        if self.cell_type == 'lstm':
+        if self.cell_type == "lstm":
             dx, dh0, dWx, dWh, db = lstm_backward(dout, lstm_cache)
         else:
             dx, dh0, dWx, dWh, db = rnn_backward(dout, rnn_cache)
-        grads['Wx'] = dWx
-        grads['Wh'] = dWh
-        grads['b'] = db
+        grads["Wx"] = dWx
+        grads["Wh"] = dWh
+        grads["b"] = db
 
-        grads['W_embed'] = word_embedding_backward(dx, emb_cache)
-        _, grads['W_proj'], grads['b_proj'] = affine_backward(dh0, proj_cache)
+        grads["W_embed"] = word_embedding_backward(dx, emb_cache)
+        _, grads["W_proj"], grads["b_proj"] = affine_backward(dh0, proj_cache)
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
 
         return loss, grads
-
 
     def sample(self, features, max_length=30):
         """
@@ -201,10 +206,10 @@ class CaptioningRNN():
         captions = self._null * np.ones((N, max_length), dtype=np.int32)
 
         # Unpack parameters
-        W_proj, b_proj = self.params['W_proj'], self.params['b_proj']
-        W_embed = self.params['W_embed']
-        Wx, Wh, b = self.params['Wx'], self.params['Wh'], self.params['b']
-        W_vocab, b_vocab = self.params['W_vocab'], self.params['b_vocab']
+        W_proj, b_proj = self.params["W_proj"], self.params["b_proj"]
+        W_embed = self.params["W_embed"]
+        Wx, Wh, b = self.params["Wx"], self.params["Wh"], self.params["b"]
+        W_vocab, b_vocab = self.params["W_vocab"], self.params["b_vocab"]
 
         ###########################################################################
         # TODO: Implement test-time sampling for the model. You will need to      #
@@ -233,11 +238,11 @@ class CaptioningRNN():
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         h, _ = affine_forward(features, W_proj, b_proj)
         _, H = h.shape
-        prev_c = np.zeros((N, H))        # For LSTM
+        prev_c = np.zeros((N, H))  # For LSTM
         curr_word = np.full(N, self._start)
         for t in range(max_length):
             out, _ = word_embedding_forward(curr_word, W_embed)
-            if self.cell_type == 'lstm':
+            if self.cell_type == "lstm":
                 h, prev_c, _ = lstm_step_forward(out, h, prev_c, Wx, Wh, b)
             else:
                 h, _ = rnn_step_forward(out, h, Wx, Wh, b)

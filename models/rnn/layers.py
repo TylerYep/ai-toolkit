@@ -124,16 +124,16 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     - out: of shape (N, D)
     - cache: A tuple of values needed in the backward pass
     """
-    mode = bn_param['mode']
-    eps = bn_param.get('eps', 1e-5)
-    momentum = bn_param.get('momentum', 0.9)
+    mode = bn_param["mode"]
+    eps = bn_param.get("eps", 1e-5)
+    momentum = bn_param.get("momentum", 0.9)
 
     N, D = x.shape
-    running_mean = bn_param.get('running_mean', np.zeros(D, dtype=x.dtype))
-    running_var = bn_param.get('running_var', np.zeros(D, dtype=x.dtype))
+    running_mean = bn_param.get("running_mean", np.zeros(D, dtype=x.dtype))
+    running_var = bn_param.get("running_var", np.zeros(D, dtype=x.dtype))
 
     out, cache = None, None
-    if mode == 'train':
+    if mode == "train":
         # Compute output
         mu = x.mean(axis=0)
         xc = x - mu
@@ -152,7 +152,7 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         running_var *= momentum
         running_var += (1 - momentum) * var
 
-    elif mode == 'test':
+    elif mode == "test":
         # Using running mean and variance to normalize
         std = np.sqrt(running_var + eps)
         xn = (x - running_mean) / std
@@ -163,8 +163,8 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         raise ValueError('Invalid forward batchnorm mode "%s"' % mode)
 
     # Store the updated running means back into bn_param
-    bn_param['running_mean'] = running_mean
-    bn_param['running_var'] = running_var
+    bn_param["running_mean"] = running_mean
+    bn_param["running_var"] = running_var
 
     return out, cache
 
@@ -187,7 +187,7 @@ def batchnorm_backward(dout, cache):
     - dbeta: Gradient with respect to shift parameter beta, of shape (D,)
     """
     mode = cache[0]
-    if mode == 'train':
+    if mode == "train":
         mode, x, gamma, xc, std, xn, out = cache
 
         N = x.shape[0]
@@ -201,7 +201,7 @@ def batchnorm_backward(dout, cache):
         dmu = np.sum(dxc, axis=0)
         dx = dxc - dmu / N
 
-    elif mode == 'test':
+    elif mode == "test":
         mode, x, xn, gamma, beta, std = cache
         dbeta = dout.sum(axis=0)
         dgamma = np.sum(xn * dout, axis=0)
@@ -228,9 +228,9 @@ def batchnorm_backward_alt(dout, cache):
 
     Inputs / outputs: Same as batchnorm_backward
     """
-    x_hat = cache['x_hat']
-    gamma = cache['gamma']
-    v = cache['v']
+    x_hat = cache["x_hat"]
+    gamma = cache["gamma"]
+    v = cache["v"]
 
     dx_hat = dout * gamma
     dx = (dx_hat - np.mean(dx_hat, axis=0) - x_hat * np.mean(dx_hat * x_hat, axis=0)) / v
@@ -314,7 +314,7 @@ def layernorm_forward(x, gamma, beta, ln_param):
     - out: of shape (N, D)
     - cache: A tuple of values needed in the backward pass
     """
-    eps = ln_param.get('eps', 1e-5)
+    eps = ln_param.get("eps", 1e-5)
 
     cache = {}
     x = x.T
@@ -324,9 +324,9 @@ def layernorm_forward(x, gamma, beta, ln_param):
     x_hat = x_hat.T
     out = gamma * x_hat + beta
 
-    cache['x_hat'] = x_hat
-    cache['gamma'] = gamma
-    cache['v'] = np.sqrt(sample_var + eps)
+    cache["x_hat"] = x_hat
+    cache["gamma"] = gamma
+    cache["v"] = np.sqrt(sample_var + eps)
 
     return out, cache
 
@@ -347,9 +347,9 @@ def layernorm_backward(dout, cache):
     - dgamma: Gradient with respect to scale parameter gamma, of shape (D,)
     - dbeta: Gradient with respect to shift parameter beta, of shape (D,)
     """
-    x_hat = cache['x_hat']
-    gamma = cache['gamma']
-    v = cache['v']
+    x_hat = cache["x_hat"]
+    gamma = cache["gamma"]
+    v = cache["v"]
 
     dx_hat = dout * gamma
     dgamma = np.sum(dout * x_hat, axis=0)
@@ -389,16 +389,16 @@ def dropout_forward(x, dropout_param):
     output; this might be contrary to some sources, where it is referred to
     as the probability of dropping a neuron output.
     """
-    p, mode = dropout_param['p'], dropout_param['mode']
-    if 'seed' in dropout_param:
-        np.random.seed(dropout_param['seed'])
+    p, mode = dropout_param["p"], dropout_param["mode"]
+    if "seed" in dropout_param:
+        np.random.seed(dropout_param["seed"])
 
     mask, out = None, None
-    if mode == 'train':
+    if mode == "train":
         mask = (np.random.rand(*x.shape) < p) / p
         out = x * mask
 
-    elif mode == 'test':
+    elif mode == "test":
         out = x
 
     cache = (dropout_param, mask)
@@ -416,13 +416,13 @@ def dropout_backward(dout, cache):
     - cache: (dropout_param, mask) from dropout_forward.
     """
     dropout_param, mask = cache
-    mode = dropout_param['mode']
+    mode = dropout_param["mode"]
 
     dx = None
-    if mode == 'train':
+    if mode == "train":
         dx = dout * mask
 
-    elif mode == 'test':
+    elif mode == "test":
         dx = dout
     return dx
 
@@ -457,19 +457,20 @@ def conv_forward_naive(x, w, b, conv_param):
     """
     N, C, H, W = x.shape
     F, C, HH, WW = w.shape
-    pad = conv_param['pad']
-    stride = conv_param['stride']
+    pad = conv_param["pad"]
+    stride = conv_param["stride"]
     H_prime = 1 + (H + 2 * pad - HH) // stride
     W_prime = 1 + (W + 2 * pad - WW) // stride
-    x_padded = np.pad(x, ((0, 0), (0, 0), (pad, pad), (pad, pad)), mode='constant')
+    x_padded = np.pad(x, ((0, 0), (0, 0), (pad, pad), (pad, pad)), mode="constant")
     out = np.zeros((N, F, H_prime, W_prime))
 
     for n in range(N):
         for f in range(F):
-            for i in range(0, H_prime*stride, stride):
-                for j in range(0, W_prime*stride, stride):
-                    out[n, f, i//stride, j//stride] = \
-                        np.sum(w[f] * x_padded[n, :, i:i+HH, j:j+WW]) + b[f]
+            for i in range(0, H_prime * stride, stride):
+                for j in range(0, W_prime * stride, stride):
+                    out[n, f, i // stride, j // stride] = (
+                        np.sum(w[f] * x_padded[n, :, i : i + HH, j : j + WW]) + b[f]
+                    )
     cache = (x, w, b, conv_param)
 
     return out, cache
@@ -495,20 +496,20 @@ def conv_backward_naive(dout, cache):
 
     N, C, H, W = x.shape
     F, C, HH, WW = w.shape
-    pad = conv_param['pad']
-    stride = conv_param['stride']
+    pad = conv_param["pad"]
+    stride = conv_param["stride"]
     _, _, H_prime, W_prime = dout.shape
     padding = ((0, 0), (0, 0), (pad, pad), (pad, pad))
-    x_padded = np.pad(x, padding, mode='constant')
-    dx_padded = np.pad(dx, padding, mode='constant')
+    x_padded = np.pad(x, padding, mode="constant")
+    dx_padded = np.pad(dx, padding, mode="constant")
 
     for n in range(N):
         for f in range(F):
-            for i in range(0, H_prime*stride, stride):
-                for j in range(0, W_prime*stride, stride):
-                    do = dout[n, f, i//stride, j//stride]
-                    dx_padded[n, :, i:i+HH, j:j+WW] += do * w[f]
-                    dw[f] += do * x_padded[n, :, i:i+HH, j:j+WW]
+            for i in range(0, H_prime * stride, stride):
+                for j in range(0, W_prime * stride, stride):
+                    do = dout[n, f, i // stride, j // stride]
+                    dx_padded[n, :, i : i + HH, j : j + WW] += do * w[f]
+                    dw[f] += do * x_padded[n, :, i : i + HH, j : j + WW]
                     db[f] += do
     dx = dx_padded[:, :, pad:-pad, pad:-pad]
 
@@ -534,9 +535,9 @@ def max_pool_forward_naive(x, pool_param):
       W' = 1 + (W - pool_width) / stride
     - cache: (x, pool_param)
     """
-    pool_height = pool_param['pool_height']
-    pool_width = pool_param['pool_width']
-    stride = pool_param['stride']
+    pool_height = pool_param["pool_height"]
+    pool_width = pool_param["pool_width"]
+    stride = pool_param["stride"]
     N, C, H, W = x.shape
     H_prime = 1 + (H - pool_height) // stride
     W_prime = 1 + (W - pool_width) // stride
@@ -544,10 +545,11 @@ def max_pool_forward_naive(x, pool_param):
     out = np.zeros((N, C, H_prime, W_prime))
     for n in range(N):
         for c in range(C):
-            for i in range(0, H_prime*stride, stride):
-                for j in range(0, W_prime*stride, stride):
-                    out[n, c, i//stride, j//stride] = \
-                        np.amax(x[n, c, i:i+pool_height, j:j+pool_width])
+            for i in range(0, H_prime * stride, stride):
+                for j in range(0, W_prime * stride, stride):
+                    out[n, c, i // stride, j // stride] = np.amax(
+                        x[n, c, i : i + pool_height, j : j + pool_width]
+                    )
     cache = (x, pool_param)
     return out, cache
 
@@ -564,9 +566,9 @@ def max_pool_backward_naive(dout, cache):
     - dx: Gradient with respect to x
     """
     x, pool_param = cache
-    pool_height = pool_param['pool_height']
-    pool_width = pool_param['pool_width']
-    stride = pool_param['stride']
+    pool_height = pool_param["pool_height"]
+    pool_width = pool_param["pool_width"]
+    stride = pool_param["stride"]
     N, C, H, W = x.shape
     H_prime = 1 + (H - pool_height) // stride
     W_prime = 1 + (W - pool_width) // stride
@@ -574,11 +576,13 @@ def max_pool_backward_naive(dout, cache):
     dx = np.zeros(x.shape)
     for n in range(N):
         for c in range(C):
-            for i in range(0, H_prime*stride, stride):
-                for j in range(0, W_prime*stride, stride):
-                    a = x[n, c, i:i+pool_height, j:j+pool_width]
+            for i in range(0, H_prime * stride, stride):
+                for j in range(0, W_prime * stride, stride):
+                    a = x[n, c, i : i + pool_height, j : j + pool_width]
                     k = np.unravel_index(a.argmax(), a.shape)
-                    dx[n, c, i:i+pool_height, j:j+pool_width][k] = dout[n, c, i//stride, j//stride]
+                    dx[n, c, i : i + pool_height, j : j + pool_width][k] = dout[
+                        n, c, i // stride, j // stride
+                    ]
     return dx
 
 
@@ -602,7 +606,7 @@ def spatial_groupnorm_forward(x, gamma, beta, G, gn_param):
     - out: Output data, of shape (N, C, H, W)
     - cache: Values needed for the backward pass
     """
-    eps = gn_param.get('eps', 1e-5)
+    eps = gn_param.get("eps", 1e-5)
     N, C, H, W = x.shape
     gamma = gamma.reshape((1, C, 1, 1))
     beta = beta.reshape((1, C, 1, 1))
@@ -615,10 +619,10 @@ def spatial_groupnorm_forward(x, gamma, beta, G, gn_param):
     out = gamma * x_hat + beta
 
     cache = {}
-    cache['x_hat'] = x_hat
-    cache['gamma'] = gamma
-    cache['v'] = np.sqrt(sample_var + eps)
-    cache['G'] = G
+    cache["x_hat"] = x_hat
+    cache["gamma"] = gamma
+    cache["v"] = np.sqrt(sample_var + eps)
+    cache["G"] = G
 
     return out, cache
 
@@ -636,10 +640,10 @@ def spatial_groupnorm_backward(dout, cache):
     - dgamma: Gradient with respect to scale parameter, of shape (C,)
     - dbeta: Gradient with respect to shift parameter, of shape (C,)
     """
-    x_hat = cache['x_hat']
-    gamma = cache['gamma']
-    G = cache['G']
-    v = cache['v']
+    x_hat = cache["x_hat"]
+    gamma = cache["gamma"]
+    G = cache["G"]
+    v = cache["v"]
     N, C, H, W = dout.shape
 
     dx_hat = dout * gamma

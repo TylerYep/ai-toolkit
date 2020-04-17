@@ -1,35 +1,37 @@
 import os
 import sys
 from collections import defaultdict
+
 import torch
-
 from torch.utils.data import DataLoader, random_split
-from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import default_collate
+from torch.utils.data.dataset import Dataset
 
-
-if 'google.colab' in sys.modules:
-    DATA_PATH = '/content/'
+if "google.colab" in sys.modules:
+    DATA_PATH = "/content/"
 else:
-    DATA_PATH = 'data/names/'
+    DATA_PATH = "data/names/"
 
 
 CLASS_LABELS = []
 
 
 def get_collate_fn(device):
-    '''
+    """
     for indices in batch_sampler:
         yield collate_fn([dataset[i] for i in indices])
-    '''
+    """
+
     def to_device(b):
         return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
+
     def sort_batch(data, target):
         batch, lengths = data
         seq_lengths, perm_idx = lengths.sort(0, descending=True)
         seq_tensor = batch[perm_idx]
         target_tensor = target[perm_idx]
         return (seq_tensor.transpose(0, 1), seq_lengths), target_tensor
+
     return lambda x: map(to_device, sort_batch(*default_collate(x)))
 
 
@@ -44,22 +46,17 @@ def load_train_data(args, device, val_split=0.2):
         train_size = int((1 - val_split) * len(orig_dataset))
         data_split = [train_size, len(orig_dataset) - train_size]
         train_set, val_set = random_split(orig_dataset, data_split)
-    train_loader = DataLoader(train_set,
-                              batch_size=args.batch_size,
-                              shuffle=True,
-                              collate_fn=collate_fn)
-    val_loader = DataLoader(val_set,
-                            batch_size=args.batch_size,
-                            collate_fn=collate_fn)
+    train_loader = DataLoader(
+        train_set, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn
+    )
+    val_loader = DataLoader(val_set, batch_size=args.batch_size, collate_fn=collate_fn)
     return train_loader, val_loader, orig_dataset.get_model_params() + (device,)
 
 
 def load_test_data(args, device):
     collate_fn = get_collate_fn(device)
     test_set = LanguageWords()
-    test_loader = DataLoader(test_set,
-                             batch_size=args.test_batch_size,
-                             collate_fn=collate_fn)
+    test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
     return test_loader
 
 
@@ -74,12 +71,13 @@ class LanguageWords(Dataset):
         length (Tensor): contains sample lengths.
         raw_data (Any): The data that has been transformed into tensor, useful for debugging
     """
+
     def __init__(self, data_dir=DATA_PATH):
         super().__init__()
         self.input_shape = [torch.Size((20,)), torch.Size([])]
         self.token2id = defaultdict(int)
         self.token_set, data = self.load_data(data_dir)
-        self.token2id = self.set2id(self.token_set, 'PAD', 'UNK')
+        self.token2id = self.set2id(self.token_set, "PAD", "UNK")
         self.tag2id = self.set2id(set(data.keys()))
         self.all_data = []
         for cat in data:
@@ -105,8 +103,10 @@ class LanguageWords(Dataset):
 
     @staticmethod
     def vectorized_data(data, item2id):
-        return [[item2id[token] if token in item2id \
-            else item2id['UNK'] for token in seq] for seq, _ in data]
+        return [
+            [item2id[token] if token in item2id else item2id["UNK"] for token in seq]
+            for seq, _ in data
+        ]
 
     @staticmethod
     def pad_sequences(vectorized_seqs, seq_lengths):
@@ -121,10 +121,10 @@ class LanguageWords(Dataset):
         token_set = set()
         data = defaultdict(list)
         for f in filenames:
-            if not f.endswith('txt'):
+            if not f.endswith("txt"):
                 continue
 
-            cat = f.replace('.txt', '')
+            cat = f.replace(".txt", "")
             with open(os.path.join(data_dir, f)) as f:
                 for line in f:
                     line = line.strip().lower()
@@ -143,6 +143,7 @@ class LanguageWords(Dataset):
         for item in item_set:
             item2id[item] = len(item2id)
         return item2id
+
 
 if __name__ == "__main__":
     x = LanguageWords()

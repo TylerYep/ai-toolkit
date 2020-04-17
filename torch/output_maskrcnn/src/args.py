@@ -1,15 +1,16 @@
-from typing import List, Optional
-import os
 import argparse
+import os
 import random
-import numpy as np
-import torch
+from typing import List, Optional
 
+import numpy as np
+
+import torch
 from src import util
 
 
 def init_pipeline(arg_list: Optional[List[str]] = None):
-    ''' Pass in the empty list to skip argument parsing. '''
+    """ Pass in the empty list to skip argument parsing. """
     set_random_seeds()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     args = get_parsed_arguments(arg_list)
@@ -25,9 +26,10 @@ def init_pipeline(arg_list: Optional[List[str]] = None):
 
 
 def get_parsed_arguments(arg_list):
+    # fmt: off
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
-    parser.add_argument('--batch-dim', type=int, default=0, metavar='B',
+    parser.add_argument('--batch-dim', type=int, default=int('0'), metavar='B',
                         help='batch dimension for training (default: 0)')
 
     parser.add_argument('--batch-size', type=int, default=128, metavar='B',
@@ -97,6 +99,7 @@ def get_parsed_arguments(arg_list):
                         help='do not save visualization files')
 
     return parser.parse_args(arg_list)
+    # fmt: on
 
 
 def set_random_seeds(seed=0):

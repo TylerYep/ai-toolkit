@@ -9,7 +9,7 @@ from src.models import get_model_initializer
 def viz():
     args, device, checkpoint = init_pipeline()
     train_loader, _, init_params = load_train_data(args, device)
-    init_params = checkpoint.get('model_init', init_params)
+    init_params = checkpoint.get("model_init", init_params)
     model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
 
@@ -18,7 +18,7 @@ def viz():
     visualize_trained(model, sample_loader)
 
 
-def visualize(model, loader, run_name=''):
+def visualize(model, loader, run_name=""):
     del model
     del loader
     if run_name is not None:
@@ -26,7 +26,7 @@ def visualize(model, loader, run_name=''):
         pass
 
 
-def visualize_trained(model, loader, run_name=''):
+def visualize_trained(model, loader, run_name=""):
     del model
     del loader
     if run_name is not None:
@@ -34,5 +34,5 @@ def visualize_trained(model, loader, run_name=''):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     viz()

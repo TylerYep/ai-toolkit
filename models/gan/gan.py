@@ -1,16 +1,15 @@
+import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
 import numpy as np
-import torch
-import torch.nn as nn
-from torch.nn import init
-import torch.optim as optim
-from torch.utils.data import DataLoader, sampler
 from torchvision import datasets, transforms
 
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from gan_loss import ls_discriminator_loss as discriminator_loss
 from gan_loss import ls_generator_loss as generator_loss
+from torch.nn import init
+from torch.utils.data import DataLoader, sampler
 
 NUM_TRAIN = 50000
 NUM_VAL = 5000
@@ -28,10 +27,10 @@ def show_images(images):
 
     for i, img in enumerate(images):
         ax = plt.subplot(gs[i])
-        plt.axis('off')
+        plt.axis("off")
         ax.set_xticklabels([])
         ax.set_yticklabels([])
-        ax.set_aspect('equal')
+        ax.set_aspect("equal")
         plt.imshow(img.reshape([sqrtimg, sqrtimg]))
 
 
@@ -41,6 +40,7 @@ class ChunkSampler(sampler.Sampler):
         num_samples: # of desired datapoints
         start: offset where we should start selecting from
     """
+
     def __init__(self, num_samples, start=0):
         self.num_samples = num_samples
         self.start = start
@@ -78,12 +78,14 @@ class Unflatten(nn.Module):
     An Unflatten module receives an input of shape (N, C*H*W) and reshapes it
     to produce an output of shape (N, C, H, W).
     """
+
     def __init__(self, N=-1, C=128, H=7, W=7):
         super().__init__()
         self.N = N
         self.C = C
         self.H = H
         self.W = W
+
     def forward(self, x):
         return x.view(self.N, self.C, self.H, self.W)
 
@@ -103,7 +105,7 @@ def discriminator():
         nn.LeakyReLU(negative_slope=0.01),
         nn.Linear(256, 256),
         nn.LeakyReLU(negative_slope=0.01),
-        nn.Linear(256, 1)
+        nn.Linear(256, 1),
     )
     return model
 
@@ -118,7 +120,7 @@ def generator(noise_dim=NOISE_DIM):
         nn.Linear(1024, 1024),
         nn.ReLU(),
         nn.Linear(1024, 784),
-        nn.Tanh()
+        nn.Tanh(),
     )
     return model
 
@@ -137,8 +139,18 @@ def get_optimizer(model):
     return optim.Adam(model.parameters(), lr=1e-3, betas=(0.5, 0.999))
 
 
-def run_a_gan(D, G, D_solver, G_solver, loader_train, device, show_every=250,
-              batch_size=128, noise_size=96, num_epochs=10):
+def run_a_gan(
+    D,
+    G,
+    D_solver,
+    G_solver,
+    loader_train,
+    device,
+    show_every=250,
+    batch_size=128,
+    noise_size=96,
+    num_epochs=10,
+):
     """
     Train a GAN!
 
@@ -180,10 +192,10 @@ def run_a_gan(D, G, D_solver, G_solver, loader_train, device, show_every=250,
             G_solver.step()
 
             if iter_count % show_every == 0:
-                print(f'Iter: {iter_count}, D: {d_total_error.item():.4}, G: {g_error.item():.4}')
+                print(f"Iter: {iter_count}, D: {d_total_error.item():.4}, G: {g_error.item():.4}")
                 imgs_numpy = fake_images.data.cpu().numpy()
                 show_images(imgs_numpy[:16])
-                plt.savefig(f'gan_output_{iter_count}.png')
+                plt.savefig(f"gan_output_{iter_count}.png")
                 plt.clf()
             iter_count += 1
 
@@ -204,7 +216,7 @@ def build_dc_classifier(batch_size=128):
         Flatten(),
         nn.Linear(1024, 1024),
         nn.LeakyReLU(0.01),
-        nn.Linear(1024, 1)
+        nn.Linear(1024, 1),
     )
 
 
@@ -221,21 +233,19 @@ def build_dc_generator(noise_dim=NOISE_DIM, batch_size=128):
         nn.ReLU(),
         nn.BatchNorm1d(6272),
         Unflatten(batch_size, 128, 7, 7),
-
         nn.ConvTranspose2d(128, 64, 4, stride=2, padding=1),
         nn.ReLU(),
         nn.BatchNorm2d(64),
-
         nn.ConvTranspose2d(64, 1, 4, stride=2, padding=1),
         nn.Tanh(),
-        Flatten()
+        Flatten(),
     )
 
 
 def main():
     norm = transforms.Compose([transforms.ToTensor()])
-    mnist_train = datasets.MNIST('data', train=True, download=False, transform=norm)
-    mnist_val = datasets.MNIST('data', train=False, transform=norm)
+    mnist_train = datasets.MNIST("data", train=True, download=False, transform=norm)
+    mnist_val = datasets.MNIST("data", train=False, transform=norm)
     loader_train = DataLoader(mnist_train, batch_size=128, sampler=ChunkSampler(NUM_TRAIN, 0))
     # loader_val = DataLoader(mnist_val, batch_size=128, sampler=ChunkSampler(NUM_VAL, NUM_TRAIN))
 
@@ -256,5 +266,5 @@ def main():
     # run_a_gan(D, G, D_solver, G_solver, loader_train, device)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+
 import torch
 
 from .viz_utils import rearrange, save_figure
@@ -31,7 +32,7 @@ def make_fooling_image(model, X, y, class_labels, target_y, run_name):
         loss = scores[0, target_y]
         loss.backward()
         g = X_fooling.grad.data
-        dX = learning_rate * g / torch.norm(g)**2
+        dX = learning_rate * g / torch.norm(g) ** 2
         X_fooling.data += dX
         X_fooling.grad.data.zero_()
 
@@ -42,23 +43,23 @@ def make_fooling_image(model, X, y, class_labels, target_y, run_name):
 
     ax.imshow(rearrange(X))
     ax.set_title(class_labels[y])
-    ax.axis('off')
+    ax.axis("off")
 
     ax = axs.flat[1]
     ax.imshow(rearrange(X_fooling_np))
     ax.set_title(class_labels[target_y])
-    ax.axis('off')
+    ax.axis("off")
 
     ax = axs.flat[2]
     diff = X_fooling - X
     ax.imshow(rearrange(diff))
-    ax.set_title('Difference')
-    ax.axis('off')
+    ax.set_title("Difference")
+    ax.axis("off")
 
     ax = axs.flat[3]
     ax.imshow(rearrange(10 * diff))
-    ax.set_title('Magnified difference (10x)')
-    ax.axis('off')
+    ax.set_title("Magnified difference (10x)")
+    ax.axis("off")
 
     plt.gcf().set_size_inches(12, 5)
-    save_figure(run_name, 'fooling.png')
+    save_figure(run_name, "fooling.png")

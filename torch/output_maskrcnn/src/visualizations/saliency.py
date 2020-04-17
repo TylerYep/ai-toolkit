@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+
 import torch
 
 from .viz_utils import rearrange, save_figure
@@ -9,8 +10,8 @@ def compute_saliency(inputs, run_name):
     saliency = inputs.grad.data
     saliency, _ = torch.max(saliency, dim=1)  # dim 1 is the channel dimension
     plt.imshow(saliency.numpy()[0], cmap=plt.cm.gray)
-    plt.axis('off')
-    save_figure(run_name, 'saliency.png')
+    plt.axis("off")
+    save_figure(run_name, "saliency.png")
 
 
 def show_saliency_maps(model, X, y, class_labels, run_name):
@@ -49,10 +50,10 @@ def show_saliency_maps(model, X, y, class_labels, run_name):
         img = rearrange(X[i])
         plt.subplot(2, N, i + 1)
         plt.imshow(img)
-        plt.axis('off')
+        plt.axis("off")
         plt.title(class_labels[y[i]])
         plt.subplot(2, N, N + i + 1)
         plt.imshow(saliency[i], cmap=plt.cm.hot)
-        plt.axis('off')
+        plt.axis("off")
 
-    save_figure(run_name, 'saliency.png')
+    save_figure(run_name, "saliency.png")

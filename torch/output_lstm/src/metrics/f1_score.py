@@ -20,7 +20,7 @@ class F1Score(Metric):
         recall = tp / (tp + fn + eps)
 
         f1 = 2 * (precision * recall) / (precision + recall + eps)
-        f1 = f1.clamp(min=eps, max=1-eps)
+        f1 = f1.clamp(min=eps, max=1 - eps)
         f1_score = 1 - f1.mean()
         return f1_score
 

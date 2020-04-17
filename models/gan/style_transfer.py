@@ -1,35 +1,37 @@
-import torch
+import matplotlib.pyplot as plt
+import numpy as np
+import PIL
 import torchvision
 import torchvision.transforms as T
-import PIL
 
-import numpy as np
-
-import matplotlib.pyplot as plt
-
+import torch
 from cs231n.image_utils import SQUEEZENET_MEAN, SQUEEZENET_STD
+
 dtype = torch.FloatTensor
 
 
 def preprocess(img, size=512):
-    transform = T.Compose([
-        T.Resize(size),
-        T.ToTensor(),
-        T.Normalize(mean=SQUEEZENET_MEAN.tolist(),
-                    std=SQUEEZENET_STD.tolist()),
-        T.Lambda(lambda x: x[None]),
-    ])
+    transform = T.Compose(
+        [
+            T.Resize(size),
+            T.ToTensor(),
+            T.Normalize(mean=SQUEEZENET_MEAN.tolist(), std=SQUEEZENET_STD.tolist()),
+            T.Lambda(lambda x: x[None]),
+        ]
+    )
     return transform(img)
 
 
 def deprocess(img):
-    transform = T.Compose([
-        T.Lambda(lambda x: x[0]),
-        T.Normalize(mean=[0, 0, 0], std=[1.0 / s for s in SQUEEZENET_STD.tolist()]),
-        T.Normalize(mean=[-m for m in SQUEEZENET_MEAN.tolist()], std=[1, 1, 1]),
-        T.Lambda(rescale),
-        T.ToPILImage(),
-    ])
+    transform = T.Compose(
+        [
+            T.Lambda(lambda x: x[0]),
+            T.Normalize(mean=[0, 0, 0], std=[1.0 / s for s in SQUEEZENET_STD.tolist()]),
+            T.Normalize(mean=[-m for m in SQUEEZENET_MEAN.tolist()], std=[1, 1, 1]),
+            T.Lambda(rescale),
+            T.ToPILImage(),
+        ]
+    )
     return transform(img)
 
 
@@ -43,7 +45,6 @@ def features_from_img(imgpath, imgsize):
     img = preprocess(PIL.Image.open(imgpath), size=imgsize)
     img_var = img.type(dtype)
     return extract_features(img_var, cnn), img_var
-
 
 
 # Load the pre-trained SqueezeNet model. TODO
@@ -94,7 +95,7 @@ def content_loss(content_weight, content_current, content_original):
     Returns:
     - scalar content loss
     """
-    return content_weight * torch.sum((content_current - content_original)**2)
+    return content_weight * torch.sum((content_current - content_original) ** 2)
 
 
 def gram_matrix(features, normalize=True):
@@ -143,7 +144,7 @@ def style_loss(feats, style_layers, style_targets, style_weights):
         index = style_layers[i]
         G = gram_matrix(feats[index])
         A = style_targets[i]
-        loss += style_weights[i] * torch.sum((G - A)**2)
+        loss += style_weights[i] * torch.sum((G - A) ** 2)
     return loss
 
 
@@ -159,13 +160,23 @@ def tv_loss(img, tv_weight):
     - loss: PyTorch Variable holding a scalar giving the total variation loss
       for img weighted by tv_weight.
     """
-    first = torch.sum((img[:, :, 1:, :] - img[:, :, :-1, :])**2)
-    second = torch.sum((img[:, :, :, 1:] - img[:, :, :, :-1])**2)
+    first = torch.sum((img[:, :, 1:, :] - img[:, :, :-1, :]) ** 2)
+    second = torch.sum((img[:, :, :, 1:] - img[:, :, :, :-1]) ** 2)
     return tv_weight * (first + second)
 
 
-def style_transfer(content_image, style_image, image_size, style_size, content_layer,
-                   content_weight, style_layers, style_weights, tv_weight, init_random=False):
+def style_transfer(
+    content_image,
+    style_image,
+    image_size,
+    style_size,
+    content_layer,
+    content_weight,
+    style_layers,
+    style_weights,
+    tv_weight,
+    init_random=False,
+):
     """
     Run style transfer!
 
@@ -213,10 +224,10 @@ def style_transfer(content_image, style_image, image_size, style_size, content_l
     optimizer = torch.optim.Adam([img], lr=initial_lr)
 
     f, axarr = plt.subplots(1, 2)
-    axarr[0].axis('off')
-    axarr[1].axis('off')
-    axarr[0].set_title('Content Source Img.')
-    axarr[1].set_title('Style Source Img.')
+    axarr[0].axis("off")
+    axarr[1].axis("off")
+    axarr[0].set_title("Content Source Img.")
+    axarr[1].set_title("Style Source Img.")
     axarr[0].imshow(deprocess(content_img.cpu()))
     axarr[1].imshow(deprocess(style_img.cpu()))
     plt.show()
@@ -243,11 +254,11 @@ def style_transfer(content_image, style_image, image_size, style_size, content_l
         optimizer.step()
 
         if t % 100 == 0:
-            print('Iteration {}'.format(t))
-            plt.axis('off')
+            print("Iteration {}".format(t))
+            plt.axis("off")
             plt.imshow(deprocess(img.data.cpu()))
             plt.show()
-    print('Iteration {}'.format(t))
-    plt.axis('off')
+    print("Iteration {}".format(t))
+    plt.axis("off")
     plt.imshow(deprocess(img.data.cpu()))
     plt.show()

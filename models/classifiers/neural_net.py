@@ -3,7 +3,7 @@ import numpy as np
 from .softmax import softmax
 
 
-class TwoLayerNet():
+class TwoLayerNet:
     """
     A two-layer fully-connected neural network. The net has an input dimension of
     N, a hidden layer dimension of H, and performs classification over C classes.
@@ -35,10 +35,10 @@ class TwoLayerNet():
         - output_size: The number of classes C.
         """
         self.params = {}
-        self.params['W1'] = std * np.random.randn(input_size, hidden_size)
-        self.params['b1'] = np.zeros(hidden_size)
-        self.params['W2'] = std * np.random.randn(hidden_size, output_size)
-        self.params['b2'] = np.zeros(output_size)
+        self.params["W1"] = std * np.random.randn(input_size, hidden_size)
+        self.params["b1"] = np.zeros(hidden_size)
+        self.params["W2"] = std * np.random.randn(hidden_size, output_size)
+        self.params["b2"] = np.zeros(output_size)
 
     def loss(self, X, y=None, reg=0.0):
         """
@@ -64,8 +64,8 @@ class TwoLayerNet():
           with respect to the loss function; has the same keys as self.params.
         """
         # Unpack variables from the params dictionary
-        W1, b1 = self.params['W1'], self.params['b1']
-        W2, b2 = self.params['W2'], self.params['b2']
+        W1, b1 = self.params["W1"], self.params["b1"]
+        W2, b2 = self.params["W2"], self.params["b2"]
 
         # Compute the forward pass
         first = X.dot(W1) + b1
@@ -86,41 +86,50 @@ class TwoLayerNet():
 
         # Backward pass: compute gradients
         grads = {}
-        grads['W1'] = np.zeros_like(W1)
-        grads['b1'] = np.zeros_like(b1)
-        grads['W2'] = np.zeros_like(W2)
-        grads['b2'] = np.zeros_like(b2)
+        grads["W1"] = np.zeros_like(W1)
+        grads["b1"] = np.zeros_like(b1)
+        grads["W2"] = np.zeros_like(W2)
+        grads["b2"] = np.zeros_like(b2)
 
         hidden_size = relu.shape[0]
         num_classes = scores.shape[1]
         kronecker = np.zeros((hidden_size, num_classes))
         kronecker[np.arange(hidden_size), y] = 1
 
-        grads['W2'] -= relu.T.dot(kronecker - softmx)
-        grads['b2'] -= np.ones(hidden_size).T.dot(kronecker - softmx)
+        grads["W2"] -= relu.T.dot(kronecker - softmx)
+        grads["b2"] -= np.ones(hidden_size).T.dot(kronecker - softmx)
 
         drelu = np.zeros(first.shape)
         drelu[first > 0] = 1
         da = (kronecker - softmx).dot(W2.T)
         dh1 = da * drelu
 
-        grads['W1'] -= X.T.dot(dh1)
-        grads['b1'] -= np.sum(dh1, axis=0)
+        grads["W1"] -= X.T.dot(dh1)
+        grads["b1"] -= np.sum(dh1, axis=0)
 
-        grads['W1'] /= num_train
-        grads['W2'] /= hidden_size
-        grads['b1'] /= num_train
-        grads['b2'] /= hidden_size
+        grads["W1"] /= num_train
+        grads["W2"] /= hidden_size
+        grads["b1"] /= num_train
+        grads["b2"] /= hidden_size
 
-        grads['W1'] += reg * 2 * W1
-        grads['W2'] += reg * 2 * W2
+        grads["W1"] += reg * 2 * W1
+        grads["W2"] += reg * 2 * W2
 
         return loss, grads
 
-    def fit(self, X, y, X_val, y_val,
-            learning_rate=1e-3, learning_rate_decay=0.95,
-            reg=5e-6, num_iters=100,
-            batch_size=200, verbose=False):
+    def fit(
+        self,
+        X,
+        y,
+        X_val,
+        y_val,
+        learning_rate=1e-3,
+        learning_rate_decay=0.95,
+        reg=5e-6,
+        num_iters=100,
+        batch_size=200,
+        verbose=False,
+    ):
         """
         Train this neural network using stochastic gradient descent.
 
@@ -155,13 +164,13 @@ class TwoLayerNet():
             loss, grads = self.loss(X_batch, y=y_batch, reg=reg)
             loss_history.append(loss)
 
-            self.params['W1'] -= learning_rate * grads['W1']
-            self.params['b1'] -= learning_rate * grads['b1']
-            self.params['W2'] -= learning_rate * grads['W2']
-            self.params['b2'] -= learning_rate * grads['b2']
+            self.params["W1"] -= learning_rate * grads["W1"]
+            self.params["b1"] -= learning_rate * grads["b1"]
+            self.params["W2"] -= learning_rate * grads["W2"]
+            self.params["b2"] -= learning_rate * grads["b2"]
 
             if verbose and it % 100 == 0:
-                print('iteration %d / %d: loss %f' % (it, num_iters, loss))
+                print("iteration %d / %d: loss %f" % (it, num_iters, loss))
 
             # Every epoch, check train and val accuracy and decay learning rate.
             if it % iterations_per_epoch == 0:
@@ -175,9 +184,9 @@ class TwoLayerNet():
                 learning_rate *= learning_rate_decay
 
         return {
-            'loss_history': loss_history,
-            'train_acc_history': train_acc_history,
-            'val_acc_history': val_acc_history,
+            "loss_history": loss_history,
+            "train_acc_history": train_acc_history,
+            "val_acc_history": val_acc_history,
         }
 
     def predict(self, X):

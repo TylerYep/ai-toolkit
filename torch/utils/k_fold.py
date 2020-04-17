@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 from classifiers import KNearestNeighbor
 
@@ -28,8 +28,10 @@ def k_fold_validation(X_train, y_train, num_folds=5):
         params_to_accuracies[k] = []
         for i in range(num_folds):
             classifier = KNearestNeighbor(k)
-            classifier.fit(np.concatenate(X_train_folds[:i] + X_train_folds[i+1:]),
-                           np.concatenate(y_train_folds[:i] + y_train_folds[i+1:]))
+            classifier.fit(
+                np.concatenate(X_train_folds[:i] + X_train_folds[i + 1 :]),
+                np.concatenate(y_train_folds[:i] + y_train_folds[i + 1 :]),
+            )
             prediction = classifier.predict(X_train_folds[i])
             num_correct = np.sum(prediction == y_train_folds[i])
             accuracy = float(num_correct) / len(y_train_folds[i])
@@ -43,9 +45,9 @@ def k_fold_validation(X_train, y_train, num_folds=5):
     accuracies_mean = np.array([np.mean(v) for k, v in sorted(params_to_accuracies.items())])
     accuracies_std = np.array([np.std(v) for k, v in sorted(params_to_accuracies.items())])
     plt.errorbar(k_choices, accuracies_mean, yerr=accuracies_std)
-    plt.title('Cross-validation on k')
-    plt.xlabel('k')
-    plt.ylabel('Cross-validation accuracy')
+    plt.title("Cross-validation on k")
+    plt.xlabel("k")
+    plt.ylabel("Cross-validation accuracy")
     plt.show()
 
     return max(params_to_accuracies, key=lambda k: params_to_accuracies[k])

@@ -1,9 +1,11 @@
 import math
-import numpy as np
-import matplotlib.pyplot as plt
 
-from dataset import load_data, preprocess
+import matplotlib.pyplot as plt
+import numpy as np
+
 from classifiers import KNearestNeighbor, LinearSVM, Softmax, TwoLayerNet
+from dataset import load_data, preprocess
+
 # from k_fold import k_fold_validation
 
 
@@ -15,11 +17,9 @@ def main():
     clf_dict = {clf.__name__: clf for clf in classifiers}
 
     ###
-    clf_name = 'TwoLayerNet'
+    clf_name = "TwoLayerNet"
     args = [5, 5, 5]
-    kwargs = {
-
-    }
+    kwargs = {}
     ###
 
     clf = clf_dict[clf_name](*args, **kwargs)
@@ -29,30 +29,30 @@ def main():
     num_correct = np.sum(y_test_pred == y_test)
     num_test = y_test.shape[0]
     accuracy = float(num_correct) / num_test
-    print('Got %d / %d correct => accuracy: %f' % (num_correct, num_test, accuracy))
+    print("Got %d / %d correct => accuracy: %f" % (num_correct, num_test, accuracy))
     # k_fold_validation(X_train, y_train)
     # tune_svm(X_train, y_train, X_test, y_test)
 
 
 def plot_loss_curve(loss_hist):
     plt.plot(loss_hist)
-    plt.xlabel('Iteration number')
-    plt.ylabel('Loss value')
-    plt.title('Loss Curve')
+    plt.xlabel("Iteration number")
+    plt.ylabel("Loss value")
+    plt.title("Loss Curve")
     plt.show()
 
 
 def visualize_weights(clf, classes=None):
-    w = clf.W[:-1, :] # strip out the bias
-    w = w.reshape(28, 28, 1, 10) # (h, w, c, b)
+    w = clf.W[:-1, :]  # strip out the bias
+    w = w.reshape(28, 28, 1, 10)  # (h, w, c, b)
     w_min, w_max = np.min(w), np.max(w)
     # classes = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
     for i in range(10):
         # Rescale the weights to be between 0 and 255
         wimg = 255.0 * (w[:, :, :, i].squeeze() - w_min) / (w_max - w_min)
         plt.subplot(2, 5, i + 1)
-        plt.imshow(wimg.astype('uint8'))
-        plt.axis('off')
+        plt.imshow(wimg.astype("uint8"))
+        plt.axis("off")
         if classes is not None:
             plt.title(classes[i])
 
@@ -68,8 +68,8 @@ def tune_svm(X_train, y_train, X_val, y_val):
     # (training_accuracy, validation_accuracy). The accuracy is simply the fraction
     # of data points that are correctly classified.
     results = {}
-    best_val = -1   # The highest validation accuracy that we have seen so far.
-    best_svm = None # The LinearSVM object that achieved the highest validation rate.
+    best_val = -1  # The highest validation accuracy that we have seen so far.
+    best_svm = None  # The LinearSVM object that achieved the highest validation rate.
 
     for lr in learning_rates:
         for reg in regularization_strengths:
@@ -94,20 +94,20 @@ def tune_svm(X_train, y_train, X_val, y_val):
     plt.subplot(2, 1, 1)
     plt.scatter(x_scatter, y_scatter, marker_size, c=colors, cmap=plt.cm.coolwarm)
     plt.colorbar()
-    plt.xlabel('log learning rate')
-    plt.ylabel('log regularization strength')
-    plt.title('CIFAR-10 training accuracy')
+    plt.xlabel("log learning rate")
+    plt.ylabel("log regularization strength")
+    plt.title("CIFAR-10 training accuracy")
 
     # plot validation accuracy
-    colors = [results[x][1] for x in results] # default size of markers is 20
+    colors = [results[x][1] for x in results]  # default size of markers is 20
     plt.subplot(2, 1, 2)
     plt.scatter(x_scatter, y_scatter, marker_size, c=colors, cmap=plt.cm.coolwarm)
     plt.colorbar()
-    plt.xlabel('log learning rate')
-    plt.ylabel('log regularization strength')
-    plt.title('CIFAR-10 validation accuracy')
+    plt.xlabel("log learning rate")
+    plt.ylabel("log regularization strength")
+    plt.title("CIFAR-10 validation accuracy")
     plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

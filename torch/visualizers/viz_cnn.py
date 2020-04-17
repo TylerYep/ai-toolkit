@@ -1,16 +1,20 @@
 from src import util
 from src.args import init_pipeline
-from src.dataset import load_train_data, CLASS_LABELS
+from src.dataset import CLASS_LABELS, load_train_data
 from src.models import get_model_initializer
-
-from src.visualizations import view_input, compute_activations, make_fooling_image, \
-    show_saliency_maps, create_class_visualization
+from src.visualizations import (
+    compute_activations,
+    create_class_visualization,
+    make_fooling_image,
+    show_saliency_maps,
+    view_input,
+)
 
 
 def viz():
     args, device, checkpoint = init_pipeline()
     train_loader, _, init_params = load_train_data(args, device)
-    init_params = checkpoint.get('model_init', init_params)
+    init_params = checkpoint.get("model_init", init_params)
     model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
 
@@ -35,5 +39,5 @@ def visualize_trained(model, loader, run_name=None):
     create_class_visualization(model, data, CLASS_LABELS, target[1], run_name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     viz()

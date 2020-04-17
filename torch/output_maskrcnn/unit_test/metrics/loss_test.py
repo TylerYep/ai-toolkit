@@ -1,4 +1,4 @@
-''' accuracy_test.py '''
+""" accuracy_test.py """
 from src.metrics import Loss
 
 
@@ -19,4 +19,4 @@ class TestLoss:
             example_batch.loss /= 2
             _ = metric.update(example_batch)
 
-        assert str(metric) == 'Loss: 0.0492'
+        assert str(metric) == "Loss: 0.0492"

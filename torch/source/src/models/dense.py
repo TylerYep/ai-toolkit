@@ -3,6 +3,7 @@ import torch.nn as nn
 
 class DenseNet(nn.Module):
     """ Neural network """
+
     def __init__(self, input_shape):
         super().__init__()
         self.input_shape = input_shape
@@ -14,7 +15,7 @@ class DenseNet(nn.Module):
             nn.Linear(hidden_sizes[0], hidden_sizes[1]),
             nn.ReLU(),
             nn.Linear(hidden_sizes[1], output_size),
-            nn.LogSoftmax(dim=1)
+            nn.LogSoftmax(dim=1),
         )
 
     def forward(self, x):

@@ -1,8 +1,11 @@
 import random
+
 import matplotlib.pyplot as plt
+
 import torch
 
 from .viz_utils import jitter, rearrange, save_figure
+
 
 def create_class_visualization(model, data, class_labels, target_y, run_name, **kwargs):
     """
@@ -23,12 +26,12 @@ def create_class_visualization(model, data, class_labels, target_y, run_name, **
     """
     dtype = torch.FloatTensor
     model.type(dtype)
-    l2_reg = kwargs.pop('l2_reg', 1e-3)
-    learning_rate = kwargs.pop('learning_rate', 25)
-    num_iterations = kwargs.pop('num_iterations', 100)
-    blur_every = kwargs.pop('blur_every', 10)
-    max_jitter = kwargs.pop('max_jitter', 16)
-    show_every = kwargs.pop('show_every', 25)
+    l2_reg = kwargs.pop("l2_reg", 1e-3)
+    learning_rate = kwargs.pop("learning_rate", 25)
+    num_iterations = kwargs.pop("num_iterations", 100)
+    blur_every = kwargs.pop("blur_every", 10)
+    max_jitter = kwargs.pop("max_jitter", 16)
+    show_every = kwargs.pop("show_every", 25)
 
     # Randomly initialize the image as a PyTorch Tensor, and make it requires gradient.
     INPUT_SHAPE = data[0].unsqueeze(0).shape
@@ -60,10 +63,10 @@ def create_class_visualization(model, data, class_labels, target_y, run_name, **
         # Periodically show the image
         if t == 0 or (t + 1) % show_every == 0 or t == num_iterations - 1:
             plt.imshow(rearrange(img.data))
-            plt.title(f'{class_labels[target_y]}\nIteration {t + 1} / {num_iterations}')
+            plt.title(f"{class_labels[target_y]}\nIteration {t + 1} / {num_iterations}")
             plt.gcf().set_size_inches(4, 4)
-            plt.axis('off')
+            plt.axis("off")
             # plt.show()
 
-    save_figure(run_name, 'class_viz.png')
+    save_figure(run_name, "class_viz.png")
     return img.data  # deprocess(img.data.cpu())

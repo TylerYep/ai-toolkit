@@ -1,14 +1,13 @@
 import numpy as np
 
 
-class LinearClassifier():
+class LinearClassifier:
     """ A simple linear classifier abstract class. """
 
     def __init__(self):
         self.W = None
 
-    def fit(self, X, y, learning_rate=1e-3, reg=1e-5, num_iters=100,
-            batch_size=200, verbose=False):
+    def fit(self, X, y, learning_rate=1e-3, reg=1e-5, num_iters=100, batch_size=200, verbose=False):
         """
         Train this linear classifier using stochastic gradient descent.
 
@@ -27,7 +26,7 @@ class LinearClassifier():
         A list containing the value of the loss function at each training iteration.
         """
         num_train, dim = X.shape
-        num_classes = np.max(y) + 1 # assume y takes values 0...K-1 where K is number of classes
+        num_classes = np.max(y) + 1  # assume y takes values 0...K-1 where K is number of classes
         if self.W is None:
             # lazily initialize W
             self.W = 0.001 * np.random.randn(dim, num_classes)
@@ -51,7 +50,7 @@ class LinearClassifier():
             self.W -= learning_rate * grad
 
             if verbose and it % 100 == 0:
-                print('iteration %d / %d: loss %f' % (it, num_iters, loss))
+                print("iteration %d / %d: loss %f" % (it, num_iters, loss))
 
         return loss_history
 

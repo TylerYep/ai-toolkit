@@ -1,5 +1,6 @@
 import numpy as np
 
+
 """
 This file implements various first-order update rules that are commonly used for
 training neural networks. Each update rule accepts current weights and the
@@ -37,12 +38,12 @@ def sgd(w, dw, config=None):
     config format:
     - learning_rate: Scalar learning rate.
     """
-    if config is None: config = {}
-    config.setdefault('learning_rate', 1e-2)
+    if config is None:
+        config = {}
+    config.setdefault("learning_rate", 1e-2)
 
-    w -= config['learning_rate'] * dw
+    w -= config["learning_rate"] * dw
     return w, config
-
 
 
 def sgd_momentum(w, dw, config=None):
@@ -56,15 +57,16 @@ def sgd_momentum(w, dw, config=None):
     - velocity: A numpy array of the same shape as w and dw used to store a
       moving average of the gradients.
     """
-    if config is None: config = {}
-    config.setdefault('learning_rate', 1e-2)
-    config.setdefault('momentum', 0.9)
-    v = config.get('velocity', np.zeros_like(w))
+    if config is None:
+        config = {}
+    config.setdefault("learning_rate", 1e-2)
+    config.setdefault("momentum", 0.9)
+    v = config.get("velocity", np.zeros_like(w))
 
-    b = config['momentum']
-    v = b*v - config['learning_rate']*dw
+    b = config["momentum"]
+    v = b * v - config["learning_rate"] * dw
     next_w = w + v
-    config['velocity'] = v
+    config["velocity"] = v
 
     return next_w, config
 
@@ -81,17 +83,18 @@ def rmsprop(w, dw, config=None):
     - epsilon: Small scalar used for smoothing to avoid dividing by zero.
     - cache: Moving average of second moments of gradients.
     """
-    if config is None: config = {}
-    config.setdefault('learning_rate', 1e-2)
-    config.setdefault('decay_rate', 0.99)
-    config.setdefault('epsilon', 1e-8)
-    config.setdefault('cache', np.zeros_like(w))
+    if config is None:
+        config = {}
+    config.setdefault("learning_rate", 1e-2)
+    config.setdefault("decay_rate", 0.99)
+    config.setdefault("epsilon", 1e-8)
+    config.setdefault("cache", np.zeros_like(w))
 
-    decay_rate = config['decay_rate']
-    learning_rate = config['learning_rate']
+    decay_rate = config["decay_rate"]
+    learning_rate = config["learning_rate"]
 
-    config['cache'] = decay_rate * config['cache'] + (1 - decay_rate) * dw**2
-    next_w = w - learning_rate * dw / (np.sqrt(config['cache']) + config['epsilon'])
+    config["cache"] = decay_rate * config["cache"] + (1 - decay_rate) * dw ** 2
+    next_w = w - learning_rate * dw / (np.sqrt(config["cache"]) + config["epsilon"])
 
     return next_w, config
 
@@ -110,26 +113,27 @@ def adam(x, dx, config=None):
     - v: Moving average of squared gradient.
     - t: Iteration number.
     """
-    if config is None: config = {}
-    config.setdefault('learning_rate', 1e-3)
-    config.setdefault('beta1', 0.9)
-    config.setdefault('beta2', 0.999)
-    config.setdefault('epsilon', 1e-8)
-    config.setdefault('m', np.zeros_like(x))
-    config.setdefault('v', np.zeros_like(x))
-    config.setdefault('t', 0)
+    if config is None:
+        config = {}
+    config.setdefault("learning_rate", 1e-3)
+    config.setdefault("beta1", 0.9)
+    config.setdefault("beta2", 0.999)
+    config.setdefault("epsilon", 1e-8)
+    config.setdefault("m", np.zeros_like(x))
+    config.setdefault("v", np.zeros_like(x))
+    config.setdefault("t", 0)
 
     next_x = None
-    beta1, beta2, eps = config['beta1'], config['beta2'], config['epsilon']
-    t, m, v = config['t'], config['m'], config['v']
+    beta1, beta2, eps = config["beta1"], config["beta2"], config["epsilon"]
+    t, m, v = config["t"], config["m"], config["v"]
     m = beta1 * m + (1 - beta1) * dx
     v = beta2 * v + (1 - beta2) * (dx * dx)
     t += 1
-    alpha = config['learning_rate'] * np.sqrt(1 - beta2 ** t) / (1 - beta1 ** t)
+    alpha = config["learning_rate"] * np.sqrt(1 - beta2 ** t) / (1 - beta1 ** t)
     x -= alpha * (m / (np.sqrt(v) + eps))
-    config['t'] = t
-    config['m'] = m
-    config['v'] = v
+    config["t"] = t
+    config["m"] = m
+    config["v"] = v
     next_x = x
 
     return next_x, config

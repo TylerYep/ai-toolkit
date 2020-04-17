@@ -7,7 +7,7 @@ class Accuracy(Metric):
         return (output.argmax(1) == target).float().sum().item()
 
     def __repr__(self):
-        return f'{self.name}: {100. * self.get_epoch_result():.2f}%'
+        return f"{self.name}: {100. * self.get_epoch_result():.2f}%"
 
     def update(self, val_dict):
         output, target = val_dict.output, val_dict.target
@@ -20,5 +20,5 @@ class Accuracy(Metric):
     def get_epoch_result(self):
         assert self.num_examples > 0
         self.value = self.epoch_avg / self.num_examples
-        assert 0. <= self.value <= 100.
+        assert 0.0 <= self.value <= 100.0
         return self.value

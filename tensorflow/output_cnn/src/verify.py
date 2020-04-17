@@ -9,7 +9,7 @@ def verify_model(model, train_images, train_labels):
     """
     gradient_check(model, train_images, train_labels)
     overfit_example(model, train_images, train_labels)
-    print('Verification complete - all tests passed!')
+    print("Verification complete - all tests passed!")
 
 
 def gradient_check(model, train_images, train_labels, test_val=3):
@@ -22,7 +22,9 @@ def gradient_check(model, train_images, train_labels, test_val=3):
 
     Will not work if the model does not compute a gradient for the predicted test_val.
     """
-    model.train_on_batch(train_images[test_val:test_val+1], train_labels[test_val:test_val+1])
+    model.train_on_batch(
+        train_images[test_val : test_val + 1], train_labels[test_val : test_val + 1]
+    )
     x_tensor = tf.convert_to_tensor(train_images, dtype=tf.float32)
     with tf.GradientTape() as t:
         t.watch(x_tensor)
@@ -31,7 +33,7 @@ def gradient_check(model, train_images, train_labels, test_val=3):
     grad = t.gradient(loss, x_tensor).numpy()
     assert loss.numpy() != 0
     assert (grad[test_val] != 0).any()
-    assert (grad[:test_val] == 0.).all() and (grad[test_val+1:] == 0.).all()
+    assert (grad[:test_val] == 0.0).all() and (grad[test_val + 1 :] == 0.0).all()
 
 
 def overfit_example(model, train_images, train_labels, batch_size=5, max_iters=50):

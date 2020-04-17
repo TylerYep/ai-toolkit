@@ -1,10 +1,12 @@
-from typing import Dict, Any
-from argparse import Namespace
-import os
-import shutil
-import random
 import json
+import os
+import random
+import shutil
+from argparse import Namespace
+from typing import Any, Dict
+
 import numpy as np
+
 import torch
 import torch.nn as nn
 
@@ -19,9 +21,9 @@ class Arguments:
 
 def load_args_from_json(args):
     filename = args.config
-    found_json = os.path.join(args.config_dir, filename + '.json')
+    found_json = os.path.join(args.config_dir, filename + ".json")
     if not os.path.isfile(found_json):
-        found_json = os.path.join(args.save_dir, filename, 'args.json')
+        found_json = os.path.join(args.save_dir, filename, "args.json")
     with open(found_json) as f:
         return Arguments(json.load(f))
 
@@ -44,11 +46,11 @@ def get_run_name(args: Namespace) -> str:
     dirlist.sort()
     dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
     if not dirlist:
-        result = 'A'
+        result = "A"
     else:
         last_run_char = dirlist[-1][-1]
-        if last_run_char == 'Z':
-            result = 'A' * (len(dirlist[-1]) + 1)
+        if last_run_char == "Z":
+            result = "A" * (len(dirlist[-1]) + 1)
         else:
             result = dirlist[-1][:-1] + chr(ord(last_run_char) + 1)
     out_dir = os.path.join(save_dir, result)
@@ -68,12 +70,12 @@ def get_sample_loader(loader):
 
 def set_rng_state(checkpoint):
     if checkpoint:
-        random.setstate(checkpoint['rng_state'])
-        np.random.set_state(checkpoint['np_rng_state'])
-        torch.set_rng_state(checkpoint['torch_rng_state'])
+        random.setstate(checkpoint["rng_state"])
+        np.random.set_state(checkpoint["np_rng_state"])
+        torch.set_rng_state(checkpoint["torch_rng_state"])
 
 
-def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = ''):
+def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = ""):
     """ Saves model and training parameters at checkpoint + 'last.pth.tar'.
     If is_best is True, also saves best.pth.tar
     Args:
@@ -82,13 +84,13 @@ def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = ''):
         run_name: (string) folder where parameters are to be saved
         is_best: (bool) True if it is the best model seen till now
     """
-    print('Saving checkpoint...\n')
-    run_name = run_name if run_name else state['run_name']
-    save_path = os.path.join(run_name, 'checkpoint.pth.tar')
+    print("Saving checkpoint...\n")
+    run_name = run_name if run_name else state["run_name"]
+    save_path = os.path.join(run_name, "checkpoint.pth.tar")
     torch.save(state, save_path)
     if is_best:
-        print('Saving new model_best...\n')
-        shutil.copyfile(save_path, os.path.join(run_name, 'model_best.pth.tar'))
+        print("Saving new model_best...\n")
+        shutil.copyfile(save_path, os.path.join(run_name, "model_best.pth.tar"))
 
 
 def load_checkpoint(checkpoint_path: str, use_best: bool = False) -> Dict[str, Any]:
@@ -96,7 +98,7 @@ def load_checkpoint(checkpoint_path: str, use_best: bool = False) -> Dict[str, A
     Args:
         checkpoint_path: (string) filename which needs to be loaded
     """
-    load_file = 'model_best.pth.tar' if use_best else 'checkpoint.pth.tar'
+    load_file = "model_best.pth.tar" if use_best else "checkpoint.pth.tar"
     return torch.load(os.path.join(checkpoint_path, load_file))
 
 
@@ -109,9 +111,9 @@ def load_state_dict(checkpoint: Dict, model: nn.Module, optimizer=None, schedule
         optimizer: (torch.optim) optional: resume optimizer from checkpoint
     """
     if checkpoint:
-        print('Loading checkpoint...')
-        model.load_state_dict(checkpoint['model_state_dict'])
+        print("Loading checkpoint...")
+        model.load_state_dict(checkpoint["model_state_dict"])
         if optimizer is not None:
-            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         if scheduler is not None:
-            scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+            scheduler.load_state_dict(checkpoint["scheduler_state_dict"])

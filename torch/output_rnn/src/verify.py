@@ -1,9 +1,10 @@
 import sys
 import warnings
-import torchsummary
-import torch
 
-if 'google.colab' in sys.modules:
+import torch
+import torchsummary
+
+if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm
@@ -21,7 +22,7 @@ def verify_model(args, model, loader, optimizer, criterion, device):
         overfit_example(model, loader, optimizer, criterion, device, args.batch_dim)
         check_all_layers_training(model, loader, optimizer, criterion)
         detect_NaN_tensors(model)
-        print('Verification complete - all tests passed!')
+        print("Verification complete - all tests passed!")
 
 
 def model_summary(args, model, loader):
@@ -52,44 +53,53 @@ def check_batch_dimension(model, loader, optimizer, test_val=2):
 
         assert loss != 0, "Loss should be greater than zero."
         assert (data.grad[test_val] != 0).any(), "The gradient of the test input is not nonzero."
-        assert (data.grad[:test_val] == 0.).all() and (data.grad[test_val+1:] == 0.).all(), \
-            "There are nonzero gradients in the batch, when they should all be zero."
+        assert (data.grad[:test_val] == 0.0).all() and (
+            data.grad[test_val + 1 :] == 0.0
+        ).all(), "There are nonzero gradients in the batch, when they should all be zero."
 
 
-def overfit_example(model, loader, optimizer, criterion, device,
-                    batch_dim=0, batch_size=2, max_iters=50):
+def overfit_example(
+    model, loader, optimizer, criterion, device, batch_dim=0, batch_size=2, max_iters=50
+):
     """
     Verifies that the provided model can overfit a single batch or example.
     """
+
     def batch_slice(input_data, batch_size, batch_dim):
         if isinstance(input_data, (list, tuple)):
             return [batch_slice(data, batch_size, batch_dim) for data in input_data]
         if input_data.ndim == 1:
             return input_data[:batch_size]
         none_slice = (slice(None),)
-        batch_dim_slice = none_slice * batch_dim + (slice(batch_size, ),) \
+        batch_dim_slice = (
+            none_slice * batch_dim
+            + (slice(batch_size,),)
             + none_slice * (input_data.ndim - batch_dim - 1)
+        )
         return input_data[batch_dim_slice]
 
     data, target = next(loader)
     data = batch_slice(data, batch_size, batch_dim)
     target = batch_slice(target, batch_size, batch_dim)
 
-    with tqdm(desc='Verify Model', total=max_iters, ncols=120) as pbar:
+    with tqdm(desc="Verify Model", total=max_iters, ncols=120) as pbar:
         for _ in range(max_iters):
             optimizer.zero_grad()
             output = model(*data) if isinstance(data, (list, tuple)) else model(data)
             loss = criterion(output, target)
-            if torch.allclose(loss, torch.tensor(0.).to(device)):
+            if torch.allclose(loss, torch.tensor(0.0).to(device)):
                 break
             loss.backward()
             optimizer.step()
-            pbar.set_postfix({'Loss': loss.item()})
+            pbar.set_postfix({"Loss": loss.item()})
             pbar.update()
 
-    if not torch.allclose(loss, torch.tensor(0.).to(device)):
-        warnings.warn(f"\nOverfit Loss is not sufficiently close to 0: {loss}\n"
-                      f"This may indicate an error with your model.", RuntimeWarning)
+    if not torch.allclose(loss, torch.tensor(0.0).to(device)):
+        warnings.warn(
+            f"\nOverfit Loss is not sufficiently close to 0: {loss}\n"
+            f"This may indicate an error with your model.",
+            RuntimeWarning,
+        )
 
 
 def detect_NaN_tensors(model):
@@ -97,9 +107,10 @@ def detect_NaN_tensors(model):
     Verifies that the provided model does not have any exploding gradients.
     """
     for name, param in model.named_parameters():
-        assert torch.isfinite(param).all(), \
-            (f'Detected NaN and/or inf values in model weights: {name}. '
-             f'Check your forward pass for numerically unstable operations.')
+        assert torch.isfinite(param).all(), (
+            f"Detected NaN and/or inf values in model weights: {name}. "
+            f"Check your forward pass for numerically unstable operations."
+        )
 
 
 def check_all_layers_training(model, loader, optimizer, criterion):
@@ -118,6 +129,7 @@ def check_all_layers_training(model, loader, optimizer, criterion):
 
     after = model.parameters()
     for start, end in zip(before, after):
-        assert (start != end).any(), \
-            ('Detected some layers that are not training. Did you freeze '
-             'some layers or forget to set the model to train mode?')
+        assert (start != end).any(), (
+            "Detected some layers that are not training. Did you freeze "
+            "some layers or forget to set the model to train mode?"
+        )

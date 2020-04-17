@@ -5,6 +5,7 @@ from torch.nn import functional as F
 
 class BasicCNN(nn.Module):
     """ Neural network """
+
     def __init__(self, input_shape):
         super().__init__()
         self.input_shape = input_shape

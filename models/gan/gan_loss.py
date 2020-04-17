@@ -1,7 +1,7 @@
 import torch
 
 
-def bce_loss(input, target):
+def bce_loss(inputs, target):
     """
     Numerically stable version of the binary cross-entropy loss function.
 
@@ -16,8 +16,8 @@ def bce_loss(input, target):
     Returns:
     - A PyTorch Tensor containing the mean BCE loss over the minibatch of input data.
     """
-    neg_abs = - input.abs()
-    loss = input.clamp(min=0) - input * target + (1 + neg_abs.exp()).log()
+    neg_abs = -inputs.abs()
+    loss = inputs.clamp(min=0) - inputs * target + (1 + neg_abs.exp()).log()
     return loss.mean()
 
 
@@ -67,8 +67,8 @@ def ls_discriminator_loss(scores_real, scores_fake):
     Outputs:
     - loss: A PyTorch Tensor containing the loss.
     """
-    real_loss = torch.mean((scores_real - 1)**2)
-    fake_loss = torch.mean(scores_fake**2)
+    real_loss = torch.mean((scores_real - 1) ** 2)
+    fake_loss = torch.mean(scores_fake ** 2)
     loss = 0.5 * (real_loss + fake_loss)
     return loss
 
@@ -83,5 +83,5 @@ def ls_generator_loss(scores_fake):
     Outputs:
     - loss: A PyTorch Tensor containing the loss.
     """
-    loss = 0.5 * torch.mean((scores_fake - 1)**2)
+    loss = 0.5 * torch.mean((scores_fake - 1) ** 2)
     return loss

@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class KNearestNeighbor():
+class KNearestNeighbor:
     """ a kNN classifier with L2 distance """
 
     def __init__(self, k):
@@ -95,7 +95,7 @@ class KNearestNeighbor():
         y_pred = np.zeros(num_test)
         for i in range(num_test):
             # List of length k storing the labels of the k nearest neighbors to the ith test point.
-            inds = np.argsort(dists[i, :])[:self.k]
+            inds = np.argsort(dists[i, :])[: self.k]
             closest_y = self.y_train[inds]
             y_pred[i] = np.bincount(closest_y).argmax()
         return y_pred

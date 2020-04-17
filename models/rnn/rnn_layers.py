@@ -47,7 +47,7 @@ def rnn_step_backward(dnext_h, cache):
     - db: Gradients of bias vector, of shape (H,)
     """
     x, prev_h, next_h, Wx, Wh, b = cache
-    dh = dnext_h * (1 - next_h**2)
+    dh = dnext_h * (1 - next_h ** 2)
     dx = dh @ Wx.T
     dprev_h = dh @ Wh.T
     dWx = x.T @ dh
@@ -169,8 +169,8 @@ def sigmoid(x):
     """
     A numerically stable version of the logistic sigmoid function.
     """
-    pos_mask = (x >= 0)
-    neg_mask = (x < 0)
+    pos_mask = x >= 0
+    neg_mask = x < 0
     z = np.zeros_like(x)
     z[pos_mask] = np.exp(-x[pos_mask])
     z[neg_mask] = np.exp(x[neg_mask])
@@ -203,7 +203,7 @@ def lstm_step_forward(x, prev_h, prev_c, Wx, Wh, b):
     """
     H = prev_h.shape[1]
     a = prev_h @ Wh + x @ Wx + b
-    a_i, a_f, a_o, a_g = a[:, :H], a[:, H:2*H], a[:, 2*H:3*H], a[:, 3*H:]
+    a_i, a_f, a_o, a_g = a[:, :H], a[:, H : 2 * H], a[:, 2 * H : 3 * H], a[:, 3 * H :]
     next_c = sigmoid(a_f) * prev_c + sigmoid(a_i) * np.tanh(a_g)
     next_h = sigmoid(a_o) * np.tanh(next_c)
     cache = x, prev_h, prev_c, next_h, next_c, Wx, Wh, b, a
@@ -228,12 +228,16 @@ def lstm_step_backward(dnext_h, dnext_c, cache):
     - dWh: Gradient of hidden-to-hidden weights, of shape (H, 4H)
     - db: Gradient of biases, of shape (4H,)
     """
-    def d_sigmoid(x): return sigmoid(x) * (1 - sigmoid(x))
-    def d_tanh(x): return 1 - np.tanh(x)**2
+
+    def d_sigmoid(x):
+        return sigmoid(x) * (1 - sigmoid(x))
+
+    def d_tanh(x):
+        return 1 - np.tanh(x) ** 2
 
     H = dnext_h.shape[1]
     x, prev_h, prev_c, next_h, next_c, Wx, Wh, b, a = cache
-    a_i, a_f, a_o, a_g = a[:, :H], a[:, H:2*H], a[:, 2*H:3*H], a[:, 3*H:]
+    a_i, a_f, a_o, a_g = a[:, :H], a[:, H : 2 * H], a[:, 2 * H : 3 * H], a[:, 3 * H :]
     i, f, o, g = sigmoid(a_i), sigmoid(a_f), sigmoid(a_o), np.tanh(a_g)
 
     dc = dnext_c + dnext_h * d_tanh(next_c) * o
@@ -322,8 +326,9 @@ def lstm_backward(dh, cache):
     db = np.zeros_like(b)
 
     for i in reversed(range(T)):
-        dx[:, i, :], dh_i, dc_i, dWx_i, dWh_i, db_i = \
-            lstm_step_backward(dh[:, i, :] + dprev_h, dprev_c, cache[i])
+        dx[:, i, :], dh_i, dc_i, dWx_i, dWh_i, db_i = lstm_step_backward(
+            dh[:, i, :] + dprev_h, dprev_c, cache[i]
+        )
         dWx += dWx_i
         dWh += dWh_i
         db += db_i
@@ -423,7 +428,8 @@ def temporal_softmax_loss(x, y, mask, verbose=False):
     dx_flat /= N
     dx_flat *= mask_flat[:, None]
 
-    if verbose: print('dx_flat: ', dx_flat.shape)
+    if verbose:
+        print("dx_flat: ", dx_flat.shape)
 
     dx = dx_flat.reshape(N, T, V)
 
