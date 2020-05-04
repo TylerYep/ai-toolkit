@@ -5,7 +5,7 @@ import string
 
 CONFIGS = {
     "maskrcnn": {
-        "destination": "output_maskrcnn",
+        "destination": "../../output_maskrcnn",
         "presets": {
             "src/dataset.py": "datasets/dataset_penn.py",
             "src/viz.py": "visualizers/viz_cnn.py",
@@ -13,7 +13,7 @@ CONFIGS = {
         "substitutions": {"batch_dim": "0", "loss_fn": "nn.CrossEntropyLoss", "model": "MaskRCNN",},
     },
     "rnn": {
-        "destination": "output_rnn",
+        "destination": "../../output_rnn",
         "presets": {
             "src/dataset.py": "datasets/dataset_rnn.py",
             "src/viz.py": "visualizers/viz_rnn.py",
@@ -21,7 +21,7 @@ CONFIGS = {
         "substitutions": {"batch_dim": "0", "loss_fn": "nn.CrossEntropyLoss", "model": "BasicRNN",},
     },
     "lstm": {
-        "destination": "output_lstm",
+        "destination": "../../output_lstm",
         "presets": {
             "src/dataset.py": "datasets/dataset_lstm.py",
             "src/viz.py": "visualizers/viz_rnn.py",
@@ -41,24 +41,24 @@ CONFIGS = {
 
 def init_pipeline():
     parser = argparse.ArgumentParser(description="PyTorch Project Initializer")
+    # fmt: off
+    parser.add_argument("--project", type=str,
+                        help="version of the code to generate")
 
-    parser.add_argument("--project", type=str, help="version of the code to generate")
+    parser.add_argument("--all", action="store_true", default=False,
+                        help="generate all projects")
 
-    parser.add_argument("--all", action="store_true", default=False, help="generate all projects")
+    parser.add_argument("--output_path", type=str, default="",
+                        help="folder to output the project to")
 
-    parser.add_argument(
-        "--output_path", type=str, default="", help="folder to output the project to"
-    )
+    parser.add_argument("--config_path", type=str, default="",
+                        help="filepath to the config.json file")
 
-    parser.add_argument(
-        "--config_path", type=str, default="", help="filepath to the config.json file"
-    )
-
-    parser.add_argument(
-        "--visualize", action="store_true", default=True, help="save visualization files"
-    )
+    parser.add_argument("--visualize", action="store_true", default=True,
+                        help="save visualization files")
 
     return parser.parse_args()
+    # fmt: on
 
 
 def remove_duplicate_files(destination, filename):

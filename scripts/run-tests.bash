@@ -18,4 +18,4 @@ black . -l 100
 # find . -iname "*.py" | xargs pylint
 
 # Testing
-cd "torch" && python init_proj.py --all && git add . && cd "output_rnn" && pytest unit_test -s
+cd "torch" && python init_proj.py --all && cd "../../output_rnn" && pytest unit_test -s
