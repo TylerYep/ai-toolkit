@@ -1,7 +1,7 @@
 import argparse
 import os
 import random
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
@@ -18,7 +18,7 @@ def init_pipeline(arg_list: Optional[List[str]] = None):
         # Update additional configs defined in the json file.
         args = util.load_args_from_json(args.config)
 
-    checkpoint = {}
+    checkpoint: Dict[str, Any] = {}
     if args.checkpoint:
         checkpoint_path = os.path.join(args.save_dir, args.checkpoint)
         checkpoint = util.load_checkpoint(checkpoint_path, args.use_best)

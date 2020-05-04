@@ -1,5 +1,6 @@
 import random
 import sys
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -39,14 +40,16 @@ def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode)
                 loss.backward()
                 optimizer.step()
 
-            batch_size = (
-                data[0].shape[args.batch_dim]
-                if isinstance(data, (list, tuple))
-                else data.shape[args.batch_dim]
-            )
-            tqdm_dict = metrics.batch_update(
-                i, num_batches, batch_size, data, loss, output, target, mode
-            )
+            val_dict = {
+                "data": data,
+                "loss": loss,
+                "output": output,
+                "target": target,
+                "batch_size": (
+                    (data[0] if isinstance(data, (list, tuple)) else data).shape[args.batch_dim]
+                ),
+            }
+            tqdm_dict = metrics.batch_update(SimpleNamespace(**val_dict), i, num_batches, mode)
             pbar.set_postfix(tqdm_dict)
             pbar.update()
     metrics.epoch_update(mode)
@@ -90,20 +93,18 @@ def train(arg_list=None):
             scheduler.step()
 
         if not args.no_save:
-            util.save_checkpoint(
-                {
-                    "model_init": init_params,
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "scheduler_state_dict": scheduler.state_dict() if args.scheduler else None,
-                    "rng_state": random.getstate(),
-                    "np_rng_state": np.random.get_state(),
-                    "torch_rng_state": torch.get_rng_state(),
-                    "run_name": metrics.run_name,
-                    "metric_obj": metrics.json_repr(),
-                },
-                metrics.is_best,
-            )
+            checkpoint_dict = {
+                "model_init": init_params,
+                "model_state_dict": model.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "scheduler_state_dict": scheduler.state_dict() if args.scheduler else None,
+                "rng_state": random.getstate(),
+                "np_rng_state": np.random.get_state(),
+                "torch_rng_state": torch.get_rng_state(),
+                "run_name": metrics.run_name,
+                "metric_obj": metrics.json_repr(),
+            }
+            util.save_checkpoint(checkpoint_dict, metrics.is_best)
 
     torch.set_grad_enabled(True)
     if not args.no_visualize:

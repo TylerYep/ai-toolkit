@@ -3,7 +3,7 @@ import os
 import random
 import shutil
 from argparse import Namespace
-from typing import Any, Dict
+from typing import Any, Dict, Generator
 
 import numpy as np
 
@@ -12,14 +12,14 @@ import torch.nn as nn
 
 
 class Arguments:
-    def __init__(self, args):
+    def __init__(self, args: Namespace):
         self.__dict__ = args
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self.__dict__)
 
 
-def load_args_from_json(args):
+def load_args_from_json(args: Namespace) -> Arguments:
     filename = args.config
     found_json = os.path.join(args.config_dir, filename + ".json")
     if not os.path.isfile(found_json):
@@ -58,7 +58,7 @@ def get_run_name(args: Namespace) -> str:
     return out_dir
 
 
-def get_sample_loader(loader):
+def get_sample_loader(loader) -> Generator:
     """ Returns a generator that outputs a single batch of data. """
     sample_loader = iter(loader)
     while True:
@@ -68,14 +68,14 @@ def get_sample_loader(loader):
             sample_loader = iter(loader)
 
 
-def set_rng_state(checkpoint):
+def set_rng_state(checkpoint: Dict[str, Any]) -> None:
     if checkpoint:
         random.setstate(checkpoint["rng_state"])
         np.random.set_state(checkpoint["np_rng_state"])
         torch.set_rng_state(checkpoint["torch_rng_state"])
 
 
-def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = ""):
+def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = "") -> None:
     """ Saves model and training parameters at checkpoint + 'last.pth.tar'.
     If is_best is True, also saves best.pth.tar
     Args:

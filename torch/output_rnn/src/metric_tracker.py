@@ -1,7 +1,6 @@
 import json
 import os
 from enum import Enum, unique
-from types import SimpleNamespace
 from typing import Any, Dict
 
 import torch
@@ -96,24 +95,20 @@ class MetricTracker:
             batch_result = metric_obj.get_batch_result(batch_size, self.args.log_interval)
             self.write(f"{Mode.TRAIN}_Batch_{metric}", batch_result, num_steps)
 
-    def batch_update(self, i, num_batches, batch_size, data, loss, output, target, mode):
-        assert torch.isfinite(loss).all(), "The loss returned in training is NaN or inf."
-
-        names = ("data", "loss", "output", "target", "batch_size")
-        variables = (data, loss, output, target, batch_size)
-        val_dict = SimpleNamespace(**dict(zip(names, variables)))
+    def batch_update(self, val_dict, i, num_batches, mode):
+        assert torch.isfinite(val_dict.loss).all(), "The loss returned in training is NaN or inf."
         tqdm_dict = self.update_all(val_dict)
         num_steps = (self.epoch - 1) * num_batches + i
 
         # Only reset batch statistics after log_interval batches
         if i > 0 and i % self.args.log_interval == 0:
             if mode == Mode.TRAIN:
-                self.write_batch(num_steps, batch_size)
+                self.write_batch(num_steps, val_dict.batch_size)
             for metric in self.metric_data.values():
                 metric.reset()
 
         if mode == Mode.VAL and not self.args.no_visualize:
-            if hasattr(data, "size") and len(data.size()) == 4:  # (N, C, H, W)
+            if hasattr(val_dict.data, "size") and len(val_dict.data.size()) == 4:  # (N, C, H, W)
                 self.add_images(val_dict, num_steps)
         return tqdm_dict
 

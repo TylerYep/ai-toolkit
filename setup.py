@@ -2,8 +2,7 @@ import setuptools
 from setuptools import setup
 
 with open("README.md") as f:
-    long_description = f.read()
-
+    LONG_DESCRIPTION = f.read()
 
 setup(
     name="ai-toolkit",
@@ -11,7 +10,7 @@ setup(
     author="Tyler Yep",
     author_email="tyep10@gmail.com",
     description="AI Toolkit",
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/tyleryep/ai-toolkit",
     packages=setuptools.find_packages(),
