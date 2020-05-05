@@ -14,24 +14,25 @@ def viz():
     util.load_state_dict(checkpoint, model)
 
     sample_loader = iter(train_loader)
-    visualize(model, sample_loader)
-    visualize_trained(model, sample_loader)
+    visualize(args, model, sample_loader)
+    visualize_trained(args, model, sample_loader)
 
 
-def visualize(model, loader, run_name=""):
+def visualize(args, model, loader, metrics=None):
     del model
     del loader
-    if run_name is not None:
-        # data, target = next(loader)
-        pass
+    if not args.no_visualize:
+        run_name = metrics.run_name
+        if run_name is not None:
+            # data, target = next(loader)
+            pass
 
 
-def visualize_trained(model, loader, run_name=""):
+def visualize_trained(args, model, loader, metrics=None):
     del model
     del loader
-    if run_name is not None:
-        # data, target = next(loader)
-        pass
+    if not args.no_visualize:
+        run_name = metrics.run_name
 
 
 if __name__ == "__main__":

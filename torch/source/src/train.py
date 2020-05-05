@@ -80,9 +80,7 @@ def train(arg_list=None):
     model, criterion, optimizer, scheduler = load_model(args, device, init_params, sample_loader)
     util.load_state_dict(checkpoint, model, optimizer, scheduler)
     metrics = MetricTracker(args, checkpoint)
-    if not args.no_visualize:
-        metrics.add_network(model, sample_loader)
-        visualize(model, sample_loader, metrics.run_name)
+    visualize(args, model, sample_loader, metrics)
 
     util.set_rng_state(checkpoint)
     for _ in range(args.epochs):
@@ -107,7 +105,5 @@ def train(arg_list=None):
             util.save_checkpoint(checkpoint_dict, metrics.is_best)
 
     torch.set_grad_enabled(True)
-    if not args.no_visualize:
-        visualize_trained(model, sample_loader, metrics.run_name)
-
+    visualize_trained(args, model, sample_loader, metrics)
     return metrics
