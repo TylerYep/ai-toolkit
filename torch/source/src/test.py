@@ -1,12 +1,12 @@
 import sys
 
 import torch
-import torchsummary
 from src import util
 from src.args import init_pipeline
 from src.dataset import load_test_data
 from src.losses import get_loss_initializer
 from src.models import get_model_initializer
+from src.verify import model_summary
 
 if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm
@@ -43,6 +43,7 @@ def test(arg_list=None):
     init_params = checkpoint.get("model_init", [])
     model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
-    torchsummary.summary(model, model.input_shape)
+    sample_loader = util.get_sample_loader(test_loader)
+    model_summary(args, model, sample_loader)
 
     test_model(test_loader, model, criterion)

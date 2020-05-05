@@ -78,6 +78,7 @@ def overfit_example(
         )
         return input_data[batch_dim_slice]
 
+    model.train()
     data, target = next(loader)
     data = batch_slice(data, batch_size, batch_dim)
     target = batch_slice(target, batch_size, batch_dim)
