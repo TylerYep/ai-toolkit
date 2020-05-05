@@ -46,7 +46,7 @@ def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode)
                 "output": output,
                 "target": target,
                 "batch_size": (
-                    (data[0] if isinstance(data, (list, tuple)) else data).shape[args.batch_dim]
+                    (data[0] if isinstance(data, (list, tuple)) else data).size(args.batch_dim)
                 ),
             }
             tqdm_dict = metrics.batch_update(SimpleNamespace(**val_dict), i, num_batches, mode)

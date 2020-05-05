@@ -14,15 +14,16 @@ else:
     from tqdm import tqdm
 
 
-def test_model(test_loader, model, criterion):
+def test_model(args, test_loader, model, criterion):
     model.eval()
     test_loss, correct = 0, 0
     with torch.no_grad():
         with tqdm(desc="Test", total=len(test_loader), ncols=120) as pbar:
             for data, target in test_loader:
-                output = model(data)
+                output = model(*data) if isinstance(data, (list, tuple)) else model(data)
                 loss = criterion(output, target)
-                test_loss += loss.item() * data.size(0)
+                batch_size = (data[0] if isinstance(data, (list, tuple)) else data).size(args.batch_dim)
+                test_loss += loss.item() * batch_size
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
                 pbar.update()
@@ -46,4 +47,4 @@ def test(arg_list=None):
     sample_loader = util.get_sample_loader(test_loader)
     model_summary(args, model, sample_loader)
 
-    test_model(test_loader, model, criterion)
+    test_model(args, model, test_loader, criterion)
