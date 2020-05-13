@@ -83,7 +83,6 @@ class LanguageWords(Dataset):
         for cat in data:
             cat_data = data[cat]
             self.all_data += [(dat, cat) for dat in cat_data]
-        # print(data)
 
         vectorized_seqs = self.vectorized_data(self.all_data, self.token2id)
         self.seq_lengths = torch.LongTensor([len(s) for s in vectorized_seqs])

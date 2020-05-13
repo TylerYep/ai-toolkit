@@ -23,7 +23,11 @@ else:
 
 
 def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode):
-    model.train() if mode == Mode.TRAIN else model.eval()  # pylint: disable=expression-not-assigned
+    if mode == Mode.TRAIN:
+        model.train()
+    else:
+        model.eval()
+
     torch.set_grad_enabled(mode == Mode.TRAIN)
     metrics.reset_hard()
     num_batches = len(loader)
@@ -34,7 +38,13 @@ def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode)
                 # If you want to freeze layers, use optimizer.zero_grad().
                 optimizer.zero_grad()
 
-            output = model(*data) if isinstance(data, (list, tuple)) else model(data)
+            if isinstance(data, (list, tuple)):
+                output = model(*data)
+                batch_size = data[0].size(args.batch_dim)
+            else:
+                output = model(data)
+                batch_size = data.size(args.batch_dim)
+
             loss = criterion(output, target)
             if mode == Mode.TRAIN:
                 loss.backward()
@@ -45,9 +55,7 @@ def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode)
                 "loss": loss,
                 "output": output,
                 "target": target,
-                "batch_size": (
-                    (data[0] if isinstance(data, (list, tuple)) else data).size(args.batch_dim)
-                ),
+                "batch_size": batch_size,
             }
             tqdm_dict = metrics.batch_update(SimpleNamespace(**val_dict), i, num_batches, mode)
             pbar.set_postfix(tqdm_dict)

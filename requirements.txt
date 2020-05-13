@@ -1,17 +1,10 @@
-numpy==1.18.2
+numpy==1.18.4
 matplotlib==3.2.1
-torch==1.4.0
-torchvision==0.5.0
+torch==1.5.0
+torchvision==0.6.0
 pandas==1.0.3
 pillow<7
 scikit-learn==0.22.2.post1
-tqdm==4.45.0
-tensorboard
-torch-summary
-# pur==5.3.0
-# pylint==2.4.4
-# pyre-check==0.0.38
-# pycodestyle==2.5.0
-# pytest==5.3.2
-# mypy==0.761
-# pylint-cov==2.8.1
+tqdm==4.46.0
+tensorboard==2.2.1
+torch-summary==1.2.0
