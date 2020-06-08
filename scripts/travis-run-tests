@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# If any command inside script returns error, exit and return that error
+set -e
+
+# Ensure that we're always inside the root of our application,
+# no matter which directory we run script: Run `./scripts/run-tests.bash`
+cd "${0%/*}/.."
+
+# Testing
+cd "torch" && python init_proj.py --all && cd "../../output_rnn" && wget https://download.pytorch.org/tutorial/data.zip && unzip data.zip && pytest unit_test -s

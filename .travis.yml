@@ -4,4 +4,4 @@ python:
 install:
   - pip install -r requirements.txt
 script:
-  - cd "torch" && python init_proj.py --all && cd "../../output_rnn" && pytest unit_test -s
+  - scripts/travis-run-tests
