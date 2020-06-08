@@ -8,4 +8,4 @@ set -e
 cd "${0%/*}/.."
 
 # Testing
-cd "torch" && python init_proj.py --all && cd "../../output_rnn" && wget https://download.pytorch.org/tutorial/data.zip && unzip data.zip && pytest unit_test -s
+cd "torch" && python init_proj.py --all && cd "../../output_rnn" && wget https://download.pytorch.org/tutorial/data.zip && unzip data.zip && pytest unit_test -s -k "not test_one_epoch"
