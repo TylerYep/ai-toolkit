@@ -1,14 +1,9 @@
 import os
 
 import tensorflow as tf
-
-# from src import util
 from src.args import init_pipeline
 from src.dataset import load_train_data
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
-
-# from src.verify import verify_model
-# from src.viz import visualize, visualize_trained
 
 
 def train_and_validate(

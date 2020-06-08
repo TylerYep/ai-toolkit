@@ -56,6 +56,7 @@ cnn.type(dtype)
 for param in cnn.parameters():
     param.requires_grad = False
 
+
 # We provide this helper code which takes an image, a model (cnn), and returns a list of
 # feature maps, one per layer.
 def extract_features(x, cnn):

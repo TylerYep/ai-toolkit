@@ -1,4 +1,9 @@
-# ml-toolkit
+# ai-toolkit
+
+[![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Build Status](https://travis-ci.com/TylerYep/ai-toolkit.svg?branch=master)](https://travis-ci.com/TylerYep/ai-toolkit)
+[![GitHub license](https://img.shields.io/github/license/TylerYep/wolfbot)](https://github.com/TylerYep/wolfbot/blob/master/LICENSE)
+
 
 ## Motivation
 When working on ML projects, especially supervised learning, there tends to be a lot of repeated code, because in every project, we always want a way to checkpoint our work, visualize loss curves in tensorboard, add additional metrics, and see example output. Some projects we are able to do this better than others. Ideally, we want to have some way to consolidate all of this code into a single place.
