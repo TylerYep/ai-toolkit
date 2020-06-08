@@ -145,9 +145,7 @@ class CaptioningRNN:
         # in your implementation, if needed.                                       #
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-        ### FORWARD ###
-
+        # FORWARD
         h0, proj_cache = affine_forward(features, W_proj, b_proj)
         out, emb_cache = word_embedding_forward(captions_in, W_embed)
         if self.cell_type == "lstm":
@@ -157,8 +155,7 @@ class CaptioningRNN:
         out, affine_cache = temporal_affine_forward(out, W_vocab, b_vocab)
         loss, dout = temporal_softmax_loss(out, captions_out, mask)
 
-        ### BACKWARD ###
-
+        # BACKWARD
         dout, grads["W_vocab"], grads["b_vocab"] = temporal_affine_backward(dout, affine_cache)
 
         if self.cell_type == "lstm":

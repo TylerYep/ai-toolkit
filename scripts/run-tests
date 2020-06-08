@@ -8,13 +8,17 @@ set -e
 cd "${0%/*}/.."
 
 # Type Checking
-# mypy .
+mypy .
+# pyre check
 
 # Auto-code formatters
 isort -y
 black . -l 100
+git add .
 
 # Style Checking
+# flake8 .
+pycodestyle .
 # find . -iname "*.py" | xargs pylint
 
 # Testing
