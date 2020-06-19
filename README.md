@@ -2,7 +2,7 @@
 
 [![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Build Status](https://travis-ci.com/TylerYep/ai-toolkit.svg?branch=master)](https://travis-ci.com/TylerYep/ai-toolkit)
-[![GitHub license](https://img.shields.io/github/license/TylerYep/wolfbot)](https://github.com/TylerYep/wolfbot/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/TylerYep/ai-toolkit)](https://github.com/TylerYep/ai-toolkit/blob/master/LICENSE)
 
 
 ## Motivation
@@ -55,14 +55,13 @@ The rough evaluation metric for this repo's success is how fast I can start work
     - data/
     - losses/
     - metrics/
-    - models/
+    - models/                       (or models.py, if you want all your models in one place)
         - layers/
         - ...
     - visualizations/
     - args.py                       (Modify default hyperparameters manually)
     - dataset.py                    (Stub)
     - metric_tracker.py
-    - models.py                     (You may opt to keep all your models in one place instead)
     - preprocess.py                 (Stub)
     - test.py
     - train.py
@@ -73,9 +72,9 @@ The rough evaluation metric for this repo's success is how fast I can start work
 
 
 # Goal Workflow
-1. Run `python init_proj.py` to initialize a repo with a given init.config.
-2. Copy data into `data/`.
-3. Fill in `preprocess.py` and `dataset.py`. (Optional: explore data by running `python visualize.py`)
-4. (Maybe?) Change `const.py` to specify input/output dimensions, batch size, etc.
-5. Run `train.py`, which saves model checkpoints, output predictions, and tensorboards in the same folder. Also automatically starts tensorboard server in a tmux session.
+1. Run `python init_proj.py` to initialize a repo with a given init config.
+2. Move data into `data/`.
+3. Fill in `preprocess.py` and `dataset.py`. (Optional: explore data by running `python viz.py`)
+4. Change `args.py` to specify input/output dimensions, batch size, etc.
+5. Run `train.py`, which saves model checkpoints, output predictions, and tensorboards in the same folder. Also automatically starts tensorboard server in a tmux session. Resume training at any point.
 6. Run `test.py` to get final predictions.

@@ -86,4 +86,4 @@ class LinearClassifier:
         - loss as a single float
         - gradient with respect to self.W; an array of the same shape as W
         """
-        pass
+        return 0.0, 0.0
