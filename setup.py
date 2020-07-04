@@ -1,10 +1,9 @@
 import setuptools
-from setuptools import setup
 
 with open("README.md") as f:
     LONG_DESCRIPTION = f.read()
 
-setup(
+setuptools.setup(
     name="ai-toolkit",
     version="0.0.1",
     author="Tyler Yep",

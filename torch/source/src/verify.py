@@ -1,9 +1,8 @@
 import sys
 import warnings
 
-import torchsummary
-
 import torch
+import torchsummary
 
 if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm

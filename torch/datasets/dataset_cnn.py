@@ -1,8 +1,8 @@
 import sys
 
-import pandas as pd
 from torchvision import datasets, transforms
 
+import pandas as pd
 import torch
 from torch.utils.data import DataLoader, random_split
 from torch.utils.data.dataloader import default_collate

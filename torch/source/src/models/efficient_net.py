@@ -1,6 +1,5 @@
-from efficientnet_pytorch import EfficientNet as EffNet
-
 import torch.nn as nn
+from efficientnet_pytorch import EfficientNet as EffNet
 
 
 class EfficientNet(nn.Module):

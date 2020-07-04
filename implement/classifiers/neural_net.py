@@ -81,8 +81,8 @@ class TwoLayerNet:
         softmx = softmax(scores)
         loss = -np.sum(np.log(softmx[np.arange(num_train), y]))
         loss /= num_train
-        loss += reg * np.sum(W1 * W1)
-        loss += reg * np.sum(W2 * W2)
+        loss += reg * np.sum(W1 ** 2)
+        loss += reg * np.sum(W2 ** 2)
 
         # Backward pass: compute gradients
         grads = {}
