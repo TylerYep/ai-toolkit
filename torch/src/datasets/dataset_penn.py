@@ -2,7 +2,6 @@
 # http://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
 import os
 import random
-import sys
 
 import numpy as np
 from PIL import Image
@@ -10,7 +9,7 @@ from torchvision.transforms import functional as F
 
 import torch
 from src.datasets.dataset import DatasetLoader
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 
 
@@ -78,7 +77,7 @@ class RandomHorizontalFlip:
 
     def __call__(self, image, target):
         if random.random() < self.prob:
-            height, width = image.shape[-2:]
+            _, width = image.shape[-2:]
             image = image.flip(-1)
             bbox = target["boxes"]
             bbox[:, [0, 2]] = width - bbox[:, [2, 0]]

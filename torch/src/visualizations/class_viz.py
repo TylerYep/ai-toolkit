@@ -29,7 +29,7 @@ def create_class_visualization(model, data, class_labels, target_y, run_name, **
     l2_reg = kwargs.pop("l2_reg", 1e-3)
     learning_rate = kwargs.pop("learning_rate", 25)
     num_iterations = kwargs.pop("num_iterations", 100)
-    blur_every = kwargs.pop("blur_every", 10)
+    # blur_every = kwargs.pop("blur_every", 10)
     max_jitter = kwargs.pop("max_jitter", 16)
     show_every = kwargs.pop("show_every", 25)
 

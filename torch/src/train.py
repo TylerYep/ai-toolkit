@@ -88,7 +88,7 @@ def train(arg_list=None):
     sample_loader = util.get_sample_loader(train_loader)
     model, criterion, optimizer, scheduler = load_model(args, device, init_params, sample_loader)
     util.load_state_dict(checkpoint, model, optimizer, scheduler)
-    metrics = MetricTracker(args, checkpoint)
+    metrics = MetricTracker(args, checkpoint, dataset_loader.CLASS_LABELS)
     visualize(args, model, sample_loader, metrics)
 
     util.set_rng_state(checkpoint)

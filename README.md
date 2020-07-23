@@ -8,7 +8,7 @@
 ## Motivation
 When working on ML projects, especially supervised learning, there tends to be a lot of repeated code, because in every project, we always want a way to checkpoint our work, visualize loss curves in tensorboard, add additional metrics, and see example output. Some projects we are able to do this better than others. Ideally, we want to have some way to consolidate all of this code into a single place.
 
-The problem is that Pytorch examples are not nearly similar enough. Like most data exploration, we want the ability to modify every part of the codebase to handle different loss metrics, different types of data, or different visualizations based on our data dimensions. Combining everything into a single repository would overcomplicate the underlying logic (making the training loop extremely unreadable, for example). We want to strike a balance between extremely minimalistic / readable code that makes it easy to add extra functionality when needed.
+The problem is that Pytorch examples are generally not very similar. Like most data exploration, we want the ability to modify every part of the codebase to handle different loss metrics, different types of data, or different visualizations based on our data dimensions. Combining everything into a single repository often overcomplicates the underlying logic (making the training loop extremely unreadable, for example). We want to strike a balance between extremely minimalistic / readable code that makes it easy to add extra functionality when needed.
 
 This project is for developers or ML scientists who want features of a fully-functioning ML pipeline from the beginning. Each project comes with consistent styling, an opinionated way of handling logging, metrics, and checkpointing / resuming training from checkpoints. It also integrates seamlessly with Google Colab and AWS/Google Cloud GPUs.
 
@@ -38,31 +38,29 @@ The rough evaluation metric for this repo's success is how fast I can start work
 
 
 # Current Workflow
-1. Edit `init_proj.py` to your desired configuration.
-2. Run `python init_proj.py <project_type>`, which creates your files in the `output/` directory.
-3. Go into the output directory e.g. `cd output/`
-4. Depending on your dataset, you may need to paste in your `data/` folder and edit `dataset.py`.
-5. Run `train.py`, which saves model checkpoints, output predictions, and tensorboards in the same folder.
-6. Start tensorboard using the `checkpoints/` folder with `tensorboard --logdir=checkpoints/`
-7. Start and stop training using `python train.py --checkpoint=<checkpoint name>`. The code should automatically resume training at the previous epoch and continue logging to the previous tensorboard.
-8. Run `python test.py --checkpoint=<checkpoint name>` to get final predictions.
-
+1. Add data to your `data/` folder and edit the corresponding DataasetLoader in `datasets/`.
+2. Add your config and model to `configs/` and `models/`.
+3. Run `train.py`, which saves model checkpoints, output predictions, and tensorboards in the same folder.
+4. Start tensorboard using the `checkpoints/` folder with `tensorboard --logdir=checkpoints/`
+5. Start and stop training using `python train.py --checkpoint=<checkpoint name>`. The code should automatically resume training at the previous epoch and continue logging to the previous tensorboard.
+6. Run `python test.py --checkpoint=<checkpoint name>` to get final predictions.
+7. Edit `init_proj.py` to your desired configuration.
+8. Run `python init_proj.py <project_type>`, which creates your files in the `output/` directory.
 
 # Directory Structure
+- checkpoints/                  (Only created once you run train.py)
+- data/
 - configs/
 - src/
-    - checkpoints/                  (Only created once you run train.py)
-    - data/
+    - datasets/
     - losses/
     - metrics/
-    - models/                       (or models.py, if you want all your models in one place)
+    - models/
         - layers/
         - ...
     - visualizations/
     - args.py                       (Modify default hyperparameters manually)
-    - dataset.py                    (Stub)
     - metric_tracker.py
-    - preprocess.py                 (Stub)
     - test.py
     - train.py
     - util.py

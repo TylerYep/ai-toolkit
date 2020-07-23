@@ -16,7 +16,7 @@ def init_pipeline(arg_list: Optional[List[str]] = None):
     args = get_parsed_arguments(arg_list)
     if args.config:
         # Update additional configs defined in the json file.
-        args = util.load_args_from_json(args.config)
+        args = util.load_args_from_json(args)
 
     checkpoint: Dict[str, Any] = {}
     if args.checkpoint:

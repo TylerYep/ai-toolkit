@@ -1,6 +1,7 @@
 import sys
 
 from torch.utils.data import DataLoader, random_split
+from torch.utils.data.dataloader import default_collate
 
 
 class DatasetLoader:
@@ -32,8 +33,12 @@ class DatasetLoader:
 
     @staticmethod
     def get_collate_fn(device):
-        raise NotImplementedError
+        """
+        for indices in batch_sampler:
+            yield collate_fn([dataset[i] for i in indices])
+        """
 
-    @staticmethod
-    def get_transforms(img_dim=None):
-        raise NotImplementedError
+        def to_device(b):
+            return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
+
+        return lambda x: map(to_device, default_collate(x))

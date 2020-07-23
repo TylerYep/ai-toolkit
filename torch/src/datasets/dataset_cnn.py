@@ -1,13 +1,8 @@
-import sys
-
-import pandas as pd
 from torchvision import datasets, transforms
 
 import torch
 from src.datasets.dataset import DatasetLoader
 from torch.utils.data import DataLoader
-from torch.utils.data.dataloader import default_collate
-from torch.utils.data.dataset import Dataset
 
 
 class DatasetCNN(DatasetLoader):
@@ -43,19 +38,8 @@ class DatasetCNN(DatasetLoader):
         return test_loader
 
     @staticmethod
-    def get_collate_fn(device):
-        """
-        for indices in batch_sampler:
-            yield collate_fn([dataset[i] for i in indices])
-        """
-
-        def to_device(b):
-            return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
-
-        return lambda x: map(to_device, default_collate(x))
-
-    @staticmethod
     def get_transforms(img_dim=None):
+        del img_dim
         return transforms.Compose(
             [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
         )

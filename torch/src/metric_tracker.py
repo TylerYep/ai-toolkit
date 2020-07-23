@@ -15,7 +15,7 @@ class Mode(Enum):
 
 
 class MetricTracker:
-    def __init__(self, args, checkpoint):
+    def __init__(self, args, checkpoint, class_labels=None):
         assert args.metrics
         self.run_name, self.writer = None, None
         if not args.no_save:
@@ -24,6 +24,8 @@ class MetricTracker:
             print(f"Storing checkpoints in: {self.run_name}\n")
             with open(os.path.join(self.run_name, "args.json"), "w") as f:
                 json.dump(args.__dict__, f, indent=4)
+
+        self.class_labels = [] if class_labels is None else class_labels
 
         metric_checkpoint = checkpoint.get("metric_obj", {})
         self.epoch = metric_checkpoint.get("epoch", 0)
@@ -113,12 +115,15 @@ class MetricTracker:
         if self.run_name is not None:
             self.writer.add_scalar(title, val, step_num)
 
-    # def add_images(self, val_dict, num_steps):
-    #     if self.run_name is not None:
-    #         data, output, target = val_dict.data, val_dict.output, val_dict.target
-    #         for j in range(output.shape[0]):
-    #             _, pred_ind = torch.max(output.detach()[j], dim=0)
-    #             target_ind = int(target.detach()[j])
-    #             pred_class = CLASS_LABELS[pred_ind]
-    #             target_class = CLASS_LABELS[target_ind]
-    #             self.writer.add_image(f"{target_class}/Predicted_{pred_class}", data[j], num_steps)
+    def add_images(self, val_dict, num_steps):
+        pass
+
+
+#     if self.run_name is not None:
+#         data, output, target = val_dict.data, val_dict.output, val_dict.target
+#         for j in range(output.shape[0]):
+#             _, pred_ind = torch.max(output.detach()[j], dim=0)
+#             target_ind = int(target.detach()[j])
+#             pred_class = CLASS_LABELS[pred_ind]
+#             target_class = CLASS_LABELS[target_ind]
+#             self.writer.add_image(f"{target_class}/Predicted_{pred_class}", data[j], num_steps)

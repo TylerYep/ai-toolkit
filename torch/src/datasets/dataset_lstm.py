@@ -1,5 +1,4 @@
 import os
-import sys
 from collections import defaultdict
 
 import torch
@@ -11,7 +10,6 @@ from torch.utils.data.dataset import Dataset
 
 class DatasetLSTM(DatasetLoader):
     def load_train_data(self, args, device, val_split=0.2):
-        collate_fn = self.get_collate_fn(device)
         orig_dataset = LanguageWords(self.DATA_PATH)
         train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
         return train_loader, val_loader, orig_dataset.get_model_params() + (device,)

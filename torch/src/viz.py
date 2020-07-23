@@ -10,8 +10,6 @@ from src.visualizations import (
     view_input,
 )
 
-CLASS_LABELS = []  # TODO
-
 
 def viz():
     args, device, checkpoint = init_pipeline()
@@ -32,20 +30,20 @@ def visualize(args, model, loader, metrics=None):
 
         run_name = metrics.run_name
         data, target = next(loader)
-        view_input(data, target, CLASS_LABELS, run_name)
+        view_input(data, target, metrics.class_labels, run_name)
         data, target = next(loader)
-        compute_activations(model, data, target, CLASS_LABELS, run_name)
+        compute_activations(model, data, target, metrics.class_labels, run_name)
 
 
 def visualize_trained(args, model, loader, metrics=None):
     if not args.no_visualize:
         run_name = metrics.run_name
         data, target = next(loader)
-        make_fooling_image(model, data[5], target[5], CLASS_LABELS, target[9], run_name)
+        make_fooling_image(model, data[5], target[5], metrics.class_labels, target[9], run_name)
         data, target = next(loader)
-        show_saliency_maps(model, data, target, CLASS_LABELS, run_name)
+        show_saliency_maps(model, data, target, metrics.class_labels, run_name)
         data, target = next(loader)
-        create_class_visualization(model, data, CLASS_LABELS, target[1], run_name)
+        create_class_visualization(model, data, metrics.class_labels, target[1], run_name)
 
 
 if __name__ == "__main__":

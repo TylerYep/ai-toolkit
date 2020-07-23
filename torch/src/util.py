@@ -25,7 +25,9 @@ def load_args_from_json(args: Namespace) -> Arguments:
     if not os.path.isfile(found_json):
         found_json = os.path.join(args.save_dir, filename, "args.json")
     with open(found_json) as f:
-        return Arguments(json.load(f))
+        new_args = vars(args)
+        new_args.update(json.load(f))
+        return Arguments(new_args)
 
 
 def get_run_name(args: Namespace) -> str:

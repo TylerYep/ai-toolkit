@@ -14,7 +14,7 @@ else:
     from tqdm import tqdm
 
 
-def test_model(args, test_loader, model, criterion):
+def test_model(args, model, test_loader, criterion):
     model.eval()
     test_loss, correct = 0, 0
     with torch.no_grad():
@@ -33,7 +33,6 @@ def test_model(args, test_loader, model, criterion):
                 pbar.update()
 
     test_loss /= len(test_loader.dataset)
-
     print(
         f"\nTest set: Average loss: {test_loss:.4f},",
         f"Accuracy: {correct}/{len(test_loader.dataset)}",

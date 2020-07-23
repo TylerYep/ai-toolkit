@@ -2,7 +2,6 @@ import glob
 import os
 import random
 import string
-import sys
 import unicodedata
 import zipfile
 
@@ -12,7 +11,6 @@ import torch
 from src.datasets.dataset import DatasetLoader
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
-from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
 
 DATA_URL = "https://download.pytorch.org/tutorial/data.zip"
@@ -30,18 +28,6 @@ class DatasetRNN(DatasetLoader):
         test_set = LanguageWords(self.DATA_PATH)
         test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
         return test_loader
-
-    @staticmethod
-    def get_collate_fn(device):
-        """
-        for indices in batch_sampler:
-            yield collate_fn([dataset[i] for i in indices])
-        """
-
-        def to_device(b):
-            return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
-
-        return lambda x: map(to_device, default_collate(x))
 
     @staticmethod
     def pad_collate(batch):
