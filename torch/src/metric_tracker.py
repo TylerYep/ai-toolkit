@@ -5,7 +5,6 @@ from typing import Any, Dict
 
 import torch
 from src import util
-from src.dataset import CLASS_LABELS
 from src.metrics import get_metric_initializer
 from torch.utils.tensorboard import SummaryWriter
 
@@ -114,12 +113,12 @@ class MetricTracker:
         if self.run_name is not None:
             self.writer.add_scalar(title, val, step_num)
 
-    def add_images(self, val_dict, num_steps):
-        if self.run_name is not None:
-            data, output, target = val_dict.data, val_dict.output, val_dict.target
-            for j in range(output.shape[0]):
-                _, pred_ind = torch.max(output.detach()[j], dim=0)
-                target_ind = int(target.detach()[j])
-                pred_class = CLASS_LABELS[pred_ind]
-                target_class = CLASS_LABELS[target_ind]
-                self.writer.add_image(f"{target_class}/Predicted_{pred_class}", data[j], num_steps)
+    # def add_images(self, val_dict, num_steps):
+    #     if self.run_name is not None:
+    #         data, output, target = val_dict.data, val_dict.output, val_dict.target
+    #         for j in range(output.shape[0]):
+    #             _, pred_ind = torch.max(output.detach()[j], dim=0)
+    #             target_ind = int(target.detach()[j])
+    #             pred_class = CLASS_LABELS[pred_ind]
+    #             target_class = CLASS_LABELS[target_ind]
+    #             self.writer.add_image(f"{target_class}/Predicted_{pred_class}", data[j], num_steps)

@@ -9,16 +9,44 @@ from PIL import Image
 from torchvision.transforms import functional as F
 
 import torch
+from src.datasets.dataset import DatasetLoader
 from torch.utils.data import DataLoader, random_split
 from torch.utils.data.dataset import Dataset
 
-if "google.colab" in sys.modules:
-    DATA_PATH = "/content/"
-else:
-    DATA_PATH = "data/"
 
+class DatasetPenn(DatasetLoader):
+    def __init__(self):
+        super().__init__()
+        self.CLASS_LABELS = ["YES", "NO"]
 
-CLASS_LABELS = ["YES", "NO"]
+    def load_train_data(self, args, device, val_split=0.2):
+        orig_dataset = PennFudanDataset("data", self.get_transforms(train=True))
+        train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
+        init_params = []
+        return train_loader, val_loader, init_params
+
+    def load_test_data(self, args, device):
+        collate_fn = self.get_collate_fn(device)
+        test_set = PennFudanDataset("data", self.get_transforms(train=False))
+        test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
+        return test_loader
+
+    @staticmethod
+    def get_collate_fn(device):
+        def collate(x):
+            data, target = tuple(zip(*x))
+            data = list(image.to(device) for image in data)
+            target = [{k: v.to(device) for k, v in t.items()} for t in target]
+            return (data, target)
+
+        return collate
+
+    @staticmethod
+    def get_transforms(train):
+        if train:
+            return Compose([ToTensor(), RandomHorizontalFlip(0.5)])
+        return Compose([ToTensor()])
+
 
 # output = model(data, target)
 # loss = sum(l for l in output.values())
@@ -68,47 +96,6 @@ class ToTensor:
     def __call__(self, image, target):
         image = F.to_tensor(image)
         return image, target
-
-
-def get_collate_fn(device):
-    def collate(x):
-        data, target = tuple(zip(*x))
-        data = list(image.to(device) for image in data)
-        target = [{k: v.to(device) for k, v in t.items()} for t in target]
-        return (data, target)
-
-    return collate
-
-
-def load_train_data(args, device, val_split=0.2):
-    collate_fn = get_collate_fn(device)
-    orig_dataset = PennFudanDataset("data", get_transforms(train=True))
-    if args.num_examples:
-        n = args.num_examples
-        data_split = [n, n, len(orig_dataset) - 2 * n]
-        train_set, val_set = random_split(orig_dataset, data_split)[:-1]
-    else:
-        data_split = [int(part * len(orig_dataset)) for part in (1 - val_split, val_split)]
-        train_set, val_set = random_split(orig_dataset, data_split)
-    train_loader = DataLoader(
-        train_set, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn
-    )
-    val_loader = DataLoader(val_set, batch_size=args.batch_size, collate_fn=collate_fn)
-    init_params = []
-    return train_loader, val_loader, init_params
-
-
-def load_test_data(args, device):
-    collate_fn = get_collate_fn(device)
-    test_set = PennFudanDataset("data", get_transforms(train=False))
-    test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
-    return test_loader
-
-
-def get_transforms(train):
-    if train:
-        return Compose([ToTensor(), RandomHorizontalFlip(0.5)])
-    return Compose([ToTensor()])
 
 
 class PennFudanDataset(Dataset):

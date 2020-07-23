@@ -3,7 +3,7 @@ import sys
 import torch
 from src import util
 from src.args import init_pipeline
-from src.dataset import load_test_data
+from src.datasets import get_dataset_initializer
 from src.losses import get_loss_initializer
 from src.models import get_model_initializer
 from src.verify import model_summary
@@ -44,7 +44,7 @@ def test_model(args, test_loader, model, criterion):
 def test(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
     criterion = get_loss_initializer(args.loss)()
-    test_loader = load_test_data(args, device)
+    test_loader = get_dataset_initializer(args.dataset).load_test_data(args, device)
     init_params = checkpoint.get("model_init", [])
     model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)

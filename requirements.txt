@@ -8,3 +8,4 @@ scikit-learn==0.23.1
 tqdm==4.48.0
 tensorboard==2.3.0
 torch-summary==1.4.0
+wget==3.2

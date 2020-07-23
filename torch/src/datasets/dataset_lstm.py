@@ -3,61 +3,43 @@ import sys
 from collections import defaultdict
 
 import torch
-from torch.utils.data import DataLoader, random_split
+from src.datasets.dataset import DatasetLoader
+from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
 
-if "google.colab" in sys.modules:
-    DATA_PATH = "/content/"
-else:
-    DATA_PATH = "data/names/"
 
+class DatasetLSTM(DatasetLoader):
+    def load_train_data(self, args, device, val_split=0.2):
+        collate_fn = self.get_collate_fn(device)
+        orig_dataset = LanguageWords(self.DATA_PATH)
+        train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
+        return train_loader, val_loader, orig_dataset.get_model_params() + (device,)
 
-CLASS_LABELS = []
+    def load_test_data(self, args, device):
+        collate_fn = self.get_collate_fn(device)
+        test_set = LanguageWords(self.DATA_PATH)
+        test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
+        return test_loader
 
+    @staticmethod
+    def get_collate_fn(device):
+        """
+        for indices in batch_sampler:
+            yield collate_fn([dataset[i] for i in indices])
+        """
 
-def get_collate_fn(device):
-    """
-    for indices in batch_sampler:
-        yield collate_fn([dataset[i] for i in indices])
-    """
+        def to_device(b):
+            return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
 
-    def to_device(b):
-        return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
+        def sort_batch(data, target):
+            batch, lengths = data
+            seq_lengths, perm_idx = lengths.sort(0, descending=True)
+            seq_tensor = batch[perm_idx]
+            target_tensor = target[perm_idx]
+            return (seq_tensor.transpose(0, 1), seq_lengths), target_tensor
 
-    def sort_batch(data, target):
-        batch, lengths = data
-        seq_lengths, perm_idx = lengths.sort(0, descending=True)
-        seq_tensor = batch[perm_idx]
-        target_tensor = target[perm_idx]
-        return (seq_tensor.transpose(0, 1), seq_lengths), target_tensor
-
-    return lambda x: map(to_device, sort_batch(*default_collate(x)))
-
-
-def load_train_data(args, device, val_split=0.2):
-    collate_fn = get_collate_fn(device)
-    orig_dataset = LanguageWords()
-    if args.num_examples:
-        n = args.num_examples
-        data_split = [n, n, len(orig_dataset) - 2 * n]
-        train_set, val_set = random_split(orig_dataset, data_split)[:-1]
-    else:
-        train_size = int((1 - val_split) * len(orig_dataset))
-        data_split = [train_size, len(orig_dataset) - train_size]
-        train_set, val_set = random_split(orig_dataset, data_split)
-    train_loader = DataLoader(
-        train_set, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn
-    )
-    val_loader = DataLoader(val_set, batch_size=args.batch_size, collate_fn=collate_fn)
-    return train_loader, val_loader, orig_dataset.get_model_params() + (device,)
-
-
-def load_test_data(args, device):
-    collate_fn = get_collate_fn(device)
-    test_set = LanguageWords()
-    test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
-    return test_loader
+        return lambda x: map(to_device, sort_batch(*default_collate(x)))
 
 
 class LanguageWords(Dataset):
@@ -72,7 +54,7 @@ class LanguageWords(Dataset):
         raw_data (Any): The data that has been transformed into tensor, useful for debugging
     """
 
-    def __init__(self, data_dir=DATA_PATH):
+    def __init__(self, data_dir):
         super().__init__()
         self.input_shape = [torch.Size((20,)), torch.Size([])]
         self.token2id = defaultdict(int)
@@ -142,8 +124,3 @@ class LanguageWords(Dataset):
         for item in item_set:
             item2id[item] = len(item2id)
         return item2id
-
-
-if __name__ == "__main__":
-    x = LanguageWords()
-    print(x[0])

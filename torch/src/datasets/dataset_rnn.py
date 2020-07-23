@@ -9,19 +9,47 @@ import zipfile
 import wget
 
 import torch
+from src.datasets.dataset import DatasetLoader
 from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
 
-if "google.colab" in sys.modules:
-    DATA_PATH = "/content/"
-else:
-    DATA_PATH = "data/"
-
 DATA_URL = "https://download.pytorch.org/tutorial/data.zip"
 ALL_LETTERS = string.ascii_letters + " .,;'"
-CLASS_LABELS = []
+
+
+class DatasetRNN(DatasetLoader):
+    def load_train_data(self, args, device, val_split=0.2):
+        orig_dataset = LanguageWords(self.DATA_PATH)
+        train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
+        return train_loader, val_loader, orig_dataset.get_model_params()
+
+    def load_test_data(self, args, device):
+        collate_fn = self.get_collate_fn(device)
+        test_set = LanguageWords(self.DATA_PATH)
+        test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
+        return test_loader
+
+    @staticmethod
+    def get_collate_fn(device):
+        """
+        for indices in batch_sampler:
+            yield collate_fn([dataset[i] for i in indices])
+        """
+
+        def to_device(b):
+            return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
+
+        return lambda x: map(to_device, default_collate(x))
+
+    @staticmethod
+    def pad_collate(batch):
+        (xx, yy) = zip(*batch)
+        x_lens = torch.tensor([len(x) for x in xx])
+        xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)
+        yy_pad = torch.stack(yy)
+        return xx_pad, yy_pad, x_lens
 
 
 # def pad_collate(batch):
@@ -33,70 +61,25 @@ CLASS_LABELS = []
 #     return xx_pad, yy_pad, x_lens, y_lens
 
 
-def get_collate_fn(device):
-    """
-    for indices in batch_sampler:
-        yield collate_fn([dataset[i] for i in indices])
-    """
-
-    def to_device(b):
-        return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
-
-    return lambda x: map(to_device, default_collate(x))
-
-
-def pad_collate(batch):
-    (xx, yy) = zip(*batch)
-    x_lens = torch.tensor([len(x) for x in xx])
-    xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)
-    yy_pad = torch.stack(yy)
-    return xx_pad, yy_pad, x_lens
-
-
-def load_train_data(args, device, val_split=0.2):
-    collate_fn = get_collate_fn(device)
-    orig_dataset = LanguageWords()
-    if args.num_examples:
-        n = args.num_examples
-        data_split = [n, n, len(orig_dataset) - 2 * n]
-        train_set, val_set = random_split(orig_dataset, data_split)[:-1]
-    else:
-        train_size = int((1 - val_split) * len(orig_dataset))
-        data_split = [train_size, len(orig_dataset) - train_size]
-        train_set, val_set = random_split(orig_dataset, data_split)
-    train_loader = DataLoader(
-        train_set, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn
-    )
-    val_loader = DataLoader(val_set, batch_size=args.batch_size, collate_fn=collate_fn)
-    return train_loader, val_loader, orig_dataset.get_model_params()
-
-
-def load_test_data(args, device):
-    collate_fn = get_collate_fn(device)
-    test_set = LanguageWords()
-    test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
-    return test_loader
-
-
 class LanguageWords(Dataset):
     """ Dataset for training a model on a dataset. """
 
-    def __init__(self):
+    def __init__(self, data_path):
         super().__init__()
         self.input_shape = torch.Size((1, 19))
         self.all_categories = []
         self.data = []
 
-        if not os.path.isdir(f"{DATA_PATH}{DATA_PATH}names/"):
-            output_zip = os.path.join(DATA_PATH, os.path.basename(DATA_URL))
+        if not os.path.isdir(f"{data_path}{data_path}names/"):
+            output_zip = os.path.join(data_path, os.path.basename(DATA_URL))
             if not os.path.isdir(output_zip):
-                output_zip = wget.download(DATA_URL, DATA_PATH)
+                output_zip = wget.download(DATA_URL, data_path)
             with zipfile.ZipFile(output_zip) as zip_ref:
-                zip_ref.extractall(DATA_PATH)
+                zip_ref.extractall(data_path)
             os.remove(output_zip)
 
         # Build the category_lines dictionary, a list of names per language
-        for filename in glob.glob(f"{DATA_PATH}{DATA_PATH}names/*.txt"):
+        for filename in glob.glob(f"{data_path}{data_path}names/*.txt"):
             category = os.path.splitext(os.path.basename(filename))[0]
             self.all_categories.append(category)
             lines = self.read_lines(filename)

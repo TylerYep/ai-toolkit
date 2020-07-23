@@ -9,7 +9,7 @@ import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 from src import util
 from src.args import init_pipeline
-from src.dataset import load_train_data
+from src.datasets import get_dataset_initializer
 from src.losses import get_loss_initializer
 from src.metric_tracker import MetricTracker, Mode
 from src.models import get_model_initializer
@@ -83,7 +83,8 @@ def load_model(args, device, init_params, loader):
 
 def train(arg_list=None):
     args, device, checkpoint = init_pipeline(arg_list)
-    train_loader, val_loader, init_params = load_train_data(args, device)
+    dataset_loader = get_dataset_initializer(args.dataset)
+    train_loader, val_loader, init_params = dataset_loader.load_train_data(args, device)
     sample_loader = util.get_sample_loader(train_loader)
     model, criterion, optimizer, scheduler = load_model(args, device, init_params, sample_loader)
     util.load_state_dict(checkpoint, model, optimizer, scheduler)

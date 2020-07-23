@@ -1,6 +1,6 @@
 from src import util
 from src.args import init_pipeline
-from src.dataset import CLASS_LABELS, load_train_data
+from src.datasets import get_dataset_initializer
 from src.models import get_model_initializer
 from src.visualizations import (
     compute_activations,
@@ -10,10 +10,13 @@ from src.visualizations import (
     view_input,
 )
 
+CLASS_LABELS = []  # TODO
+
 
 def viz():
     args, device, checkpoint = init_pipeline()
-    train_loader, _, init_params = load_train_data(args, device)
+    dataset_loader = get_dataset_initializer(args.dataset)
+    train_loader, _, init_params = dataset_loader.load_train_data(args, device)
     init_params = checkpoint.get("model_init", init_params)
     model = get_model_initializer(args.model)(*init_params).to(device)
     util.load_state_dict(checkpoint, model)
