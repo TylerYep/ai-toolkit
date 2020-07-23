@@ -115,7 +115,7 @@ def add_config_files(destination, config):
 
 
 def create_project_folder(config):
-    source = "source"
+    source = "torch"
     destination = config["destination"]
 
     # Create destination directory if it doesn't exist
@@ -140,10 +140,10 @@ def main():
         if args.output_path == "":
             create_project_folder(CONFIGS[args.project])
         else:
-            print("SPECIFY DESTINATION")
+            raise ValueError("SPECIFY DESTINATION")
 
     else:
-        raise ValueError
+        raise ValueError("Project name does not match an existing config.")
 
 
 if __name__ == "__main__":
