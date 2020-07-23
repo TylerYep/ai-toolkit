@@ -2,10 +2,11 @@ import os
 from collections import defaultdict
 
 import torch
-from src.datasets.dataset import DatasetLoader
 from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
+
+from src.datasets.dataset import DatasetLoader
 
 
 class DatasetLSTM(DatasetLoader):

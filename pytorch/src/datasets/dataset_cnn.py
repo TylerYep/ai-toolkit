@@ -1,8 +1,8 @@
+import torch
+from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
-import torch
 from src.datasets.dataset import DatasetLoader
-from torch.utils.data import DataLoader
 
 
 class DatasetCNN(DatasetLoader):

@@ -3,10 +3,10 @@ import sys
 from types import SimpleNamespace
 
 import numpy as np
-
 import torch
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
+
 from src import util
 from src.args import init_pipeline
 from src.datasets import get_dataset_initializer

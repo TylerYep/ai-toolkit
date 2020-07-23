@@ -115,7 +115,7 @@ def add_config_files(destination, config):
 
 
 def create_project_folder(config):
-    source = "torch"
+    source = "pytorch"
     destination = config["destination"]
 
     # Create destination directory if it doesn't exist

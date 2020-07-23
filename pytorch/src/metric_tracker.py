@@ -4,9 +4,10 @@ from enum import Enum, unique
 from typing import Any, Dict
 
 import torch
+from torch.utils.tensorboard import SummaryWriter
+
 from src import util
 from src.metrics import get_metric_initializer
-from torch.utils.tensorboard import SummaryWriter
 
 
 @unique

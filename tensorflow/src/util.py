@@ -6,7 +6,6 @@ from argparse import Namespace
 from typing import Any, Dict
 
 import numpy as np
-
 import torch
 
 SAVE_DIR = "checkpoints"

@@ -1,7 +1,6 @@
 import random
 
 import matplotlib.pyplot as plt
-
 import torch
 
 from .viz_utils import jitter, rearrange, save_figure

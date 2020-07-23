@@ -1,6 +1,7 @@
 import sys
 
 import torch
+
 from src import util
 from src.args import init_pipeline
 from src.datasets import get_dataset_initializer

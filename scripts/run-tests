@@ -21,4 +21,4 @@ git add .
 # find . -iname "*.py" | xargs pylint
 
 # Testing
-cd "torch" && pytest -s
+cd "pytorch" && pytest -s

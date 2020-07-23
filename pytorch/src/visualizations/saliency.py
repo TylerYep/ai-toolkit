@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-
 import torch
 
 from .viz_utils import rearrange, save_figure

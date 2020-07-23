@@ -4,13 +4,13 @@ import os
 import random
 
 import numpy as np
-from PIL import Image
-from torchvision.transforms import functional as F
-
 import torch
-from src.datasets.dataset import DatasetLoader
+from PIL import Image
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
+from torchvision.transforms import functional as F
+
+from src.datasets.dataset import DatasetLoader
 
 
 class DatasetPenn(DatasetLoader):

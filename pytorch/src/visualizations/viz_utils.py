@@ -2,9 +2,8 @@
 import os
 
 import matplotlib.pyplot as plt
-import torchvision.transforms as T
-
 import torch
+import torchvision.transforms as T
 
 
 def save_figure(run_name, img_name):
