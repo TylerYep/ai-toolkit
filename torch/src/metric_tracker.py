@@ -29,14 +29,12 @@ class MetricTracker:
         metric_checkpoint = checkpoint.get("metric_obj", {})
         self.epoch = metric_checkpoint.get("epoch", 0)
         self.is_best = metric_checkpoint.get("is_best", True)
-        self.metric_data = metric_checkpoint.get("metric_data", self.init_metrics(args.metrics))
+        self.metric_data = metric_checkpoint.get(
+            "metric_data", {name: get_metric_initializer(name)() for name in args.metrics}
+        )
         self.primary_metric = metric_checkpoint.get("primary_metric", args.metrics[0])
         self.end_epoch = self.epoch + args.epochs
         self.args = args
-
-    @staticmethod
-    def init_metrics(metric_names):
-        return {name: get_metric_initializer(name)() for name in metric_names}
 
     def json_repr(self) -> Dict[str, Any]:
         return {
@@ -46,7 +44,7 @@ class MetricTracker:
             "is_best": self.is_best,
         }
 
-    def __getattr__(self, name):
+    def __getitem__(self, name):
         return self.metric_data[name]
 
     def __eq__(self, other):
@@ -62,11 +60,9 @@ class MetricTracker:
         self.epoch += 1
         print(f"Epoch [{self.epoch}/{self.end_epoch}]")
 
-    def get_primary_value(self):
-        return self.metric_data[self.primary_metric].value
-
     def reset_hard(self):
-        self.metric_data = self.init_metrics(self.metric_data.keys())
+        for metric in self.metric_data.values():
+            metric.epoch_reset()
 
     def batch_update(self, val_dict, i, num_batches, mode):
         assert torch.isfinite(val_dict.loss).all(), "The loss returned in training is NaN or inf."
@@ -87,7 +83,7 @@ class MetricTracker:
                     self.write(f"{Mode.TRAIN}_Batch_{metric}", batch_result, num_steps)
 
             for metric in self.metric_data.values():
-                metric.reset()
+                metric.batch_reset()
 
         if mode == Mode.VAL and not self.args.no_visualize:
             if hasattr(val_dict.data, "size") and len(val_dict.data.size()) == 4:  # (N, C, H, W)
@@ -102,7 +98,7 @@ class MetricTracker:
 
             # Update all metrics
             if mode == Mode.VAL and metric == self.primary_metric:
-                self.is_best = epoch_result < self.get_primary_value()
+                self.is_best = epoch_result < self.metric_data[self.primary_metric].value
                 if self.is_best:
                     self.metric_data[self.primary_metric].value = epoch_result
             metric_obj.value = epoch_result

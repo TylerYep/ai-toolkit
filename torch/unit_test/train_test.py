@@ -7,9 +7,9 @@ class TestTrain:
     def test_one_epoch():
         config = ["--no-visualize", "--num-examples=100", "--no-save"]
 
-        metrics = train(["--epoch=1", "--name=TEST"] + config)
+        metric_tracker = train(["--epoch=1", "--name=TEST"] + config)
 
-        assert round(metrics.get_primary_value(), 7) == 4.6288586
+        assert round(metric_tracker["Loss"].value, 7) == 4.6288586
 
     @staticmethod
     def test_epoch_resume(tmp_path):

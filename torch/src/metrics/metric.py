@@ -14,8 +14,14 @@ class Metric:
     def __repr__(self):
         return f"{self.name}: {self.get_epoch_result():.4f}"
 
-    def reset(self):
+    def batch_reset(self):
         self.running_avg = 0.0
+
+    def epoch_reset(self):
+        self.value = 0.0
+        self.epoch_avg = 0.0
+        self.running_avg = 0.0
+        self.num_examples = 0
 
     def get_batch_result(self, batch_size, log_interval=1):
         assert log_interval > 0
