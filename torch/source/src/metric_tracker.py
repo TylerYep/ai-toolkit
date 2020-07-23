@@ -58,15 +58,6 @@ class MetricTracker:
                 return False
         return True
 
-    def add_network(self, model, loader):
-        if self.run_name is not None:
-            data, _ = next(loader)
-            self.writer.add_graph(model, data)
-
-    def write(self, title: str, val: float, step_num: int):
-        if self.run_name is not None:
-            self.writer.add_scalar(title, val, step_num)
-
     def next_epoch(self):
         self.epoch += 1
         print(f"Epoch [{self.epoch}/{self.end_epoch}]")
@@ -74,36 +65,27 @@ class MetricTracker:
     def get_primary_value(self):
         return self.metric_data[self.primary_metric].value
 
-    def set_primary_metric(self, mode, ret_val):
-        if mode == Mode.VAL:
-            self.is_best = ret_val < self.get_primary_value()
-            if self.is_best:
-                self.metric_data[self.primary_metric].value = ret_val
-
     def reset_hard(self):
         self.metric_data = self.init_metrics(self.metric_data.keys())
 
-    def update_all(self, val_dict):
-        ret_dict = {}
-        for metric, metric_obj in self.metric_data.items():
-            metric_obj.update(val_dict)
-            ret_dict[metric] = metric_obj.get_epoch_result()
-        return ret_dict
-
-    def write_batch(self, num_steps, batch_size):
-        for metric, metric_obj in self.metric_data.items():
-            batch_result = metric_obj.get_batch_result(batch_size, self.args.log_interval)
-            self.write(f"{Mode.TRAIN}_Batch_{metric}", batch_result, num_steps)
-
     def batch_update(self, val_dict, i, num_batches, mode):
         assert torch.isfinite(val_dict.loss).all(), "The loss returned in training is NaN or inf."
-        tqdm_dict = self.update_all(val_dict)
-        num_steps = (self.epoch - 1) * num_batches + i
+        tqdm_dict = {}
+        for metric, metric_obj in self.metric_data.items():
+            metric_obj.update(val_dict)
+            tqdm_dict[metric] = metric_obj.get_epoch_result()
 
+        num_steps = (self.epoch - 1) * num_batches + i
         # Only reset batch statistics after log_interval batches
         if i > 0 and i % self.args.log_interval == 0:
             if mode == Mode.TRAIN:
-                self.write_batch(num_steps, val_dict.batch_size)
+                # Write batch to tensorboard
+                for metric, metric_obj in self.metric_data.items():
+                    batch_result = metric_obj.get_batch_result(
+                        val_dict.batch_size, self.args.log_interval
+                    )
+                    self.write(f"{Mode.TRAIN}_Batch_{metric}", batch_result, num_steps)
+
             for metric in self.metric_data.values():
                 metric.reset()
 
@@ -117,11 +99,24 @@ class MetricTracker:
         for metric, metric_obj in self.metric_data.items():
             epoch_result = metric_obj.get_epoch_result()
             self.write(f"{mode}_Epoch_{metric}", epoch_result, self.epoch)
-            if metric == self.primary_metric:
-                self.set_primary_metric(mode, epoch_result)
+
+            # Update all metrics
+            if mode == Mode.VAL and metric == self.primary_metric:
+                self.is_best = epoch_result < self.get_primary_value()
+                if self.is_best:
+                    self.metric_data[self.primary_metric].value = epoch_result
             metric_obj.value = epoch_result
-            result_str += str(metric_obj) + " "
+            result_str += f"{metric_obj} "
         print(result_str)
+
+    def add_network(self, model, loader):
+        if self.run_name is not None:
+            data, _ = next(loader)
+            self.writer.add_graph(model, data)
+
+    def write(self, title: str, val: float, step_num: int):
+        if self.run_name is not None:
+            self.writer.add_scalar(title, val, step_num)
 
     def add_images(self, val_dict, num_steps):
         if self.run_name is not None:

@@ -29,7 +29,7 @@ def get_parsed_arguments(arg_list):
     # fmt: off
     parser = argparse.ArgumentParser(description='PyTorch ML Pipeline')
 
-    parser.add_argument('--batch-dim', type=int, default=int('$batch_dim'), metavar='B',
+    parser.add_argument('--batch-dim', type=int, default=0, metavar='B',
                         help='batch dimension for training (default: 0)')
 
     parser.add_argument('--batch-size', type=int, default=128, metavar='B',
@@ -56,7 +56,7 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--log-interval', type=int, default=10, metavar='NB',
                         help='how many batches to wait before logging training status')
 
-    parser.add_argument('--loss', type=str, default='$loss_fn', metavar='LOSS',
+    parser.add_argument('--loss', type=str, default='nn.CrossEntropyLoss', metavar='LOSS',
                         help='loss function to use')
 
     parser.add_argument('--lr', type=float, default=3e-3, metavar='LR',
@@ -65,7 +65,7 @@ def get_parsed_arguments(arg_list):
     parser.add_argument('--metrics', nargs='+', type=str, default=['Loss', 'Accuracy'],
                         help='metrics in metrics/ folder to use during training (space-separated)')
 
-    parser.add_argument('--model', type=str, default='$model', metavar='MODEL',
+    parser.add_argument('--model', type=str, default='BasicRNN', metavar='MODEL',
                         help='model architecture to use')
 
     parser.add_argument('--name', type=str, default='', metavar='NAME',

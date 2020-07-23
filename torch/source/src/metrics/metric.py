@@ -1,22 +1,18 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class Metric:
-    def __init__(self):
+    value: float = 0.0
+    epoch_avg: float = 0.0
+    running_avg: float = 0.0
+    num_examples: int = 0
+
+    def __post_init__(self):
         self.name = type(self).__name__
-        self.value = 0.0
-        self.epoch_avg = 0.0
-        self.running_avg = 0.0
-        self.num_examples = 0
 
     def __repr__(self):
         return f"{self.name}: {self.get_epoch_result():.4f}"
-
-    def __eq__(self, other):
-        return (
-            self.name == other.name
-            and self.value == other.value
-            and self.epoch_avg == other.epoch_avg
-            and self.running_avg == other.running_avg
-            and self.num_examples == other.num_examples
-        )
 
     def reset(self):
         self.running_avg = 0.0

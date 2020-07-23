@@ -4,6 +4,9 @@ import random
 import string
 import sys
 import unicodedata
+import zipfile
+
+import wget
 
 import torch
 from torch.nn.utils.rnn import pad_sequence
@@ -16,7 +19,7 @@ if "google.colab" in sys.modules:
 else:
     DATA_PATH = "data/"
 
-
+DATA_URL = "https://download.pytorch.org/tutorial/data.zip"
 ALL_LETTERS = string.ascii_letters + " .,;'"
 CLASS_LABELS = []
 
@@ -83,8 +86,17 @@ class LanguageWords(Dataset):
         self.input_shape = torch.Size((1, 19))
         self.all_categories = []
         self.data = []
+
+        if not os.path.isdir(f"{DATA_PATH}{DATA_PATH}names/"):
+            output_zip = os.path.join(DATA_PATH, os.path.basename(DATA_URL))
+            if not os.path.isdir(output_zip):
+                output_zip = wget.download(DATA_URL, DATA_PATH)
+            with zipfile.ZipFile(output_zip) as zip_ref:
+                zip_ref.extractall(DATA_PATH)
+            os.remove(output_zip)
+
         # Build the category_lines dictionary, a list of names per language
-        for filename in glob.glob(f"{DATA_PATH}names/*.txt"):
+        for filename in glob.glob(f"{DATA_PATH}{DATA_PATH}names/*.txt"):
             category = os.path.splitext(os.path.basename(filename))[0]
             self.all_categories.append(category)
             lines = self.read_lines(filename)
