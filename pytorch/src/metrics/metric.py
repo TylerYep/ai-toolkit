@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 @dataclass
 class Metric:
-    value: float = 0.0
     epoch_avg: float = 0.0
     running_avg: float = 0.0
     num_examples: int = 0
@@ -12,13 +11,15 @@ class Metric:
         self.name = type(self).__name__
 
     def __repr__(self):
-        return f"{self.name}: {self.get_epoch_result():.4f}"
+        return f"{self.name}: {self.value:.4f}"
+
+    def update(self, val_dict):
+        raise NotImplementedError
 
     def batch_reset(self):
         self.running_avg = 0.0
 
     def epoch_reset(self):
-        self.value = 0.0
         self.epoch_avg = 0.0
         self.running_avg = 0.0
         self.num_examples = 0
@@ -28,6 +29,8 @@ class Metric:
         assert batch_size > 0
         return self.running_avg / (log_interval * batch_size)
 
-    def get_epoch_result(self):
-        assert self.num_examples > 0
+    @property
+    def value(self):
+        if self.num_examples == 0:
+            return self.epoch_avg
         return self.epoch_avg / self.num_examples

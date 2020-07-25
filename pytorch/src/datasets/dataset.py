@@ -16,7 +16,8 @@ class DatasetLoader:
             data_split = [n, n, len(orig_dataset) - 2 * n]
             train_set, val_set = random_split(orig_dataset, data_split)[:-1]
         else:
-            data_split = [int(part * len(orig_dataset)) for part in (1 - val_split, val_split)]
+            train_size = int((1 - val_split) * len(orig_dataset))
+            data_split = [train_size, len(orig_dataset) - train_size]
             train_set, val_set = random_split(orig_dataset, data_split)
 
         train_loader = DataLoader(

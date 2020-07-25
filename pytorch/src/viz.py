@@ -25,7 +25,7 @@ def viz():
 
 
 def visualize(args, model, loader, metrics=None):
-    if not args.no_visualize:
+    if not args.no_visualize and (metrics is None or metrics.class_labels):
         metrics.add_network(model, loader)
 
         run_name = metrics.run_name
@@ -36,7 +36,7 @@ def visualize(args, model, loader, metrics=None):
 
 
 def visualize_trained(args, model, loader, metrics=None):
-    if not args.no_visualize:
+    if not args.no_visualize and (metrics is None or metrics.class_labels):
         run_name = metrics.run_name
         data, target = next(loader)
         make_fooling_image(model, data[5], target[5], metrics.class_labels, target[9], run_name)
