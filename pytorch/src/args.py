@@ -1,7 +1,9 @@
 import argparse
+import json
 import os
 import random
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
@@ -9,23 +11,35 @@ import torch
 from src import util
 
 
-def init_pipeline(arg_list: Optional[List[str]] = None):
-    """ Pass in the empty list to skip argument parsing. """
-    set_random_seeds()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    args = get_parsed_arguments(arg_list)
-    if args.config:
-        # Update additional configs defined in the json file.
-        args = util.load_args_from_json(args)
+@dataclass
+class Arguments:
+    batch_dim: int
+    batch_size: int
+    checkpoint: str
+    config: str
+    config_dir: str
+    dataset: str
+    epochs: int
+    gamma: float
+    img_dim: int
+    log_interval: int
+    loss: str
+    lr: float
+    metrics: str
+    model: str
+    name: str
+    no_save: bool
+    no_verify: bool
+    no_visualize: bool
+    num_examples: int
+    plot: bool
+    save_dir: str
+    scheduler: bool
+    test_batch_size: int
+    use_best: bool
 
-    checkpoint: Dict[str, Any] = {}
-    if args.checkpoint:
-        checkpoint_path = os.path.join(args.save_dir, args.checkpoint)
-        checkpoint = util.load_checkpoint(checkpoint_path, args.use_best)
-    return args, device, checkpoint
 
-
-def get_parsed_arguments(arg_list):
+def get_parsed_arguments(arg_list: Optional[List[str]]) -> Arguments:
     # fmt: off
     parser = argparse.ArgumentParser(description="PyTorch ML Pipeline")
 
@@ -100,12 +114,41 @@ def get_parsed_arguments(arg_list):
 
     parser.add_argument("--use-best", action="store_true", default=False,
                         help="use checkpoint with best val metric, rather than most recent")
-
-    return parser.parse_args(arg_list)
     # fmt: on
 
+    namespace = parser.parse_args(arg_list)
+    return Arguments(**vars(namespace))
 
-def set_random_seeds(seed=0):
+
+def load_args_from_json(args: Arguments) -> None:
+    """ Update additional configs defined in the json file. """
+    filename = args.config
+    found_json = os.path.join(args.config_dir, filename + ".json")
+    if not os.path.isfile(found_json):
+        found_json = os.path.join(args.save_dir, filename, "args.json")
+    with open(found_json) as f:
+        for key, val in json.load(f):
+            setattr(args, key, val)
+
+
+def init_pipeline(
+    arg_list: Optional[List[str]] = None,
+) -> Tuple[Arguments, torch.device, Dict[str, Any]]:
+    """ Pass in the empty list to skip argument parsing. """
+    set_random_seeds()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    args = get_parsed_arguments(arg_list)
+    if args.config:
+        load_args_from_json(args)
+
+    checkpoint: Dict[str, Any] = {}
+    if args.checkpoint:
+        checkpoint_path = os.path.join(args.save_dir, args.checkpoint)
+        checkpoint = util.load_checkpoint(checkpoint_path, args.use_best)
+    return args, device, checkpoint
+
+
+def set_random_seeds(seed: int = 0) -> None:
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -113,3 +156,33 @@ def set_random_seeds(seed=0):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
+
+def get_run_name(args: Arguments) -> str:
+    save_dir = args.save_dir
+    if not os.path.isdir(save_dir):
+        os.makedirs(save_dir)
+
+    if args.checkpoint:
+        return os.path.join(save_dir, args.checkpoint)
+
+    if args.name:
+        full_name = os.path.join(save_dir, args.name)
+        if not os.path.isdir(full_name):
+            os.makedirs(full_name)
+        return full_name
+
+    dirlist = [f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))]
+    dirlist.sort()
+    dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
+    if not dirlist:
+        result = "A"
+    else:
+        last_run_char = dirlist[-1][-1]
+        if last_run_char == "Z":
+            result = "A" * (len(dirlist[-1]) + 1)
+        else:
+            result = dirlist[-1][:-1] + chr(ord(last_run_char) + 1)
+    out_dir = os.path.join(save_dir, result)
+    os.makedirs(out_dir)
+    return out_dir

@@ -1,14 +1,17 @@
 import random
 import sys
 from types import SimpleNamespace
+from typing import Any, Generator, List, Optional, Tuple
 
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
+from torch.utils.data import DataLoader
 
 from src import util
-from src.args import init_pipeline
+from src.args import Arguments, init_pipeline
 from src.datasets import get_dataset_initializer
 from src.losses import get_loss_initializer
 from src.metric_tracker import MetricTracker, Mode
@@ -22,7 +25,15 @@ else:
     from tqdm import tqdm
 
 
-def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode):
+def train_and_validate(
+    args: Arguments,
+    model: nn.Module,
+    loader: DataLoader,
+    optimizer: optim.Optimizer,
+    criterion: nn.Module,
+    metrics: MetricTracker,
+    mode: Mode,
+) -> None:
     if mode == Mode.TRAIN:
         model.train()
     else:
@@ -63,16 +74,18 @@ def train_and_validate(args, model, loader, optimizer, criterion, metrics, mode)
     metrics.epoch_update(mode)
 
 
-def get_optimizer(args, model):
+def get_optimizer(args: Arguments, model: nn.Module) -> optim.Optimizer:
     params = filter(lambda p: p.requires_grad, model.parameters())
     return optim.AdamW(params, lr=args.lr)
 
 
-def get_scheduler(args, optimizer):
+def get_scheduler(args: Arguments, optimizer: optim.Optimizer) -> lr_scheduler._LRScheduler:
     return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)
 
 
-def load_model(args, device, init_params, loader):
+def load_model(
+    args: Arguments, device: torch.device, init_params: List[Any], loader: Generator
+) -> Tuple[nn.Module, nn.Module, optim.Optimizer, lr_scheduler._LRScheduler]:
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
     optimizer = get_optimizer(args, model)
@@ -81,7 +94,7 @@ def load_model(args, device, init_params, loader):
     return model, criterion, optimizer, scheduler
 
 
-def train(arg_list=None):
+def train(arg_list: Optional[List[str]] = None) -> MetricTracker:
     args, device, checkpoint = init_pipeline(arg_list)
     dataset_loader = get_dataset_initializer(args.dataset)
     train_loader, val_loader, init_params = dataset_loader.load_train_data(args, device)

@@ -1,8 +1,13 @@
 import sys
 import warnings
+from typing import Generator
 
 import torch
+import torch.nn as nn
+import torch.optim as optim
+
 import torchsummary
+from src.args import Arguments
 
 if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm
@@ -10,7 +15,14 @@ else:
     from tqdm import tqdm
 
 
-def verify_model(args, model, loader, optimizer, criterion, device):
+def verify_model(
+    args: Arguments,
+    model: nn.Module,
+    loader: Generator,
+    optimizer: optim.Optimizer,
+    criterion: nn.Module,
+    device: torch.device,
+) -> None:
     """
     Performs all necessary validation on your model to ensure correctness.
     You may need to change the batch_size or max_iters in overfit_example
@@ -25,15 +37,17 @@ def verify_model(args, model, loader, optimizer, criterion, device):
         print("Verification complete - all tests passed!")
 
 
-def model_summary(args, model, loader):
+def model_summary(args: Arguments, model: nn.Module, loader: Generator) -> None:
     """
     Prints out model using torchsummary.
     """
-    data, _ = next(loader)
+    data, _ = next(loader)  # type: ignore
     torchsummary.summary(model, data, batch_dim=args.batch_dim)
 
 
-def check_batch_dimension(model, loader, optimizer, test_val=2):
+def check_batch_dimension(
+    model: nn.Module, loader: Generator, optimizer: optim.Optimizer, test_val: int = 2
+) -> None:
     """
     Verifies that the provided model loads the data correctly. We do this by setting the
     loss to be something trivial (e.g. the sum of all outputs of example i), running the
@@ -59,7 +73,14 @@ def check_batch_dimension(model, loader, optimizer, test_val=2):
 
 
 def overfit_example(
-    model, loader, optimizer, criterion, device, batch_dim=0, batch_size=2, max_iters=50
+    model: nn.Module,
+    loader: Generator,
+    optimizer: optim.Optimizer,
+    criterion: nn.Module,
+    device: torch.device,
+    batch_dim: int = 0,
+    batch_size: int = 2,
+    max_iters: int = 50,
 ):
     """
     Verifies that the provided model can overfit a single batch or example.
@@ -103,7 +124,7 @@ def overfit_example(
         )
 
 
-def detect_NaN_tensors(model):
+def detect_NaN_tensors(model: nn.Module) -> None:
     """
     Verifies that the provided model does not have any exploding gradients.
     """
@@ -114,7 +135,9 @@ def detect_NaN_tensors(model):
         )
 
 
-def check_all_layers_training(model, loader, optimizer, criterion):
+def check_all_layers_training(
+    model: nn.Module, loader: Generator, optimizer: optim.Optimizer, criterion: nn.Module
+) -> None:
     """
     Verifies that the provided model trains all provided layers.
     """

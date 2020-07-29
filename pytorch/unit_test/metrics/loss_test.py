@@ -4,7 +4,7 @@ from src.metrics import Loss
 
 class TestLoss:
     @staticmethod
-    def test_batch_loss(example_batch):
+    def test_batch_loss(example_batch) -> None:
         metric = Loss()
 
         _ = metric.update(example_batch)
@@ -12,7 +12,7 @@ class TestLoss:
         assert round(metric.get_batch_result(3), 3) == 0.21
 
     @staticmethod
-    def test_epoch_accuracy(example_batch):
+    def test_epoch_accuracy(example_batch) -> None:
         metric = Loss()
 
         for _ in range(4):

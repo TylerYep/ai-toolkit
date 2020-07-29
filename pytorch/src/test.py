@@ -1,9 +1,12 @@
 import sys
+from typing import List, Optional
 
 import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader
 
 from src import util
-from src.args import init_pipeline
+from src.args import Arguments, init_pipeline
 from src.datasets import get_dataset_initializer
 from src.losses import get_loss_initializer
 from src.models import get_model_initializer
@@ -15,9 +18,9 @@ else:
     from tqdm import tqdm
 
 
-def test_model(args, model, test_loader, criterion):
+def test_model(args: Arguments, model: nn.Module, test_loader: DataLoader, criterion: nn.Module):
     model.eval()
-    test_loss, correct = 0, 0
+    test_loss, correct = 0.0, 0.0
     with torch.no_grad():
         with tqdm(desc="Test", total=len(test_loader), ncols=120) as pbar:
             for data, target in test_loader:
@@ -41,7 +44,7 @@ def test_model(args, model, test_loader, criterion):
     )
 
 
-def test(arg_list=None):
+def test(arg_list: Optional[List[str]] = None) -> None:
     args, device, checkpoint = init_pipeline(arg_list)
     criterion = get_loss_initializer(args.loss)()
     test_loader = get_dataset_initializer(args.dataset).load_test_data(args, device)

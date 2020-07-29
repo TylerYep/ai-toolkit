@@ -7,6 +7,7 @@ from .dice import Dice
 from .f1_score import F1Score
 from .iou import IoU
 from .loss import Loss
+from .metric import Metric
 
 
 def get_metric_initializer(metric_name: str) -> Any:

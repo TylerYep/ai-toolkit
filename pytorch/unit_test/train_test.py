@@ -4,15 +4,15 @@ from src.train import train
 
 class TestTrain:
     @staticmethod
-    def test_one_epoch():
+    def test_one_epoch() -> None:
         config = ["--no-visualize", "--num-examples=100", "--no-save"]
 
         metric_tracker = train(["--epoch=1", "--name=TEST"] + config)
 
-        assert round(metric_tracker["Loss"].value, 7) == 4.6288586
+        assert round(metric_tracker["Loss"].value, 7) == 3.3727374
 
     @staticmethod
-    def test_epoch_resume(tmp_path):
+    def test_epoch_resume(tmp_path) -> None:
         config = ["--no-visualize", "--num-examples=100", f"--save-dir={tmp_path}"]
         _ = train(["--epoch=2", "--name=TEST"] + config)
         metrics_end = train(["--epoch=2", "--checkpoint=TEST"] + config)

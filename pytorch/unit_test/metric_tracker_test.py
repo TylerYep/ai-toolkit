@@ -5,7 +5,7 @@ from src.metric_tracker import MetricTracker, Mode
 
 class TestMetricTracker:
     @staticmethod
-    def test_init_metrics():
+    def test_init_metrics() -> None:
         arg_list = ["--no-save", "--no-visualize", "--num-examples=100", "--epochs=1"]
         args, _, _ = init_pipeline(arg_list)
 
@@ -14,7 +14,7 @@ class TestMetricTracker:
         assert metrics
 
     @staticmethod
-    def test_one_batch_update(example_batch):
+    def test_one_batch_update(example_batch) -> None:
         arg_list = ["--no-save", "--no-visualize", "--epochs=1"]
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
@@ -28,7 +28,7 @@ class TestMetricTracker:
         assert result == [0.63, 2.0]
 
     @staticmethod
-    def test_many_batch_update(example_batch):
+    def test_many_batch_update(example_batch) -> None:
         arg_list = ["--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"]
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
@@ -45,7 +45,7 @@ class TestMetricTracker:
         assert result == [2.52, 8.0]
 
     @staticmethod
-    def test_epoch_update(capsys, example_batch):
+    def test_epoch_update(capsys, example_batch) -> None:
         arg_list = ["--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"]
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
@@ -59,5 +59,5 @@ class TestMetricTracker:
         assert captured == "Mode.TRAIN Loss: 0.2100 Accuracy: 66.67% \n"
 
     @staticmethod
-    def test_checkpoint_continue():
+    def test_checkpoint_continue() -> None:
         pass

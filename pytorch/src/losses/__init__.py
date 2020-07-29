@@ -1,5 +1,6 @@
 """ Imports all Loss functions. """
 import sys
+from typing import Any
 
 import torch
 import torch.nn as nn
@@ -9,7 +10,7 @@ from .dice import DiceLoss
 from .focal import FocalLoss
 
 
-def get_loss_initializer(loss_fn):
+def get_loss_initializer(loss_fn: str) -> Any:
     """ Retrieves class initializer from its string name. """
     if loss_fn == "nn.CrossEntropyLoss":
         return nn.CrossEntropyLoss

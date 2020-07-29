@@ -6,7 +6,7 @@ import torch
 
 
 @pytest.fixture
-def example_batch():
+def example_batch() -> SimpleNamespace:
     batch_size = 3
     val_dict = SimpleNamespace(
         **{

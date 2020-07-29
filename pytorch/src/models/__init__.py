@@ -1,4 +1,5 @@
 import sys
+from typing import Any
 
 from .cnn import BasicCNN
 from .dense import DenseNet
@@ -10,7 +11,7 @@ from .rnn import BasicRNN
 # from .efficient_net import EfficientNet
 
 
-def get_model_initializer(model_name):
+def get_model_initializer(model_name: str) -> Any:
     """ Retrieves class initializer from its string name. """
     assert hasattr(
         sys.modules[__name__], model_name
