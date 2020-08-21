@@ -3,11 +3,11 @@ import torch.nn as nn
 
 
 class DiceLoss(nn.Module):
-    def __init__(self, eps=1):
+    def __init__(self, eps: int = 1) -> None:
         super().__init__()
         self.eps = eps
 
-    def forward(self, output, target):
+    def forward(self, output: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         batch_size = output.shape[0]
         dice_target = target.reshape(batch_size, -1)
         dice_output = output.reshape(batch_size, -1)

@@ -12,7 +12,7 @@ class TestTrain:
         assert round(metric_tracker["Loss"].value, 7) == 3.3727374
 
     @staticmethod
-    def test_epoch_resume(tmp_path) -> None:
+    def test_epoch_resume(tmp_path: str) -> None:
         config = ["--no-visualize", "--num-examples=100", f"--save-dir={tmp_path}"]
         _ = train(["--epoch=2", "--name=TEST"] + config)
         metrics_end = train(["--epoch=2", "--checkpoint=TEST"] + config)

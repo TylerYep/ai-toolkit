@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import torch
 
 from .metric import Metric
@@ -5,7 +7,9 @@ from .metric import Metric
 
 class Dice(Metric):
     @staticmethod
-    def calculate_dice_coefficent(output, target, eps=1e-7):
+    def calculate_dice_coefficent(
+        output: torch.Tensor, target: torch.Tensor, eps: float = 1e-7
+    ) -> float:
         output = (output > 0.5).float()
         batch_size = output.shape[0]
         dice_target = target.reshape(batch_size, -1)
@@ -15,7 +19,7 @@ class Dice(Metric):
         accuracy = ((2 * intersection + eps) / (union + eps)).sum().item()
         return accuracy
 
-    def update(self, val_dict):
+    def update(self, val_dict: SimpleNamespace) -> float:
         output, target = val_dict.output, val_dict.target
         dice_score = self.calculate_dice_coefficent(output, target)
         self.epoch_avg += dice_score

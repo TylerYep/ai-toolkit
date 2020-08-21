@@ -1,4 +1,7 @@
 """ train_test.py """
+from types import SimpleNamespace
+
+from _pytest.capture import CaptureFixture
 from src.args import init_pipeline
 from src.metric_tracker import MetricTracker, Mode
 
@@ -14,7 +17,7 @@ class TestMetricTracker:
         assert metrics
 
     @staticmethod
-    def test_one_batch_update(example_batch) -> None:
+    def test_one_batch_update(example_batch: SimpleNamespace) -> None:
         arg_list = ["--no-save", "--no-visualize", "--epochs=1"]
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
@@ -28,7 +31,7 @@ class TestMetricTracker:
         assert result == [0.63, 2.0]
 
     @staticmethod
-    def test_many_batch_update(example_batch) -> None:
+    def test_many_batch_update(example_batch: SimpleNamespace) -> None:
         arg_list = ["--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"]
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})
@@ -45,7 +48,7 @@ class TestMetricTracker:
         assert result == [2.52, 8.0]
 
     @staticmethod
-    def test_epoch_update(capsys, example_batch) -> None:
+    def test_epoch_update(capsys: CaptureFixture, example_batch: SimpleNamespace) -> None:
         arg_list = ["--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"]
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})

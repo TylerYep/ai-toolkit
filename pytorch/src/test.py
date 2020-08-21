@@ -17,7 +17,9 @@ else:
     from tqdm import tqdm
 
 
-def test_model(args: Arguments, model: nn.Module, test_loader: DataLoader, criterion: nn.Module):
+def test_model(
+    args: Arguments, model: nn.Module, test_loader: DataLoader, criterion: nn.Module
+) -> None:
     model.eval()
     test_loss, correct = 0.0, 0.0
     with torch.no_grad():

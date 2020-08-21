@@ -1,3 +1,6 @@
+from types import SimpleNamespace
+
+import torch
 from torch.nn import functional as F
 
 from .metric import Metric
@@ -5,9 +8,9 @@ from .metric import Metric
 
 class F1Score(Metric):
     @staticmethod
-    def calculate_f1_score(y_pred, y_true, eps=1e-7):
-        assert y_pred.ndim == 2
-        assert y_true.ndim == 1
+    def calculate_f1_score(y_pred: torch.Tensor, y_true: torch.Tensor, eps: float = 1e-7) -> float:
+        assert y_pred.size() == 2
+        assert y_true.size() == 1
         y_true = F.one_hot(y_true, 2)
         y_pred = F.softmax(y_pred, dim=1)
 
@@ -24,7 +27,7 @@ class F1Score(Metric):
         f1_score = 1 - f1.mean()
         return f1_score
 
-    def update(self, val_dict):
+    def update(self, val_dict: SimpleNamespace) -> float:
         y_pred, y_true = val_dict.output, val_dict.target
         f1_score = self.calculate_f1_score(y_pred, y_true)
         self.epoch_avg += f1_score
