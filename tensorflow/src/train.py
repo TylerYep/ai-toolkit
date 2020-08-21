@@ -1,8 +1,9 @@
 import os
 
-import tensorflow as tf
 from src.args import init_pipeline
 from src.dataset import load_train_data
+
+import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
 

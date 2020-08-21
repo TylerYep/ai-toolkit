@@ -1,7 +1,6 @@
 from typing import Generator, Optional
 
 import torch.nn as nn
-
 from src import util
 from src.args import Arguments, init_pipeline
 from src.datasets import get_dataset_initializer

@@ -12,7 +12,7 @@ cd "${0%/*}/.."
 # pyre check
 
 # Auto-code formatters
-isort -y
+isort .
 black . -l 100
 git add .
 

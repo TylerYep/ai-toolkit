@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
-
 from src import util
 
 
@@ -127,7 +126,8 @@ def load_args_from_json(args: Arguments) -> None:
     if not os.path.isfile(found_json):
         found_json = os.path.join(args.save_dir, filename, "args.json")
     with open(found_json) as f:
-        for key, val in json.load(f):
+        arg_dict = json.load(f)
+        for key, val in arg_dict.items():
             setattr(args, key, val)
 
 

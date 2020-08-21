@@ -5,7 +5,6 @@ from typing import Generator
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
 import torchsummary
 from src.args import Arguments
 

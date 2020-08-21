@@ -6,10 +6,9 @@ from typing import Any, Dict, Generator, List, Optional
 
 import torch
 import torch.nn as nn
-from torch.utils.tensorboard import SummaryWriter
-
 from src.args import Arguments, get_run_name
 from src.metrics import Metric, get_metric_initializer
+from torch.utils.tensorboard import SummaryWriter
 
 
 @unique

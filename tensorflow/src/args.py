@@ -2,9 +2,9 @@ import argparse
 import random
 
 import numpy as np
+from src import util
 
 import tensorflow as tf
-from src import util
 
 
 def init_pipeline(arg_list=None):

@@ -3,14 +3,13 @@ from typing import List, Optional
 
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
-
 from src import util
 from src.args import Arguments, init_pipeline
 from src.datasets import get_dataset_initializer
 from src.losses import get_loss_initializer
 from src.models import get_model_initializer
 from src.verify import model_summary
+from torch.utils.data import DataLoader
 
 if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm

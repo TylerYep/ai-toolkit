@@ -1,8 +1,10 @@
+from typing import Any, List, Tuple
+
 import torch
+from src.args import Arguments
+from src.datasets.dataset import DatasetLoader
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-
-from src.datasets.dataset import DatasetLoader
 
 
 class DatasetCNN(DatasetLoader):
@@ -21,15 +23,17 @@ class DatasetCNN(DatasetLoader):
             "Ankle boot",
         ]
 
-    def load_train_data(self, args, device, val_split=0.2):
+    def load_train_data(
+        self, args: Arguments, device: torch.device, val_split: float = 0.2
+    ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
         orig_dataset = datasets.FashionMNIST(
             self.DATA_PATH, train=True, download=True, transform=self.get_transforms()
         )
         train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
-        init_params = [torch.Size((1, 28, 28))]
+        init_params = (torch.Size((1, 28, 28)),)
         return train_loader, val_loader, init_params
 
-    def load_test_data(self, args, device):
+    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:
         collate_fn = self.get_collate_fn(device)
         test_set = datasets.FashionMNIST(
             self.DATA_PATH, train=False, transform=self.get_transforms()

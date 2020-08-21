@@ -3,15 +3,16 @@
 # http://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
 import os
 import random
+from typing import Any, Callable, List, Tuple
 
 import numpy as np
 import torch
 from PIL import Image
+from src.args import Arguments
+from src.datasets.dataset import DatasetLoader
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import functional as F
-
-from src.datasets.dataset import DatasetLoader
 
 
 class DatasetPenn(DatasetLoader):
@@ -19,20 +20,22 @@ class DatasetPenn(DatasetLoader):
         super().__init__()
         self.CLASS_LABELS = ["YES", "NO"]
 
-    def load_train_data(self, args, device, val_split=0.2):
+    def load_train_data(
+        self, args: Arguments, device: torch.device, val_split: float = 0.2
+    ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
         orig_dataset = PennFudanDataset("data", self.get_transforms(train=True))
         train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
         init_params = []
         return train_loader, val_loader, init_params
 
-    def load_test_data(self, args, device):
+    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:
         collate_fn = self.get_collate_fn(device)
         test_set = PennFudanDataset("data", self.get_transforms(train=False))
         test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
         return test_loader
 
     @staticmethod
-    def get_collate_fn(device):
+    def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
         def collate(x):
             data, target = tuple(zip(*x))
             data = list(image.to(device) for image in data)

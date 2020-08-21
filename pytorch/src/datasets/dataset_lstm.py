@@ -1,28 +1,31 @@
 import os
 from collections import defaultdict
+from typing import Any, Callable, List, Tuple
 
 import torch
+from src.args import Arguments
+from src.datasets.dataset import DatasetLoader
 from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
 
-from src.datasets.dataset import DatasetLoader
-
 
 class DatasetLSTM(DatasetLoader):
-    def load_train_data(self, args, device, val_split=0.2):
+    def load_train_data(
+        self, args: Arguments, device: torch.device, val_split: float = 0.2
+    ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
         orig_dataset = LanguageWords(self.DATA_PATH)
         train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
         return train_loader, val_loader, orig_dataset.get_model_params() + (device,)
 
-    def load_test_data(self, args, device):
+    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
         test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
         return test_loader
 
     @staticmethod
-    def get_collate_fn(device):
+    def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
         """
         for indices in batch_sampler:
             yield collate_fn([dataset[i] for i in indices])

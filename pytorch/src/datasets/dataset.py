@@ -1,11 +1,10 @@
 import sys
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Tuple
 
 import torch
+from src.args import Arguments
 from torch.utils.data import DataLoader, Dataset, random_split
 from torch.utils.data.dataloader import default_collate
-
-from src.args import Arguments
 
 
 class DatasetLoader:
@@ -35,7 +34,7 @@ class DatasetLoader:
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> DataLoader:
+    ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
         raise NotImplementedError
 
     def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:

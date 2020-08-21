@@ -8,8 +8,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
-from torch.utils.data import DataLoader
-
 from src import util
 from src.args import Arguments, init_pipeline
 from src.datasets import get_dataset_initializer
@@ -18,6 +16,7 @@ from src.metric_tracker import MetricTracker, Mode
 from src.models import get_model_initializer
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained
+from torch.utils.data import DataLoader
 
 if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm
