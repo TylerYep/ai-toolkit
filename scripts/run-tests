@@ -6,10 +6,10 @@ set -e
 # Ensure that we're always inside the root of our application,
 # no matter which directory we run script: Run `./scripts/run-tests.bash`
 cd "${0%/*}/.."
+cd "pytorch"
 
 # Type Checking
-# mypy .
-# pyre check
+mypy .
 
 # Auto-code formatters
 isort .
@@ -17,8 +17,8 @@ black . -l 100
 git add .
 
 # Style Checking
-# flake8 .
-# find . -iname "*.py" | xargs pylint
+flake8 .
+find . -iname "*.py" | xargs pylint
 
 # Testing
-cd "pytorch" && pytest -s
+pytest -s

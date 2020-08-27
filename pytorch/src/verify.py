@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchsummary
+
 from src.args import Arguments
 
 if "google.colab" in sys.modules:
@@ -40,7 +41,7 @@ def model_summary(args: Arguments, model: nn.Module, loader: Generator) -> None:
     """
     Prints out model using torchsummary.
     """
-    data, _ = next(loader)  # type: ignore
+    data, _ = next(loader)
     torchsummary.summary(model, data, batch_dim=args.batch_dim)
 
 
@@ -80,7 +81,7 @@ def overfit_example(
     batch_dim: int = 0,
     batch_size: int = 2,
     max_iters: int = 50,
-):
+) -> None:
     """
     Verifies that the provided model can overfit a single batch or example.
     """
@@ -93,7 +94,7 @@ def overfit_example(
         none_slice = (slice(None),)
         batch_dim_slice = (
             none_slice * batch_dim
-            + (slice(batch_size,),)
+            + (slice(batch_size),)
             + none_slice * (input_data.ndim - batch_dim - 1)
         )
         return input_data[batch_dim_slice]

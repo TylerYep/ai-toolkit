@@ -6,9 +6,10 @@ from typing import Any, Dict, Generator, List, Optional
 
 import torch
 import torch.nn as nn
+from torch.utils.tensorboard import SummaryWriter
+
 from src.args import Arguments, get_run_name
 from src.metrics import Metric, get_metric_initializer
-from torch.utils.tensorboard import SummaryWriter
 
 
 @unique
@@ -34,13 +35,13 @@ class MetricTracker:
         metric_checkpoint = checkpoint.get("metric_obj", {})
         self.epoch = metric_checkpoint.get("epoch", 0)
         self.is_best = metric_checkpoint.get("is_best", True)
-        self.metric_data = metric_checkpoint.get(
+        self.metric_data: Dict[str, Metric] = metric_checkpoint.get(
             "metric_data", {name: get_metric_initializer(name)() for name in args.metrics}
         )
         self.primary_metric = metric_checkpoint.get("primary_metric", args.metrics[0])
         self.end_epoch = self.epoch + args.epochs
         self.args = args
-        self.prev_best = None
+        self.prev_best: Optional[float] = None
 
     def json_repr(self) -> Dict[str, Any]:
         return {
@@ -76,20 +77,20 @@ class MetricTracker:
     ) -> Dict[str, float]:
         assert torch.isfinite(val_dict.loss).all(), "The loss returned in training is NaN or inf."
         tqdm_dict = {}
-        for metric, metric_obj in self.metric_data.items():
-            metric_obj.update(val_dict)
-            tqdm_dict[metric] = metric_obj.value
+        for metric_name, metric in self.metric_data.items():
+            metric.update(val_dict)
+            tqdm_dict[metric_name] = metric.value
 
         num_steps = (self.epoch - 1) * num_batches + i
         # Only reset batch statistics after log_interval batches
         if i > 0 and i % self.args.log_interval == 0:
             if mode == Mode.TRAIN:
                 # Write batch to tensorboard
-                for metric, metric_obj in self.metric_data.items():
-                    batch_result = metric_obj.get_batch_result(
+                for metric_name, metric in self.metric_data.items():
+                    batch_result = metric.get_batch_result(
                         val_dict.batch_size, self.args.log_interval
                     )
-                    self.write(f"{Mode.TRAIN}_Batch_{metric}", batch_result, num_steps)
+                    self.write(f"{Mode.TRAIN}_Batch_{metric_name}", batch_result, num_steps)
 
             for metric in self.metric_data.values():
                 metric.batch_reset()
@@ -101,21 +102,21 @@ class MetricTracker:
 
     def epoch_update(self, mode: Mode) -> None:
         result_str = f"{mode} "
-        for metric, metric_obj in self.metric_data.items():
-            self.write(f"{mode}_Epoch_{metric}", metric_obj.value, self.epoch)
-            if mode == Mode.VAL and metric == self.primary_metric:
-                self.is_best = self.prev_best is None or metric_obj.value < self.prev_best
+        for metric_name, metric in self.metric_data.items():
+            self.write(f"{mode}_Epoch_{metric_name}", metric.value, self.epoch)
+            if mode == Mode.VAL and metric_name == self.primary_metric:
+                self.is_best = self.prev_best is None or metric.value < self.prev_best
                 if self.is_best:
-                    self.prev_best = metric_obj.value
-            result_str += f"{metric_obj} "
+                    self.prev_best = metric.value
+            result_str += f"{metric} "
         print(result_str)
 
     def add_network(self, model: nn.Module, loader: Generator) -> None:
         if self.writer is not None:
-            data, _ = next(loader)  # type: ignore
+            data, _ = next(loader)
             self.writer.add_graph(model, data)
 
-    def write(self, title: str, val: float, step_num: int):
+    def write(self, title: str, val: float, step_num: int) -> None:
         if self.writer is not None:
             self.writer.add_scalar(title, val, step_num)
 

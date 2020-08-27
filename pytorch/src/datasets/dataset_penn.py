@@ -8,15 +8,16 @@ from typing import Any, Callable, List, Tuple
 import numpy as np
 import torch
 from PIL import Image
-from src.args import Arguments
-from src.datasets.dataset import DatasetLoader
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import functional as F
 
+from src.args import Arguments
+from src.datasets.dataset import DatasetLoader
+
 
 class DatasetPenn(DatasetLoader):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.CLASS_LABELS = ["YES", "NO"]
 

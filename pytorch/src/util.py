@@ -29,7 +29,8 @@ def set_rng_state(checkpoint: Dict[str, Any]) -> None:
 
 
 def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = "") -> None:
-    """ Saves model and training parameters at checkpoint + 'last.pth.tar'.
+    """
+    Saves model and training parameters at checkpoint + 'last.pth.tar'.
     If is_best is True, also saves best.pth.tar
     Args:
         state: (dict) contains model's state_dict, may contain other keys such as
@@ -47,12 +48,15 @@ def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = "") ->
 
 
 def load_checkpoint(checkpoint_path: str, use_best: bool = False) -> Dict[str, Any]:
-    """ Loads torch checkpoint.
+    """
+    Loads torch checkpoint.
     Args:
         checkpoint_path: (string) filename which needs to be loaded
     """
     load_file = "model_best.pth.tar" if use_best else "checkpoint.pth.tar"
-    return torch.load(os.path.join(checkpoint_path, load_file))
+    checkpoint = torch.load(os.path.join(checkpoint_path, load_file))
+    assert isinstance(checkpoint, dict)
+    return checkpoint
 
 
 def load_state_dict(
@@ -60,8 +64,9 @@ def load_state_dict(
     model: nn.Module,
     optimizer: Optional[optim.Optimizer] = None,
     scheduler: Optional[lr_scheduler._LRScheduler] = None,
-):
-    """ Loads model parameters (state_dict) from checkpoint. If optimizer or scheduler are
+) -> None:
+    """
+    Loads model parameters (state_dict) from checkpoint. If optimizer or scheduler are
     provided, loads state_dict of optimizer assuming it is present in checkpoint.
     Args:
         checkpoint: () checkpoint object

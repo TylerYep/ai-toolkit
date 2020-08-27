@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from types import SimpleNamespace
 
-import torch
-
 
 @dataclass
 class Metric:
@@ -10,7 +8,7 @@ class Metric:
     running_avg: float = 0.0
     num_examples: int = 0
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.name = type(self).__name__
 
     def __repr__(self) -> str:

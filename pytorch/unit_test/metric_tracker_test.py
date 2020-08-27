@@ -2,6 +2,7 @@
 from types import SimpleNamespace
 
 from _pytest.capture import CaptureFixture
+
 from src.args import init_pipeline
 from src.metric_tracker import MetricTracker, Mode
 

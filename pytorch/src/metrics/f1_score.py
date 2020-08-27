@@ -9,8 +9,8 @@ from .metric import Metric
 class F1Score(Metric):
     @staticmethod
     def calculate_f1_score(y_pred: torch.Tensor, y_true: torch.Tensor, eps: float = 1e-7) -> float:
-        assert y_pred.size() == 2
-        assert y_true.size() == 1
+        assert y_pred.dim() == 2
+        assert y_true.dim() == 1
         y_true = F.one_hot(y_true, 2)
         y_pred = F.softmax(y_pred, dim=1)
 
@@ -25,6 +25,7 @@ class F1Score(Metric):
         f1 = 2 * (precision * recall) / (precision + recall + eps)
         f1 = f1.clamp(min=eps, max=1 - eps)
         f1_score = 1 - f1.mean()
+        assert isinstance(f1_score, float)
         return f1_score
 
     def update(self, val_dict: SimpleNamespace) -> float:

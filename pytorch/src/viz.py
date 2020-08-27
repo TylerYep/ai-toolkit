@@ -1,6 +1,7 @@
 from typing import Generator, Optional
 
 import torch.nn as nn
+
 from src import util
 from src.args import Arguments, init_pipeline
 from src.datasets import get_dataset_initializer
@@ -31,7 +32,7 @@ def viz() -> None:
 def visualize(
     args: Arguments, model: nn.Module, loader: Generator, metrics: Optional[MetricTracker] = None
 ) -> None:
-    if not args.no_visualize and (metrics is None or metrics.class_labels):
+    if not args.no_visualize and metrics is not None:
         metrics.add_network(model, loader)
 
         run_name = metrics.run_name
@@ -44,7 +45,7 @@ def visualize(
 def visualize_trained(
     args: Arguments, model: nn.Module, loader: Generator, metrics: Optional[MetricTracker] = None
 ) -> None:
-    if not args.no_visualize and (metrics is None or metrics.class_labels):
+    if not args.no_visualize and metrics is not None:
         run_name = metrics.run_name
         data, target = next(loader)
         make_fooling_image(model, data[5], target[5], metrics.class_labels, target[9], run_name)

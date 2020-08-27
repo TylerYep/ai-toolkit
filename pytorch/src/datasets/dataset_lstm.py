@@ -3,11 +3,12 @@ from collections import defaultdict
 from typing import Any, Callable, List, Tuple
 
 import torch
-from src.args import Arguments
-from src.datasets.dataset import DatasetLoader
 from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
+
+from src.args import Arguments
+from src.datasets.dataset import DatasetLoader
 
 
 class DatasetLSTM(DatasetLoader):

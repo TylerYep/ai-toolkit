@@ -62,7 +62,8 @@ def set_rng_state(checkpoint):
 
 
 def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = ""):
-    """ Saves model and training parameters at checkpoint + 'last.pth.tar'.
+    """
+    Saves model and training parameters at checkpoint + 'last.pth.tar'.
     If is_best is True, also saves best.pth.tar
     Args:
         state: (dict) contains model's state_dict, may contain other keys such as
@@ -80,7 +81,8 @@ def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = ""):
 
 
 def load_checkpoint(checkpoint_name: str, use_best: bool = False) -> Dict[str, Any]:
-    """ Loads torch checkpoint.
+    """
+    Loads torch checkpoint.
     Args:
         checkpoint: (string) filename which needs to be loaded
     """

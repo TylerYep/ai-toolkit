@@ -10,7 +10,7 @@ class TestCNN:
 
     @staticmethod
     def test_epoch_resume() -> None:
-        val_loss_start = train(["--epoch=2", "--name=TEST"])
+        _ = train(["--epoch=2", "--name=TEST"])
         val_loss_end = train(["--epoch=2", "--checkpoint=TEST"])
 
         val_loss_test = train(["--epoch=4"])

@@ -1,14 +1,15 @@
-from typing import Any, List, Tuple
+from typing import Any, Tuple
 
 import torch
-from src.args import Arguments
-from src.datasets.dataset import DatasetLoader
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
+from src.args import Arguments
+from src.datasets.dataset import DatasetLoader
+
 
 class DatasetCNN(DatasetLoader):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.CLASS_LABELS = [
             "T-shirt/top",

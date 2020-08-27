@@ -2,9 +2,10 @@ import sys
 from typing import Any, Callable, List, Tuple
 
 import torch
-from src.args import Arguments
 from torch.utils.data import DataLoader, Dataset, random_split
 from torch.utils.data.dataloader import default_collate
+
+from src.args import Arguments
 
 
 class DatasetLoader:
@@ -14,7 +15,7 @@ class DatasetLoader:
 
     def split_data(
         self, orig_dataset: Dataset, args: Arguments, device: torch.device, val_split: float
-    ):
+    ) -> Tuple[DataLoader, DataLoader]:
         collate_fn = self.get_collate_fn(device)
         generator_seed = torch.Generator().manual_seed(0)
         if args.num_examples:

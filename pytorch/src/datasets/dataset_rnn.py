@@ -4,15 +4,16 @@ import random
 import string
 import unicodedata
 import zipfile
-from typing import Any, List, Tuple
+from typing import Any, Tuple
 
 import torch
 import wget
-from src.args import Arguments
-from src.datasets.dataset import DatasetLoader
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
+
+from src.args import Arguments
+from src.datasets.dataset import DatasetLoader
 
 DATA_URL = "https://download.pytorch.org/tutorial/data.zip"
 ALL_LETTERS = string.ascii_letters + " .,;'"

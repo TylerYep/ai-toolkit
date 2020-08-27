@@ -7,7 +7,7 @@ import torchvision.transforms as T
 
 
 def save_figure(run_name, img_name):
-    plt.tight_layout(True)
+    plt.tight_layout(pad=True)
     if run_name:
         plt.savefig(os.path.join(run_name, img_name))
         plt.clf()

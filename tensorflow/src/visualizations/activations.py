@@ -1,3 +1,9 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+import tensorflow as tf
+
+
 def compute_activations(model, train_images, train_labels):
     output, activations = model.call_with_activations(train_images)
     NUM_EXAMPLES = 2
@@ -16,5 +22,5 @@ def compute_activations(model, train_images, train_labels):
             ax.axis("off")
 
 
-train_img, train_lab = next(iter(train_dataset))
-compute_activations(model, train_img, train_lab)
+# train_img, train_lab = next(iter(train_dataset))
+# compute_activations(model, train_img, train_lab)

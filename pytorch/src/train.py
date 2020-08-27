@@ -8,6 +8,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
+from torch.utils.data import DataLoader
+
 from src import util
 from src.args import Arguments, init_pipeline
 from src.datasets import get_dataset_initializer
@@ -16,7 +18,6 @@ from src.metric_tracker import MetricTracker, Mode
 from src.models import get_model_initializer
 from src.verify import verify_model
 from src.viz import visualize, visualize_trained
-from torch.utils.data import DataLoader
 
 if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm
@@ -28,7 +29,7 @@ def train_and_validate(
     args: Arguments,
     model: nn.Module,
     loader: DataLoader,
-    optimizer: optim.Optimizer,
+    optimizer: Optional[optim.Optimizer],
     criterion: nn.Module,
     metrics: MetricTracker,
     mode: Mode,
@@ -43,9 +44,11 @@ def train_and_validate(
     num_batches = len(loader)
     with tqdm(desc=str(mode), total=num_batches, ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
-            if mode == Mode.TRAIN:
+            # Optimizer is never None in Mode.TRAIN, used for type-checking
+            if mode == Mode.TRAIN and optimizer is not None:
                 # If you have multiple optimizers, use model.zero_grad().
                 # If you want to freeze layers, use optimizer.zero_grad().
+                assert optimizer is not None
                 optimizer.zero_grad()
 
             if isinstance(data, (list, tuple)):
@@ -56,7 +59,7 @@ def train_and_validate(
                 batch_size = data.size(args.batch_dim)
 
             loss = criterion(output, target)
-            if mode == Mode.TRAIN:
+            if mode == Mode.TRAIN and optimizer is not None:
                 loss.backward()
                 optimizer.step()
 
@@ -84,7 +87,7 @@ def get_scheduler(args: Arguments, optimizer: optim.Optimizer) -> lr_scheduler._
 
 def load_model(
     args: Arguments, device: torch.device, init_params: List[Any], loader: Generator
-) -> Tuple[nn.Module, nn.Module, optim.Optimizer, lr_scheduler._LRScheduler]:
+) -> Tuple[nn.Module, nn.Module, optim.Optimizer, Optional[lr_scheduler._LRScheduler]]:
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
     optimizer = get_optimizer(args, model)
@@ -108,7 +111,7 @@ def train(arg_list: Optional[List[str]] = None) -> MetricTracker:
         metrics.next_epoch()
         train_and_validate(args, model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
         train_and_validate(args, model, val_loader, None, criterion, metrics, Mode.VAL)
-        if args.scheduler:
+        if scheduler is not None:
             scheduler.step()
 
         if not args.no_save:
@@ -116,7 +119,7 @@ def train(arg_list: Optional[List[str]] = None) -> MetricTracker:
                 "model_init": init_params,
                 "model_state_dict": model.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
-                "scheduler_state_dict": scheduler.state_dict() if args.scheduler else None,
+                "scheduler_state_dict": None if scheduler is None else scheduler.state_dict(),
                 "rng_state": random.getstate(),
                 "np_rng_state": np.random.get_state(),
                 "torch_rng_state": torch.get_rng_state(),
