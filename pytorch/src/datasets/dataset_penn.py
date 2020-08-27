@@ -1,6 +1,6 @@
-# type: ignore
 # Sample code from the TorchVision 0.3 Object Detection Finetuning Tutorial
 # http://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
+# pylint: disable=too-few-public-methods
 import os
 import random
 from typing import Any, Callable, List, Tuple
@@ -26,7 +26,7 @@ class DatasetPenn(DatasetLoader):
     ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
         orig_dataset = PennFudanDataset("data", self.get_transforms(train=True))
         train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
-        init_params = []
+        init_params = ()
         return train_loader, val_loader, init_params
 
     def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:
@@ -134,16 +134,16 @@ class PennFudanDataset(Dataset):
 
         # get bounding box coordinates for each mask
         num_objs = len(obj_ids)
-        boxes = []
+        box = []
         for i in range(num_objs):
             pos = np.where(masks[i])
             xmin = np.min(pos[1])
             xmax = np.max(pos[1])
             ymin = np.min(pos[0])
             ymax = np.max(pos[0])
-            boxes.append([xmin, ymin, xmax, ymax])
+            box.append([xmin, ymin, xmax, ymax])
 
-        boxes = torch.as_tensor(boxes, dtype=torch.float32)
+        boxes = torch.as_tensor(box, dtype=torch.float32)
         # there is only one class
         labels = torch.ones((num_objs,), dtype=torch.int64)
         masks = torch.as_tensor(masks, dtype=torch.uint8)

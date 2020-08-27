@@ -3,7 +3,7 @@ from typing import Any
 
 from .dataset_cnn import DatasetCNN
 from .dataset_lstm import DatasetLSTM
-from .dataset_penn import DatasetPenn  # type: ignore
+from .dataset_penn import DatasetPenn
 from .dataset_rnn import DatasetRNN
 
 
