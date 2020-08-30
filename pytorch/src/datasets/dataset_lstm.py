@@ -24,7 +24,13 @@ class DatasetLSTM(DatasetLoader):
     def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
-        test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
+        test_loader = DataLoader(
+            test_set,
+            batch_size=args.test_batch_size,
+            collate_fn=collate_fn,
+            pin_memory=torch.cuda.is_available(),
+            num_workers=args.num_workers,
+        )
         return test_loader
 
     @staticmethod

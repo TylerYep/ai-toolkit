@@ -16,6 +16,7 @@
     "name": "",
     "no_save": true,
     "num_examples": 100,
+     "num_workers": 0,
     "plot": false,
     "scheduler": true,
     "test_batch_size": 1000,

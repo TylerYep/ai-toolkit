@@ -34,9 +34,20 @@ class DatasetLoader:
             train_set, val_set = random_split(orig_dataset, data_split, generator_seed)
 
         train_loader = DataLoader(
-            train_set, batch_size=args.batch_size, shuffle=True, collate_fn=collate_fn
+            train_set,
+            batch_size=args.batch_size,
+            shuffle=True,
+            collate_fn=collate_fn,
+            pin_memory=torch.cuda.is_available(),
+            num_workers=args.num_workers,
         )
-        val_loader = DataLoader(val_set, batch_size=args.batch_size, collate_fn=collate_fn)
+        val_loader = DataLoader(
+            val_set,
+            batch_size=args.batch_size,
+            collate_fn=collate_fn,
+            pin_memory=torch.cuda.is_available(),
+            num_workers=args.num_workers,
+        )
         return train_loader, val_loader
 
     def load_train_data(

@@ -32,6 +32,7 @@ class Arguments:
     no_verify: bool
     no_visualize: bool
     num_examples: int
+    num_workers: int
     plot: bool
     save_dir: str
     scheduler: bool
@@ -100,6 +101,9 @@ def get_parsed_arguments(arg_list: Optional[List[str]]) -> Arguments:
     parser.add_argument("--num-examples", type=int, default=None, metavar="N",
                         help="number of training examples")
 
+    parser.add_argument("--num-workers", type=int, default=0,
+                        help="number of workers to use when training on GPU")
+
     parser.add_argument("--plot", action="store_true", default=False,
                         help="plot training examples")
 
@@ -129,6 +133,8 @@ def load_args_from_json(args: Arguments) -> None:
     with open(found_json) as f:
         arg_dict = json.load(f)
         for key, val in arg_dict.items():
+            if not hasattr(args, key):
+                raise KeyError(f"Not a valid argument for Arguments: {key}")
             setattr(args, key, val)
 
 
@@ -150,13 +156,17 @@ def init_pipeline(
 
 
 def set_random_seeds(seed: int = 0) -> None:
+    """
+    Set torch.backends.cudnn.benchmark = True to speed up training,
+    but may cause some non-determinism.
+    """
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.benchmark = torch.cuda.is_available()
 
 
 def get_run_name(args: Arguments) -> str:

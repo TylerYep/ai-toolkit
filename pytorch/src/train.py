@@ -46,12 +46,14 @@ def train_and_validate(
     num_batches = len(loader)
     with tqdm(desc=str(mode), total=num_batches, ncols=120) as pbar:
         for i, (data, target) in enumerate(loader):
-            # Optimizer is never None in Mode.TRAIN, used for type-checking
+            # If you have multiple optimizers, use model.zero_grad().
+            # If you want to freeze layers, use optimizer.zero_grad().
             if mode == Mode.TRAIN and optimizer is not None:
-                # If you have multiple optimizers, use model.zero_grad().
-                # If you want to freeze layers, use optimizer.zero_grad().
-                assert optimizer is not None
-                optimizer.zero_grad()
+                # The following code is said to be more efficient than optimizer.zero_grad():
+                # https://www.youtube.com/watch?v=9mS1fIYj1So
+                # When available, use optimizer.zero_grad(set_to_none=True) instead.
+                for param in model.parameters():
+                    param.grad = None
 
             if isinstance(data, (list, tuple)):
                 output = model(*data)

@@ -41,7 +41,13 @@ class DatasetCNN(DatasetLoader):
         test_set = datasets.FashionMNIST(
             self.DATA_PATH, train=False, transform=self.get_transforms()
         )
-        test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
+        test_loader = DataLoader(
+            test_set,
+            batch_size=args.test_batch_size,
+            collate_fn=collate_fn,
+            pin_memory=torch.cuda.is_available(),
+            num_workers=args.num_workers,
+        )
         return test_loader
 
     @staticmethod
