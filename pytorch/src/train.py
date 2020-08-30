@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import random
 import sys
 from types import SimpleNamespace
-from typing import Any, Generator, List, Optional, Tuple
+from typing import Any, Iterator, List, Optional, Tuple
 
 import numpy as np
 import torch
@@ -28,7 +30,7 @@ else:
 def train_and_validate(
     args: Arguments,
     model: nn.Module,
-    loader: DataLoader,
+    loader: DataLoader[torch.Tensor],
     optimizer: Optional[optim.Optimizer],
     criterion: nn.Module,
     metrics: MetricTracker,
@@ -86,7 +88,7 @@ def get_scheduler(args: Arguments, optimizer: optim.Optimizer) -> lr_scheduler._
 
 
 def load_model(
-    args: Arguments, device: torch.device, init_params: List[Any], loader: Generator
+    args: Arguments, device: torch.device, init_params: List[Any], loader: Iterator[Any]
 ) -> Tuple[nn.Module, nn.Module, optim.Optimizer, Optional[lr_scheduler._LRScheduler]]:
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)

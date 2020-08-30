@@ -6,7 +6,7 @@ import torch
 # import torchvision.transforms as T
 
 
-def save_figure(run_name, img_name):
+def save_figure(run_name: str, img_name: str) -> None:
     plt.tight_layout(pad=True)
     if run_name:
         plt.savefig(os.path.join(run_name, img_name))
@@ -15,7 +15,7 @@ def save_figure(run_name, img_name):
         plt.show()
 
 
-def rearrange(orig_img):
+def rearrange(orig_img: torch.Tensor) -> torch.Tensor:
     img = orig_img.clone()
 
     if img.requires_grad:
@@ -31,7 +31,7 @@ def rearrange(orig_img):
 
     if min_val < 0 or max_val > img_data_max:
         img -= img.min()
-        img /= img.max()
+        img /= img.max()  # type: ignore[has-type]
 
     # Reshape
     if len(img.shape) == 4 and img.shape[0] == 1:
@@ -53,7 +53,7 @@ def rearrange(orig_img):
     return img
 
 
-def jitter(X, ox, oy):
+def jitter(X: torch.Tensor, ox: int, oy: int) -> torch.Tensor:
     """
     Helper function to randomly jitter an image.
 

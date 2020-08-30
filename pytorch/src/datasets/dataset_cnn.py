@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Tuple
 
 import torch
@@ -26,7 +28,7 @@ class DatasetCNN(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
+    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
         orig_dataset = datasets.FashionMNIST(
             self.DATA_PATH, train=True, download=True, transform=self.get_transforms()
         )
@@ -34,7 +36,7 @@ class DatasetCNN(DatasetLoader):
         init_params = (torch.Size((1, 28, 28)),)
         return train_loader, val_loader, init_params
 
-    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:
+    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
         collate_fn = self.get_collate_fn(device)
         test_set = datasets.FashionMNIST(
             self.DATA_PATH, train=False, transform=self.get_transforms()

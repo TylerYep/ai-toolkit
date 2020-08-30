@@ -1,13 +1,22 @@
+from typing import List
+
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import torch.nn as nn
 
 from .viz_utils import save_figure
 
 
-def compute_activations(model, data, target, class_labels, run_name):
+def compute_activations(
+    model: nn.Module,
+    data: torch.Tensor,
+    target: torch.Tensor,
+    class_labels: List[str],
+    run_name: str,
+) -> None:
     model.eval()
-    _, activations = model.forward_with_activations(data)
+    _, activations = model.forward_with_activations(data)  # type: ignore[operator]
     NUM_EXAMPLES = 4
     NUM_SUBPLOTS = NUM_EXAMPLES * len(activations)
     _, axs = plt.subplots(NUM_SUBPLOTS // NUM_EXAMPLES, NUM_EXAMPLES)
@@ -22,7 +31,7 @@ def compute_activations(model, data, target, class_labels, run_name):
             ax = axs[j, i]
             ax.imshow(activation)
             ax.axis("off")
-            ax.set_title(class_labels[target[i]] if j == 0 else "")
+            ax.set_title(class_labels[target[i]] if j == 0 else "")  # type: ignore[call-overload]
 
     save_figure(run_name, "activation_layers.png")
 

@@ -1,6 +1,8 @@
 # Sample code from the TorchVision 0.3 Object Detection Finetuning Tutorial
 # http://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
 # pylint: disable=too-few-public-methods
+from __future__ import annotations
+
 import os
 import random
 from typing import Any, Callable, List, Tuple
@@ -23,13 +25,13 @@ class DatasetPenn(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
+    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
         orig_dataset = PennFudanDataset("data", self.get_transforms(train=True))
         train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
         init_params = ()
         return train_loader, val_loader, init_params
 
-    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:
+    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
         collate_fn = self.get_collate_fn(device)
         test_set = PennFudanDataset("data", self.get_transforms(train=False))
         test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
@@ -102,7 +104,7 @@ class ToTensor:
         return image, target
 
 
-class PennFudanDataset(Dataset):
+class PennFudanDataset(Dataset):  # type: ignore[type-arg]
     def __init__(self, root, transform=None):
         super().__init__()
         self.root = root

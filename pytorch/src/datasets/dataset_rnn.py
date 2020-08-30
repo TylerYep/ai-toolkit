@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import glob
 import os
 import random
@@ -22,12 +24,12 @@ ALL_LETTERS = string.ascii_letters + " .,;'"
 class DatasetRNN(DatasetLoader):
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
+    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
         orig_dataset = LanguageWords(self.DATA_PATH)
         train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
         return train_loader, val_loader, orig_dataset.get_model_params()
 
-    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:
+    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
         test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
@@ -51,7 +53,7 @@ class DatasetRNN(DatasetLoader):
 #     return xx_pad, yy_pad, x_lens, y_lens
 
 
-class LanguageWords(Dataset):
+class LanguageWords(Dataset):  # type: ignore[type-arg]
     """ Dataset for training a model on a dataset. """
 
     def __init__(self, data_path):

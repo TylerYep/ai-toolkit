@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from collections import defaultdict
 from typing import Any, Callable, List, Tuple
@@ -14,12 +16,12 @@ from src.datasets.dataset import DatasetLoader
 class DatasetLSTM(DatasetLoader):
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
+    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
         orig_dataset = LanguageWords(self.DATA_PATH)
         train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
         return train_loader, val_loader, orig_dataset.get_model_params() + (device,)
 
-    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:
+    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
         test_loader = DataLoader(test_set, batch_size=args.test_batch_size, collate_fn=collate_fn)
@@ -45,7 +47,7 @@ class DatasetLSTM(DatasetLoader):
         return lambda x: map(to_device, sort_batch(*default_collate(x)))
 
 
-class LanguageWords(Dataset):
+class LanguageWords(Dataset):  # type: ignore[type-arg]
     """Dataset wrapping data, target and length tensors.
 
     Each sample will be retrieved by indexing both tensors along the first dimension.

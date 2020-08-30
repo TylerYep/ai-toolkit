@@ -1,10 +1,20 @@
+from typing import List
+
 import matplotlib.pyplot as plt
 import torch
+import torch.nn as nn
 
 from .viz_utils import rearrange, save_figure
 
 
-def make_fooling_image(model, X, y, class_labels, target_y, run_name):
+def make_fooling_image(
+    model: nn.Module,
+    X: torch.Tensor,
+    y: torch.Tensor,
+    class_labels: List[str],
+    target_y: int,
+    run_name: str,
+) -> None:
     """
     Generate a fooling image that is close to X, but that the model classifies
     as target_y.
@@ -18,7 +28,7 @@ def make_fooling_image(model, X, y, class_labels, target_y, run_name):
     - X_fooling: An image that is close to X, but that is classifed as target_y
     by the model.
     """
-    assert class_labels[y] != class_labels[target_y]
+    assert class_labels[y] != class_labels[target_y]  # type: ignore[call-overload]
     X_fooling = X.clone().unsqueeze(dim=0)
     X_fooling.requires_grad_()
 
@@ -41,7 +51,7 @@ def make_fooling_image(model, X, y, class_labels, target_y, run_name):
     ax = axs.flat[0]
 
     ax.imshow(rearrange(X))
-    ax.set_title(class_labels[y])
+    ax.set_title(class_labels[y])  # type: ignore[call-overload]
     ax.axis("off")
 
     ax = axs.flat[1]

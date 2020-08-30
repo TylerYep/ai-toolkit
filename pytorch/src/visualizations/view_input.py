@@ -1,9 +1,17 @@
+from typing import List
+
 import matplotlib.pyplot as plt
+import torch
 
 from .viz_utils import rearrange, save_figure
 
 
-def view_input(data, target, class_labels, run_name):
+def view_input(
+    data: torch.Tensor,
+    target: torch.Tensor,
+    class_labels: List[str],
+    run_name: str,
+) -> None:
     """ Data is of shape (B, C, H, W) """
     NUM_EXAMPLES = 15
     NUM_ROWS = 4
@@ -11,7 +19,7 @@ def view_input(data, target, class_labels, run_name):
     data, target = data.cpu(), target.cpu()
     for i, ax in enumerate(axs.flat):
         img = rearrange(data[i])
-        label = class_labels[target[i]]
+        label = class_labels[target[i]]  # type: ignore[call-overload]
         ax.imshow(img)
         ax.axis("off")
         ax.set_title(label)

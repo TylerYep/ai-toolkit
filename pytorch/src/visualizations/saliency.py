@@ -1,10 +1,13 @@
+from typing import List
+
 import matplotlib.pyplot as plt
 import torch
+import torch.nn as nn
 
 from .viz_utils import rearrange, save_figure
 
 
-def compute_saliency(inputs, run_name):
+def compute_saliency(inputs: torch.Tensor, run_name: str) -> None:
     # Deprecated
     saliency = inputs.grad.data
     saliency, _ = torch.max(saliency, dim=1)  # dim 1 is the channel dimension
@@ -13,8 +16,18 @@ def compute_saliency(inputs, run_name):
     save_figure(run_name, "saliency.png")
 
 
-def show_saliency_maps(model, X, y, class_labels, run_name):
-    def compute_saliency_maps(model, X, y):
+def show_saliency_maps(
+    model: nn.Module,
+    X: torch.Tensor,
+    y: torch.Tensor,
+    class_labels: List[str],
+    run_name: str,
+) -> None:
+    def compute_saliency_maps(
+        model: nn.Module,
+        X: torch.Tensor,
+        y: torch.Tensor,
+    ) -> torch.Tensor:
         """
         Compute a class saliency map using the model for images X and labels y.
         Performs a forward and backward pass through the model to compute the
@@ -50,7 +63,7 @@ def show_saliency_maps(model, X, y, class_labels, run_name):
         plt.subplot(2, N, i + 1)
         plt.imshow(img)
         plt.axis("off")
-        plt.title(class_labels[y[i]])
+        plt.title(class_labels[y[i]])  # type: ignore[call-overload]
         plt.subplot(2, N, N + i + 1)
         plt.imshow(saliency[i], cmap=plt.cm.hot)  # pylint: disable=no-member
         plt.axis("off")

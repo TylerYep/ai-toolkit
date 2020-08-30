@@ -2,7 +2,7 @@ import json
 import os
 from enum import Enum, unique
 from types import SimpleNamespace
-from typing import Any, Dict, Generator, List, Optional
+from typing import Any, Dict, Iterator, List, Optional
 
 import torch
 import torch.nn as nn
@@ -22,7 +22,8 @@ class MetricTracker:
         self, args: Arguments, checkpoint: Dict[str, Any], class_labels: Optional[List[str]] = None
     ) -> None:
         assert args.metrics
-        self.run_name, self.writer = None, None
+        self.run_name = ""
+        self.writer = None
         if not args.no_save:
             self.run_name = checkpoint.get("run_name", get_run_name(args))
             self.writer = SummaryWriter(self.run_name)
@@ -111,7 +112,7 @@ class MetricTracker:
             result_str += f"{metric} "
         print(result_str)
 
-    def add_network(self, model: nn.Module, loader: Generator) -> None:
+    def add_network(self, model: nn.Module, loader: Iterator[Any]) -> None:
         if self.writer is not None:
             data, _ = next(loader)
             self.writer.add_graph(model, data)

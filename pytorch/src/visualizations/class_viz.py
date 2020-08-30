@@ -1,12 +1,21 @@
 import random
+from typing import List
 
 import matplotlib.pyplot as plt
 import torch
+import torch.nn as nn
 
 from .viz_utils import jitter, rearrange, save_figure
 
 
-def create_class_visualization(model, data, class_labels, target_y, run_name, **kwargs):
+def create_class_visualization(
+    model: nn.Module,
+    data: torch.Tensor,
+    target_y: torch.Tensor,
+    class_labels: List[str],
+    run_name: str,
+    **kwargs: int,
+) -> torch.Tensor:
     """
     Generate an image to maximize the score of target_y under a pretrained model.
 
@@ -24,7 +33,7 @@ def create_class_visualization(model, data, class_labels, target_y, run_name, **
     - show_every: How often to show the intermediate result
     """
     dtype = torch.FloatTensor
-    model.type(dtype)
+    model.type(dtype)  # type: ignore[arg-type]
     l2_reg = kwargs.pop("l2_reg", 1e-3)
     learning_rate = kwargs.pop("learning_rate", 25)
     num_iterations = kwargs.pop("num_iterations", 100)
@@ -63,7 +72,10 @@ def create_class_visualization(model, data, class_labels, target_y, run_name, **
         # Periodically show the image
         if t == 0 or (t + 1) % show_every == 0 or t == num_iterations - 1:
             plt.imshow(rearrange(img.data))
-            plt.title(f"{class_labels[target_y]}\nIteration {t + 1} / {num_iterations}")
+            plt.title(
+                f"{class_labels[target_y]}\n"  # type: ignore[call-overload]
+                f"Iteration {t + 1} / {num_iterations}"
+            )
             plt.gcf().set_size_inches(4, 4)
             plt.axis("off")
             # plt.show()

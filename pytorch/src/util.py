@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import os
 import random
 import shutil
-from typing import Any, Dict, Generator, Optional
+from typing import Any, Dict, Iterator, Optional
 
 import numpy as np
 import torch
@@ -11,7 +13,7 @@ import torch.optim.lr_scheduler as lr_scheduler
 from torch.utils.data import DataLoader
 
 
-def get_sample_loader(loader: DataLoader) -> Generator:
+def get_sample_loader(loader: DataLoader[torch.Tensor]) -> Iterator[Any]:
     """ Returns a generator that outputs a single batch of data. """
     sample_loader = iter(loader)
     while True:
@@ -60,7 +62,7 @@ def load_checkpoint(checkpoint_path: str, use_best: bool = False) -> Dict[str, A
 
 
 def load_state_dict(
-    checkpoint: Dict,
+    checkpoint: Dict[str, Any],
     model: nn.Module,
     optimizer: Optional[optim.Optimizer] = None,
     scheduler: Optional[lr_scheduler._LRScheduler] = None,

@@ -1,4 +1,4 @@
-from typing import Generator, Optional
+from typing import Any, Iterator, Optional
 
 import torch.nn as nn
 
@@ -30,7 +30,10 @@ def viz() -> None:
 
 
 def visualize(
-    args: Arguments, model: nn.Module, loader: Generator, metrics: Optional[MetricTracker] = None
+    args: Arguments,
+    model: nn.Module,
+    loader: Iterator[Any],
+    metrics: Optional[MetricTracker] = None,
 ) -> None:
     if not args.no_visualize and metrics is not None:
         metrics.add_network(model, loader)
@@ -43,7 +46,10 @@ def visualize(
 
 
 def visualize_trained(
-    args: Arguments, model: nn.Module, loader: Generator, metrics: Optional[MetricTracker] = None
+    args: Arguments,
+    model: nn.Module,
+    loader: Iterator[Any],
+    metrics: Optional[MetricTracker] = None,
 ) -> None:
     if not args.no_visualize and metrics is not None:
         run_name = metrics.run_name
@@ -52,7 +58,7 @@ def visualize_trained(
         data, target = next(loader)
         show_saliency_maps(model, data, target, metrics.class_labels, run_name)
         data, target = next(loader)
-        create_class_visualization(model, data, metrics.class_labels, target[1], run_name)
+        create_class_visualization(model, data, target[1], metrics.class_labels, run_name)
 
 
 if __name__ == "__main__":

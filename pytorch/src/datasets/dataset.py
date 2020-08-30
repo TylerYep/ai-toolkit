@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from typing import Any, Callable, List, Tuple
 
@@ -14,8 +16,12 @@ class DatasetLoader:
         self.DATA_PATH = "/content/" if "google.colab" in sys.modules else "data/"
 
     def split_data(
-        self, orig_dataset: Dataset, args: Arguments, device: torch.device, val_split: float
-    ) -> Tuple[DataLoader, DataLoader]:
+        self,
+        orig_dataset: Dataset[torch.Tensor],
+        args: Arguments,
+        device: torch.device,
+        val_split: float,
+    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor]]:
         collate_fn = self.get_collate_fn(device)
         generator_seed = torch.Generator().manual_seed(0)
         if args.num_examples:
@@ -35,10 +41,10 @@ class DatasetLoader:
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader, DataLoader, Tuple[Any, ...]]:
+    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
         raise NotImplementedError
 
-    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader:
+    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
         raise NotImplementedError
 
     @staticmethod

@@ -1,6 +1,6 @@
 import sys
 import warnings
-from typing import Generator
+from typing import Any, Iterator
 
 import torch
 import torch.nn as nn
@@ -18,7 +18,7 @@ else:
 def verify_model(
     args: Arguments,
     model: nn.Module,
-    loader: Generator,
+    loader: Iterator[Any],
     optimizer: optim.Optimizer,
     criterion: nn.Module,
     device: torch.device,
@@ -37,7 +37,7 @@ def verify_model(
         print("Verification complete - all tests passed!")
 
 
-def model_summary(args: Arguments, model: nn.Module, loader: Generator) -> None:
+def model_summary(args: Arguments, model: nn.Module, loader: Iterator[Any]) -> None:
     """
     Prints out model using torchsummary.
     """
@@ -46,7 +46,7 @@ def model_summary(args: Arguments, model: nn.Module, loader: Generator) -> None:
 
 
 def check_batch_dimension(
-    model: nn.Module, loader: Generator, optimizer: optim.Optimizer, test_val: int = 2
+    model: nn.Module, loader: Iterator[Any], optimizer: optim.Optimizer, test_val: int = 2
 ) -> None:
     """
     Verifies that the provided model loads the data correctly. We do this by setting the
@@ -74,7 +74,7 @@ def check_batch_dimension(
 
 def overfit_example(
     model: nn.Module,
-    loader: Generator,
+    loader: Iterator[Any],
     optimizer: optim.Optimizer,
     criterion: nn.Module,
     device: torch.device,
@@ -86,7 +86,7 @@ def overfit_example(
     Verifies that the provided model can overfit a single batch or example.
     """
 
-    def batch_slice(input_data, batch_size, batch_dim):
+    def batch_slice(input_data: Any, batch_size: int, batch_dim: int) -> Any:
         if isinstance(input_data, (list, tuple)):
             return [batch_slice(data, batch_size, batch_dim) for data in input_data]
         if input_data.ndim == 1:
@@ -136,7 +136,10 @@ def detect_NaN_tensors(model: nn.Module) -> None:
 
 
 def check_all_layers_training(
-    model: nn.Module, loader: Generator, optimizer: optim.Optimizer, criterion: nn.Module
+    model: nn.Module,
+    loader: Iterator[Any],
+    optimizer: optim.Optimizer,
+    criterion: nn.Module,
 ) -> None:
     """
     Verifies that the provided model trains all provided layers.
