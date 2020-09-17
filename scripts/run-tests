@@ -13,7 +13,7 @@ mypy .
 
 # Auto-code formatters
 isort .
-black .
+black . --exclude pytorch/data
 git add .
 
 # Style Checking

@@ -1,3 +1,4 @@
+from typing import Any, Dict
 import argparse
 import os
 import shutil
@@ -55,7 +56,7 @@ CONFIGS = {
 }
 
 
-def init_pipeline():
+def init_pipeline() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="PyTorch Project Initializer")
     # fmt: off
     parser.add_argument("--project", type=str,
@@ -77,7 +78,7 @@ def init_pipeline():
     # fmt: on
 
 
-def remove_duplicate_files(destination, filename):
+def remove_duplicate_files(destination: str, filename: str) -> None:
     # Remove file if it already exists.
     full_dest_path = os.path.join(destination, filename)
     if filename in os.listdir(destination):
@@ -87,7 +88,7 @@ def remove_duplicate_files(destination, filename):
             os.remove(full_dest_path)
 
 
-def copy_file_or_folder(source, destination, filename):
+def copy_file_or_folder(source: str, destination: str, filename: str) -> None:
     # If not a template, copy file over.
     full_src_path = os.path.join(source, filename)
     full_dest_path = os.path.join(destination, filename)
@@ -98,7 +99,7 @@ def copy_file_or_folder(source, destination, filename):
         # if any(ext in url_string for ext in extensionsToCheck):
 
 
-def fill_template_files(destination, config):
+def fill_template_files(destination: str, config: Dict[str, Any]) -> None:
     # Fill in template files with entries in config.
     for root, subdirs, files in os.walk(destination):
         if (
@@ -119,7 +120,7 @@ def fill_template_files(destination, config):
                 os.remove(full_src_path)
 
 
-def add_config_files(destination, config):
+def add_config_files(destination: str, config: Dict[str, Any]) -> None:
     # Copy additional files specified in config, such as dataset.py
     presets = config["presets"]
     for key, src_path in presets.items():
@@ -130,7 +131,7 @@ def add_config_files(destination, config):
             print("Path not found.")
 
 
-def create_project_folder(config):
+def create_project_folder(config: Dict[str, Any]) -> None:
     source = "pytorch"
     destination = config["destination"]
 
@@ -146,7 +147,7 @@ def create_project_folder(config):
     add_config_files(destination, config)
 
 
-def main():
+def main() -> None:
     args = init_pipeline()
     if args.all:
         for proj in CONFIGS:

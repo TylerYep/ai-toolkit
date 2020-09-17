@@ -69,9 +69,7 @@ def check_batch_dimension(
         loss.backward()
 
         assert loss != 0, "Loss should be greater than zero."
-        assert (
-            data.grad[test_val] != 0
-        ).any(), "The gradient of the test input is not nonzero."
+        assert (data.grad[test_val] != 0).any(), "Grad of test input is not nonzero."
         assert (data.grad[:test_val] == 0.0).all() and (
             data.grad[test_val + 1 :] == 0.0
         ).all(), (

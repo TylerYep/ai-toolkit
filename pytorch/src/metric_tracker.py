@@ -105,9 +105,8 @@ class MetricTracker:
                 metric.batch_reset()
 
         if mode == Mode.VAL and not self.args.no_visualize:
-            if (
-                hasattr(val_dict.data, "size") and len(val_dict.data.size()) == 4
-            ):  # (N, C, H, W)
+            # (N, C, H, W)
+            if hasattr(val_dict.data, "size") and len(val_dict.data.size()) == 4:
                 self.add_images(val_dict, num_steps)
         return tqdm_dict
 
