@@ -19,7 +19,10 @@ class Mode(Enum):
 
 class MetricTracker:
     def __init__(
-        self, args: Arguments, checkpoint: Dict[str, Any], class_labels: Optional[List[str]] = None
+        self,
+        args: Arguments,
+        checkpoint: Dict[str, Any],
+        class_labels: Optional[List[str]] = None,
     ) -> None:
         assert args.metrics
         self.run_name = ""
@@ -37,7 +40,8 @@ class MetricTracker:
         self.epoch = metric_checkpoint.get("epoch", 0)
         self.is_best = metric_checkpoint.get("is_best", True)
         self.metric_data: Dict[str, Metric] = metric_checkpoint.get(
-            "metric_data", {name: get_metric_initializer(name)() for name in args.metrics}
+            "metric_data",
+            {name: get_metric_initializer(name)() for name in args.metrics},
         )
         self.primary_metric = metric_checkpoint.get("primary_metric", args.metrics[0])
         self.end_epoch = self.epoch + args.epochs
@@ -76,7 +80,9 @@ class MetricTracker:
     def batch_update(
         self, val_dict: SimpleNamespace, i: int, num_batches: int, mode: Mode
     ) -> Dict[str, float]:
-        assert torch.isfinite(val_dict.loss).all(), "The loss returned in training is NaN or inf."
+        assert torch.isfinite(
+            val_dict.loss
+        ).all(), "The loss returned in training is NaN or inf."
         tqdm_dict = {}
         for metric_name, metric in self.metric_data.items():
             metric.update(val_dict)
@@ -91,13 +97,17 @@ class MetricTracker:
                     batch_result = metric.get_batch_result(
                         val_dict.batch_size, self.args.log_interval
                     )
-                    self.write(f"{Mode.TRAIN}_Batch_{metric_name}", batch_result, num_steps)
+                    self.write(
+                        f"{Mode.TRAIN}_Batch_{metric_name}", batch_result, num_steps
+                    )
 
             for metric in self.metric_data.values():
                 metric.batch_reset()
 
         if mode == Mode.VAL and not self.args.no_visualize:
-            if hasattr(val_dict.data, "size") and len(val_dict.data.size()) == 4:  # (N, C, H, W)
+            if (
+                hasattr(val_dict.data, "size") and len(val_dict.data.size()) == 4
+            ):  # (N, C, H, W)
                 self.add_images(val_dict, num_steps)
         return tqdm_dict
 
@@ -129,4 +139,6 @@ class MetricTracker:
                 target_ind = int(target.detach()[j])
                 pred_class = self.class_labels[int(pred_ind)]
                 target_class = self.class_labels[target_ind]
-                self.writer.add_image(f"{target_class}/Predicted_{pred_class}", data[j], num_steps)
+                self.writer.add_image(
+                    f"{target_class}/Predicted_{pred_class}", data[j], num_steps
+                )

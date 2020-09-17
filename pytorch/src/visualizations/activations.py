@@ -26,12 +26,16 @@ def compute_activations(
             activation = activation.detach().cpu().numpy()
             activation /= activation.max()  # type: ignore[has-type]
             activation = plt.get_cmap("inferno")(activation)
-            activation = np.delete(activation, 3, 2)  # deletes 4th channel created by cmap
+            activation = np.delete(
+                activation, 3, 2
+            )  # deletes 4th channel created by cmap
 
             ax = axs[j, i]
             ax.imshow(activation)
             ax.axis("off")
-            ax.set_title(class_labels[target[i]] if j == 0 else "")  # type: ignore[call-overload]
+            ax.set_title(
+                class_labels[target[i]] if j == 0 else ""  # type: ignore[call-overload]
+            )
 
     save_figure(run_name, "activation_layers.png")
 

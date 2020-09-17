@@ -10,7 +10,11 @@ CONFIGS = {
             "src/dataset.py": "datasets/dataset_penn.py",
             "src/viz.py": "visualizers/viz_cnn.py",
         },
-        "substitutions": {"batch_dim": "0", "loss_fn": "nn.CrossEntropyLoss", "model": "MaskRCNN"},
+        "substitutions": {
+            "batch_dim": "0",
+            "loss_fn": "nn.CrossEntropyLoss",
+            "model": "MaskRCNN",
+        },
     },
     "rnn": {
         "destination": "../../output_rnn",
@@ -18,7 +22,11 @@ CONFIGS = {
             "src/dataset.py": "datasets/dataset_rnn.py",
             "src/viz.py": "visualizers/viz_rnn.py",
         },
-        "substitutions": {"batch_dim": "0", "loss_fn": "nn.CrossEntropyLoss", "model": "BasicRNN"},
+        "substitutions": {
+            "batch_dim": "0",
+            "loss_fn": "nn.CrossEntropyLoss",
+            "model": "BasicRNN",
+        },
     },
     "lstm": {
         "destination": "../../output_lstm",
@@ -26,7 +34,11 @@ CONFIGS = {
             "src/dataset.py": "datasets/dataset_lstm.py",
             "src/viz.py": "visualizers/viz_rnn.py",
         },
-        "substitutions": {"batch_dim": "1", "loss_fn": "nn.NLLLoss", "model": "BasicLSTM"},
+        "substitutions": {
+            "batch_dim": "1",
+            "loss_fn": "nn.NLLLoss",
+            "model": "BasicLSTM",
+        },
     },
     "cnn": {
         "destination": "../../example_cnn",
@@ -34,7 +46,11 @@ CONFIGS = {
             "src/dataset.py": "datasets/dataset_cnn.py",
             "src/viz.py": "visualizers/viz_cnn.py",
         },
-        "substitutions": {"batch_dim": "0", "loss_fn": "F.nll_loss", "model": "BasicCNN"},
+        "substitutions": {
+            "batch_dim": "0",
+            "loss_fn": "F.nll_loss",
+            "model": "BasicCNN",
+        },
     },
 }
 

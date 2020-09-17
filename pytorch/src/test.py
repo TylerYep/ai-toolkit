@@ -21,7 +21,10 @@ else:
 
 
 def test_model(
-    args: Arguments, model: nn.Module, test_loader: DataLoader[torch.Tensor], criterion: nn.Module
+    args: Arguments,
+    model: nn.Module,
+    test_loader: DataLoader[torch.Tensor],
+    criterion: nn.Module,
 ) -> None:
     model.eval()
     test_loss, correct = 0.0, 0.0

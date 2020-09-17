@@ -15,7 +15,9 @@ def compute_activations(model, train_images, train_labels):
             activation = activation.numpy()
             activation /= activation.max()
             activation = plt.get_cmap("inferno")(activation)
-            activation = np.delete(activation, 3, 2)  # deletes 4th channel created by cmap
+            activation = np.delete(
+                activation, 3, 2
+            )  # deletes 4th channel created by cmap
 
             ax = axs[j, i]
             ax.imshow(activation)

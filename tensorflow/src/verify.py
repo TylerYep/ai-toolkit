@@ -14,13 +14,11 @@ def verify_model(model, train_images, train_labels):
 
 def gradient_check(model, train_images, train_labels, test_val=3):
     """
-    Verifies that the provided model loads the data correctly. We do this by setting the
-    loss to be something trivial (e.g. the sum of all outputs of example i), running the
-    backward pass all the way to the input, and ensuring that we only get a non-zero gradient
-    on the i-th input.
+    Verifies that the provided model loads the data correctly. We do this by
+    setting the loss to be something trivial (e.g. the sum of all outputs
+    of example i), running the backward pass all the way to the input,
+    and ensuring that we only get a non-zero gradient on the i-th input.
     See details at http://karpathy.github.io/2019/04/25/recipe/.
-
-    Will not work if the model does not compute a gradient for the predicted test_val.
     """
     model.train_on_batch(
         train_images[test_val : test_val + 1], train_labels[test_val : test_val + 1]

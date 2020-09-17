@@ -14,7 +14,9 @@ class MaskRCNN(nn.Module):
         # get number of input features for the classifier
         in_features = self.model_ft.roi_heads.box_predictor.cls_score.in_features
         # replace the pre-trained head with a new one
-        self.model_ft.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+        self.model_ft.roi_heads.box_predictor = FastRCNNPredictor(
+            in_features, num_classes
+        )
         # now get the number of input features for the mask classifier
         in_features_mask = self.model_ft.roi_heads.mask_predictor.conv5_mask.in_channels
         # and replace the mask predictor with a new one

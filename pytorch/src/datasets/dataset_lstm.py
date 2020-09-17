@@ -18,10 +18,14 @@ class DatasetLSTM(DatasetLoader):
         self, args: Arguments, device: torch.device, val_split: float = 0.2
     ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
         orig_dataset = LanguageWords(self.DATA_PATH)
-        train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
+        train_loader, val_loader = self.split_data(
+            orig_dataset, args, device, val_split
+        )
         return train_loader, val_loader, orig_dataset.get_model_params() + (device,)
 
-    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
+    def load_test_data(
+        self, args: Arguments, device: torch.device
+    ) -> DataLoader[torch.Tensor]:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
         test_loader = DataLoader(
@@ -41,7 +45,11 @@ class DatasetLSTM(DatasetLoader):
         """
 
         def to_device(b):
-            return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
+            return (
+                list(map(to_device, b))
+                if isinstance(b, (list, tuple))
+                else b.to(device)
+            )
 
         def sort_batch(data, target):
             batch, lengths = data
@@ -62,7 +70,8 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
         data_tensor (Tensor): contains sample data.
         target_tensor (Tensor): contains sample targets (labels).
         length (Tensor): contains sample lengths.
-        raw_data (Any): The data that has been transformed into tensor, useful for debugging
+        raw_data (Any): The data that has been transformed into
+            tensor, useful for debugging
     """
 
     def __init__(self, data_dir):
@@ -80,12 +89,20 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
         vectorized_seqs = self.vectorized_data(self.all_data, self.token2id)
         self.seq_lengths = torch.LongTensor([len(s) for s in vectorized_seqs])
         self.data_tensor = self.pad_sequences(vectorized_seqs, self.seq_lengths)
-        self.target_tensor = torch.LongTensor([self.tag2id[y] for _, y in self.all_data])
+        self.target_tensor = torch.LongTensor(
+            [self.tag2id[y] for _, y in self.all_data]
+        )
 
-        assert self.data_tensor.size(0) == self.target_tensor.size(0) == self.seq_lengths.size(0)
+        assert (
+            self.data_tensor.size(0)
+            == self.target_tensor.size(0)
+            == self.seq_lengths.size(0)
+        )
 
     def __getitem__(self, index):
-        return (self.data_tensor[index], self.seq_lengths[index]), self.target_tensor[index]
+        return (self.data_tensor[index], self.seq_lengths[index]), self.target_tensor[
+            index
+        ]
 
     def __len__(self):
         return self.data_tensor.size(0)

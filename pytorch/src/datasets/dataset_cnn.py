@@ -32,11 +32,15 @@ class DatasetCNN(DatasetLoader):
         orig_dataset = datasets.FashionMNIST(
             self.DATA_PATH, train=True, download=True, transform=self.get_transforms()
         )
-        train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
+        train_loader, val_loader = self.split_data(
+            orig_dataset, args, device, val_split
+        )
         init_params = (torch.Size((1, 28, 28)),)
         return train_loader, val_loader, init_params
 
-    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
+    def load_test_data(
+        self, args: Arguments, device: torch.device
+    ) -> DataLoader[torch.Tensor]:
         collate_fn = self.get_collate_fn(device)
         test_set = datasets.FashionMNIST(
             self.DATA_PATH, train=False, transform=self.get_transforms()

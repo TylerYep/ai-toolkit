@@ -25,9 +25,10 @@ def train_and_validate(
 
 def load_model(checkpoint, init_params, train_images, train_labels):
     """
-    Note: It is possible to bake this tf.nn.softmax in as the activation function for the
-    last layer of the network. While this can make the model output more directly interpretable,
-    this approach is discouraged as it's impossible to provide an exact and numerically stable
+    Note: It is possible to bake this tf.nn.softmax in as the activation
+    function for the last layer of the network. While this can make the model
+    output more directly interpretable, this approach is discouraged as it's
+    impossible to provide an exact and numerically stable
     loss calculation for all models when using a softmax output.
     """
     optimizer = tf.keras.optimizers.Adam(learning_rate=3e-6)

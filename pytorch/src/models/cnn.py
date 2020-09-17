@@ -47,4 +47,9 @@ class BasicCNN(nn.Module):
         x = self.dropx2(x)
         x = self.fc2(x)
         x = F.log_softmax(x, dim=1)
-        return x, [first_activation, second_activation, third_activation, fourth_activation]
+        return x, [
+            first_activation,
+            second_activation,
+            third_activation,
+            fourth_activation,
+        ]

@@ -27,7 +27,9 @@ class DatasetLoader:
         if args.num_examples:
             n = args.num_examples
             data_split = [n, n, len(orig_dataset) - 2 * n]
-            train_set, val_set = random_split(orig_dataset, data_split, generator_seed)[:-1]
+            train_set, val_set = random_split(orig_dataset, data_split, generator_seed)[
+                :-1
+            ]
         else:
             train_size = int((1 - val_split) * len(orig_dataset))
             data_split = [train_size, len(orig_dataset) - train_size]
@@ -55,7 +57,9 @@ class DatasetLoader:
     ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
         raise NotImplementedError
 
-    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
+    def load_test_data(
+        self, args: Arguments, device: torch.device
+    ) -> DataLoader[torch.Tensor]:
         raise NotImplementedError
 
     @staticmethod
@@ -66,6 +70,10 @@ class DatasetLoader:
         """
 
         def to_device(b: torch.Tensor) -> Any:
-            return list(map(to_device, b)) if isinstance(b, (list, tuple)) else b.to(device)
+            return (
+                list(map(to_device, b))
+                if isinstance(b, (list, tuple))
+                else b.to(device)
+            )
 
         return lambda x: map(to_device, default_collate(x))

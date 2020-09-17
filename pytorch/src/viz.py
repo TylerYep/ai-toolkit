@@ -54,11 +54,15 @@ def visualize_trained(
     if not args.no_visualize and metrics is not None:
         run_name = metrics.run_name
         data, target = next(loader)
-        make_fooling_image(model, data[5], target[5], metrics.class_labels, target[9], run_name)
+        make_fooling_image(
+            model, data[5], target[5], metrics.class_labels, target[9], run_name
+        )
         data, target = next(loader)
         show_saliency_maps(model, data, target, metrics.class_labels, run_name)
         data, target = next(loader)
-        create_class_visualization(model, data, target[1], metrics.class_labels, run_name)
+        create_class_visualization(
+            model, data, target[1], metrics.class_labels, run_name
+        )
 
 
 if __name__ == "__main__":

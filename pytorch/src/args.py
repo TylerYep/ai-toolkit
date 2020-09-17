@@ -54,7 +54,7 @@ def get_parsed_arguments(arg_list: Optional[List[str]]) -> Arguments:
                         help="for loading a checkpoint model")
 
     parser.add_argument("--config", type=str, default="",
-                        help="use given config file as args: <checkpoints, configs>/<name>.json")
+                        help="config file as args: <checkpoints, configs>/<name>.json")
 
     parser.add_argument("--config-dir", type=str, default="configs",
                         help="config directory to use")
@@ -74,14 +74,14 @@ def get_parsed_arguments(arg_list: Optional[List[str]]) -> Arguments:
     parser.add_argument("--log-interval", type=int, default=10, metavar="NB",
                         help="how many batches to wait before logging training status")
 
-    parser.add_argument("--loss", type=str, default="nn.CrossEntropyLoss", metavar="LOSS",
-                        help="loss function to use")
+    parser.add_argument("--loss", type=str, default="nn.CrossEntropyLoss",
+                        metavar="LOSS", help="loss function to use")
 
     parser.add_argument("--lr", type=float, default=3e-3, metavar="LR",
                         help="learning rate (default: 3e-3)")
 
     parser.add_argument("--metrics", nargs="+", type=str, default=["Loss", "Accuracy"],
-                        help="metrics in metrics/ folder to use during training (space-separated)")
+                        help="metrics to use during training (space-separated)")
 
     parser.add_argument("--model", type=str, default="BasicRNN", metavar="MODEL",
                         help="model architecture to use")
@@ -117,7 +117,7 @@ def get_parsed_arguments(arg_list: Optional[List[str]]) -> Arguments:
                         help="input batch size for testing (default: 1000)")
 
     parser.add_argument("--use-best", action="store_true", default=False,
-                        help="use checkpoint with best val metric, rather than most recent")
+                        help="use best val metric checkpoint (default: most recent)")
     # fmt: on
 
     namespace = parser.parse_args(arg_list)
@@ -183,7 +183,9 @@ def get_run_name(args: Arguments) -> str:
             os.makedirs(full_name)
         return full_name
 
-    dirlist = [f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))]
+    dirlist = [
+        f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))
+    ]
     dirlist.sort()
     dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
     if not dirlist:

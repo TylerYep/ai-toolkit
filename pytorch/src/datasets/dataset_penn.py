@@ -27,11 +27,15 @@ class DatasetPenn(DatasetLoader):
         self, args: Arguments, device: torch.device, val_split: float = 0.2
     ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
         orig_dataset = PennFudanDataset("data", self.get_transforms(train=True))
-        train_loader, val_loader = self.split_data(orig_dataset, args, device, val_split)
+        train_loader, val_loader = self.split_data(
+            orig_dataset, args, device, val_split
+        )
         init_params = ()
         return train_loader, val_loader, init_params
 
-    def load_test_data(self, args: Arguments, device: torch.device) -> DataLoader[torch.Tensor]:
+    def load_test_data(
+        self, args: Arguments, device: torch.device
+    ) -> DataLoader[torch.Tensor]:
         collate_fn = self.get_collate_fn(device)
         test_set = PennFudanDataset("data", self.get_transforms(train=False))
         test_loader = DataLoader(

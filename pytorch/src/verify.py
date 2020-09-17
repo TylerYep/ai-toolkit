@@ -46,13 +46,16 @@ def model_summary(args: Arguments, model: nn.Module, loader: Iterator[Any]) -> N
 
 
 def check_batch_dimension(
-    model: nn.Module, loader: Iterator[Any], optimizer: optim.Optimizer, test_val: int = 2
+    model: nn.Module,
+    loader: Iterator[Any],
+    optimizer: optim.Optimizer,
+    test_val: int = 2,
 ) -> None:
     """
-    Verifies that the provided model loads the data correctly. We do this by setting the
-    loss to be something trivial (e.g. the sum of all outputs of example i), running the
-    backward pass all the way to the input, and ensuring that we only get a non-zero gradient
-    on the i-th input.
+    Verifies that the provided model loads the data correctly. We do this by
+    setting the loss to be something trivial (e.g. the sum of all outputs
+    of example i), running the backward pass all the way to the input,
+    and ensuring that we only get a non-zero gradient on the i-th input.
     See details at http://karpathy.github.io/2019/04/25/recipe/.
     """
     model.eval()
@@ -66,10 +69,14 @@ def check_batch_dimension(
         loss.backward()
 
         assert loss != 0, "Loss should be greater than zero."
-        assert (data.grad[test_val] != 0).any(), "The gradient of the test input is not nonzero."
+        assert (
+            data.grad[test_val] != 0
+        ).any(), "The gradient of the test input is not nonzero."
         assert (data.grad[:test_val] == 0.0).all() and (
             data.grad[test_val + 1 :] == 0.0
-        ).all(), "There are nonzero gradients in the batch, when they should all be zero."
+        ).all(), (
+            "There are nonzero gradients in the batch, when they should all be zero."
+        )
 
 
 def overfit_example(

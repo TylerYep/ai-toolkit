@@ -6,7 +6,13 @@ from torch.nn.utils.rnn import pack_padded_sequence
 
 class BasicLSTM(nn.Module):
     def __init__(
-        self, input_shape, vocab_size, output_size, device, embedding_size=128, hidden_size=32
+        self,
+        input_shape,
+        vocab_size,
+        output_size,
+        device,
+        embedding_size=128,
+        hidden_size=32,
     ):
         super().__init__()
         self.input_shape = input_shape

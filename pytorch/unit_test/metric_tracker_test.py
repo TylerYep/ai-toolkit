@@ -49,7 +49,9 @@ class TestMetricTracker:
         assert result == [2.52, 8.0]
 
     @staticmethod
-    def test_epoch_update(capsys: CaptureFixture, example_batch: SimpleNamespace) -> None:
+    def test_epoch_update(
+        capsys: CaptureFixture, example_batch: SimpleNamespace
+    ) -> None:
         arg_list = ["--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"]
         args, _, _ = init_pipeline(arg_list)
         metrics = MetricTracker(args, {})

@@ -28,7 +28,7 @@ def get_parsed_arguments(arg_list):
                         help="for loading a checkpoint model")
 
     parser.add_argument("--config", type=str, default="",
-                        help="use given config file as args: <checkpoints, configs>/<name>.json")
+                        help="config file as args: <checkpoints, configs>/<name>.json")
 
     parser.add_argument("--epochs", type=int, default=100, metavar="N",
                         help="number of epochs to train (default: 100)")
@@ -49,7 +49,7 @@ def get_parsed_arguments(arg_list):
                         help="learning rate (default: 3e-3)")
 
     parser.add_argument("--metrics", nargs="+", type=str, default=["Loss", "Accuracy"],
-                        help="metrics in metrics/ folder to use during training (space-separated)")
+                        help="metrics to use during training (space-separated)")
 
     parser.add_argument("--model", type=str, default="$model", metavar="N",
                         help="model architecture to use")

@@ -49,7 +49,8 @@ def train_and_validate(
             # If you have multiple optimizers, use model.zero_grad().
             # If you want to freeze layers, use optimizer.zero_grad().
             if mode == Mode.TRAIN and optimizer is not None:
-                # The following code is said to be more efficient than optimizer.zero_grad():
+                # The following code is said to be more efficient
+                # than optimizer.zero_grad():
                 # https://www.youtube.com/watch?v=9mS1fIYj1So
                 # When available, use optimizer.zero_grad(set_to_none=True) instead.
                 for param in model.parameters():
@@ -74,7 +75,9 @@ def train_and_validate(
                 "target": target,
                 "batch_size": batch_size,
             }
-            tqdm_dict = metrics.batch_update(SimpleNamespace(**val_dict), i, num_batches, mode)
+            tqdm_dict = metrics.batch_update(
+                SimpleNamespace(**val_dict), i, num_batches, mode
+            )
             pbar.set_postfix(tqdm_dict)
             pbar.update()
     metrics.epoch_update(mode)
@@ -85,7 +88,9 @@ def get_optimizer(args: Arguments, model: nn.Module) -> optim.Optimizer:
     return optim.AdamW(params, lr=args.lr)
 
 
-def get_scheduler(args: Arguments, optimizer: optim.Optimizer) -> lr_scheduler._LRScheduler:
+def get_scheduler(
+    args: Arguments, optimizer: optim.Optimizer
+) -> lr_scheduler._LRScheduler:
     return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)
 
 
@@ -105,7 +110,9 @@ def train(arg_list: Optional[List[str]] = None) -> MetricTracker:
     dataset_loader = get_dataset_initializer(args.dataset)
     train_loader, val_loader, init_params = dataset_loader.load_train_data(args, device)
     sample_loader = util.get_sample_loader(train_loader)
-    model, criterion, optimizer, scheduler = load_model(args, device, init_params, sample_loader)
+    model, criterion, optimizer, scheduler = load_model(
+        args, device, init_params, sample_loader
+    )
     util.load_state_dict(checkpoint, model, optimizer, scheduler)
     metrics = MetricTracker(args, checkpoint, dataset_loader.CLASS_LABELS)
     visualize(args, model, sample_loader, metrics)
@@ -113,7 +120,9 @@ def train(arg_list: Optional[List[str]] = None) -> MetricTracker:
     util.set_rng_state(checkpoint)
     for _ in range(args.epochs):
         metrics.next_epoch()
-        train_and_validate(args, model, train_loader, optimizer, criterion, metrics, Mode.TRAIN)
+        train_and_validate(
+            args, model, train_loader, optimizer, criterion, metrics, Mode.TRAIN
+        )
         train_and_validate(args, model, val_loader, None, criterion, metrics, Mode.VAL)
         if scheduler is not None:
             scheduler.step()
@@ -123,7 +132,9 @@ def train(arg_list: Optional[List[str]] = None) -> MetricTracker:
                 "model_init": init_params,
                 "model_state_dict": model.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
-                "scheduler_state_dict": None if scheduler is None else scheduler.state_dict(),
+                "scheduler_state_dict": None
+                if scheduler is None
+                else scheduler.state_dict(),
                 "rng_state": random.getstate(),
                 "np_rng_state": np.random.get_state(),
                 "torch_rng_state": torch.get_rng_state(),

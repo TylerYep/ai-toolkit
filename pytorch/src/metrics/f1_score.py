@@ -8,7 +8,9 @@ from .metric import Metric
 
 class F1Score(Metric):
     @staticmethod
-    def calculate_f1_score(y_pred: torch.Tensor, y_true: torch.Tensor, eps: float = 1e-7) -> float:
+    def calculate_f1_score(
+        y_pred: torch.Tensor, y_true: torch.Tensor, eps: float = 1e-7
+    ) -> float:
         assert y_pred.dim() == 2
         assert y_true.dim() == 1
         y_true = F.one_hot(y_true, 2)
