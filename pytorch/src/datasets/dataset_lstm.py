@@ -14,29 +14,6 @@ from src.datasets.dataset import DatasetLoader
 
 
 class DatasetLSTM(DatasetLoader):
-    def load_train_data(
-        self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
-        orig_dataset = LanguageWords(self.DATA_PATH)
-        train_loader, val_loader = self.split_data(
-            orig_dataset, args, device, val_split
-        )
-        return train_loader, val_loader, orig_dataset.get_model_params() + (device,)
-
-    def load_test_data(
-        self, args: Arguments, device: torch.device
-    ) -> DataLoader[torch.Tensor]:
-        collate_fn = self.get_collate_fn(device)
-        test_set = LanguageWords(self.DATA_PATH)
-        test_loader = DataLoader(
-            test_set,
-            batch_size=args.test_batch_size,
-            collate_fn=collate_fn,
-            pin_memory=torch.cuda.is_available(),
-            num_workers=args.num_workers,
-        )
-        return test_loader
-
     @staticmethod
     def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
         """
@@ -59,6 +36,29 @@ class DatasetLSTM(DatasetLoader):
             return (seq_tensor.transpose(0, 1), seq_lengths), target_tensor
 
         return lambda x: map(to_device, sort_batch(*default_collate(x)))
+
+    def load_train_data(
+        self, args: Arguments, device: torch.device, val_split: float = 0.2
+    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
+        orig_dataset = LanguageWords(self.DATA_PATH)
+        train_loader, val_loader = self.split_data(
+            orig_dataset, args, device, val_split
+        )
+        return train_loader, val_loader, orig_dataset.model_params + (device,)
+
+    def load_test_data(
+        self, args: Arguments, device: torch.device
+    ) -> DataLoader[torch.Tensor]:
+        collate_fn = self.get_collate_fn(device)
+        test_set = LanguageWords(self.DATA_PATH)
+        test_loader = DataLoader(
+            test_set,
+            batch_size=args.test_batch_size,
+            collate_fn=collate_fn,
+            pin_memory=torch.cuda.is_available(),
+            num_workers=args.num_workers,
+        )
+        return test_loader
 
 
 class LanguageWords(Dataset):  # type: ignore[type-arg]
@@ -107,7 +107,8 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
     def __len__(self):
         return self.data_tensor.size(0)
 
-    def get_model_params(self):
+    @property
+    def model_params(self):
         return self.input_shape, len(self.token2id), len(self.tag2id)
 
     @staticmethod

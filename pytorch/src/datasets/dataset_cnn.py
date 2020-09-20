@@ -26,6 +26,13 @@ class DatasetCNN(DatasetLoader):
             "Ankle boot",
         ]
 
+    @staticmethod
+    def get_transforms(img_dim=None):
+        del img_dim
+        return transforms.Compose(
+            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+        )
+
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
     ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
@@ -53,10 +60,3 @@ class DatasetCNN(DatasetLoader):
             num_workers=args.num_workers,
         )
         return test_loader
-
-    @staticmethod
-    def get_transforms(img_dim=None):
-        del img_dim
-        return transforms.Compose(
-            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-        )

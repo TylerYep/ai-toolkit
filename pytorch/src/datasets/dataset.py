@@ -15,6 +15,22 @@ class DatasetLoader:
         self.CLASS_LABELS: List[str] = []
         self.DATA_PATH = "/content/" if "google.colab" in sys.modules else "data/"
 
+    @staticmethod
+    def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
+        """
+        for indices in batch_sampler:
+            yield collate_fn([dataset[i] for i in indices])
+        """
+
+        def to_device(b: torch.Tensor) -> Any:
+            return (
+                list(map(to_device, b))
+                if isinstance(b, (list, tuple))
+                else b.to(device)
+            )
+
+        return lambda x: map(to_device, default_collate(x))
+
     def split_data(
         self,
         orig_dataset: Dataset[torch.Tensor],
@@ -61,19 +77,3 @@ class DatasetLoader:
         self, args: Arguments, device: torch.device
     ) -> DataLoader[torch.Tensor]:
         raise NotImplementedError
-
-    @staticmethod
-    def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
-        """
-        for indices in batch_sampler:
-            yield collate_fn([dataset[i] for i in indices])
-        """
-
-        def to_device(b: torch.Tensor) -> Any:
-            return (
-                list(map(to_device, b))
-                if isinstance(b, (list, tuple))
-                else b.to(device)
-            )
-
-        return lambda x: map(to_device, default_collate(x))

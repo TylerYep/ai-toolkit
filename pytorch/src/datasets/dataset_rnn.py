@@ -22,6 +22,14 @@ ALL_LETTERS = string.ascii_letters + " .,;'"
 
 
 class DatasetRNN(DatasetLoader):
+    @staticmethod
+    def pad_collate(batch):
+        (xx, yy) = zip(*batch)
+        x_lens = torch.tensor([len(x) for x in xx])
+        xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)
+        yy_pad = torch.stack(yy)
+        return xx_pad, yy_pad, x_lens
+
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
     ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
@@ -29,7 +37,7 @@ class DatasetRNN(DatasetLoader):
         train_loader, val_loader = self.split_data(
             orig_dataset, args, device, val_split
         )
-        return train_loader, val_loader, orig_dataset.get_model_params()
+        return train_loader, val_loader, orig_dataset.model_params
 
     def load_test_data(
         self, args: Arguments, device: torch.device
@@ -44,14 +52,6 @@ class DatasetRNN(DatasetLoader):
             num_workers=args.num_workers,
         )
         return test_loader
-
-    @staticmethod
-    def pad_collate(batch):
-        (xx, yy) = zip(*batch)
-        x_lens = torch.tensor([len(x) for x in xx])
-        xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)
-        yy_pad = torch.stack(yy)
-        return xx_pad, yy_pad, x_lens
 
 
 # def pad_collate(batch):
@@ -96,10 +96,6 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
 
         random.shuffle(self.data)
 
-    def get_model_params(self):
-        return self.input_shape, self.max_word_length, self.n_hidden, self.n_categories
-        # , self.n_letters
-
     def __len__(self):
         return len(self.data)
 
@@ -109,6 +105,11 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
         line_tensor = self.lineToTensor(line)
         # torch.tensor([ALL_LETTERS.index(letter) for letter in line])
         return line_tensor, category_tensor.squeeze()
+
+    @property
+    def model_params(self):
+        return self.input_shape, self.max_word_length, self.n_hidden, self.n_categories
+        # , self.n_letters
 
     @staticmethod
     def read_lines(filename):

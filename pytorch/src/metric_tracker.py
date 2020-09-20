@@ -48,14 +48,6 @@ class MetricTracker:
         self.args = args
         self.prev_best: Optional[float] = None
 
-    def json_repr(self) -> Dict[str, Any]:
-        return {
-            "epoch": self.epoch,
-            "metric_data": self.metric_data,
-            "primary_metric": self.primary_metric,
-            "is_best": self.is_best,
-        }
-
     def __getitem__(self, name: str) -> Metric:
         return self.metric_data[name]
 
@@ -80,9 +72,7 @@ class MetricTracker:
     def batch_update(
         self, val_dict: SimpleNamespace, i: int, num_batches: int, mode: Mode
     ) -> Dict[str, float]:
-        assert torch.isfinite(
-            val_dict.loss
-        ).all(), "The loss returned in training is NaN or inf."
+        assert torch.isfinite(val_dict.loss).all(), "Loss in training is NaN or inf."
         tqdm_dict = {}
         for metric_name, metric in self.metric_data.items():
             metric.update(val_dict)
@@ -141,3 +131,11 @@ class MetricTracker:
                 self.writer.add_image(
                     f"{target_class}/Predicted_{pred_class}", data[j], num_steps
                 )
+
+    def json_repr(self) -> Dict[str, Any]:
+        return {
+            "epoch": self.epoch,
+            "metric_data": self.metric_data,
+            "primary_metric": self.primary_metric,
+            "is_best": self.is_best,
+        }

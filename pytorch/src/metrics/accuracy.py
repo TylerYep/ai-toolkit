@@ -6,14 +6,14 @@ from .metric import Metric
 
 
 class Accuracy(Metric):
+    def __repr__(self) -> str:
+        return f"{self.name}: {100. * self.value:.2f}%"
+
     @staticmethod
     def calculate_accuracy(output: torch.Tensor, target: torch.Tensor) -> float:
         accuracy = (output.argmax(1) == target).float().sum().item()
         assert isinstance(accuracy, float)
         return accuracy
-
-    def __repr__(self) -> str:
-        return f"{self.name}: {100. * self.value:.2f}%"
 
     def update(self, val_dict: SimpleNamespace) -> float:
         output, target = val_dict.output, val_dict.target

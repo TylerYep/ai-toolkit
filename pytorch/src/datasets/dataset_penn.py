@@ -23,6 +23,22 @@ class DatasetPenn(DatasetLoader):
         super().__init__()
         self.CLASS_LABELS = ["YES", "NO"]
 
+    @staticmethod
+    def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
+        def collate(x):
+            data, target = tuple(zip(*x))
+            data = [image.to(device) for image in data]
+            target = [{k: v.to(device) for k, v in t.items()} for t in target]
+            return (data, target)
+
+        return collate
+
+    @staticmethod
+    def get_transforms(train):
+        if train:
+            return Compose([ToTensor(), RandomHorizontalFlip(0.5)])
+        return Compose([ToTensor()])
+
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
     ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
@@ -46,22 +62,6 @@ class DatasetPenn(DatasetLoader):
             num_workers=args.num_workers,
         )
         return test_loader
-
-    @staticmethod
-    def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
-        def collate(x):
-            data, target = tuple(zip(*x))
-            data = list(image.to(device) for image in data)
-            target = [{k: v.to(device) for k, v in t.items()} for t in target]
-            return (data, target)
-
-        return collate
-
-    @staticmethod
-    def get_transforms(train):
-        if train:
-            return Compose([ToTensor(), RandomHorizontalFlip(0.5)])
-        return Compose([ToTensor()])
 
 
 # output = model(data, target)
@@ -121,8 +121,8 @@ class PennFudanDataset(Dataset):  # type: ignore[type-arg]
         self.transform = transform
         # load all image files, sorting them to
         # ensure that they are aligned
-        self.imgs = list(sorted(os.listdir(os.path.join(root, "PNGImages"))))
-        self.masks = list(sorted(os.listdir(os.path.join(root, "PedMasks"))))
+        self.imgs = sorted(os.listdir(os.path.join(root, "PNGImages")))
+        self.masks = sorted(os.listdir(os.path.join(root, "PedMasks")))
 
     def __getitem__(self, idx):
         # load images ad masks

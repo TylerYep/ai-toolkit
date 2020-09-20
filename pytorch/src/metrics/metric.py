@@ -14,6 +14,12 @@ class Metric:
     def __repr__(self) -> str:
         return f"{self.name}: {self.value:.4f}"
 
+    @property
+    def value(self) -> float:
+        if self.num_examples == 0:
+            return self.epoch_avg
+        return self.epoch_avg / self.num_examples
+
     def update(self, val_dict: SimpleNamespace) -> float:
         raise NotImplementedError
 
@@ -29,9 +35,3 @@ class Metric:
         assert log_interval > 0
         assert batch_size > 0
         return self.running_avg / (log_interval * batch_size)
-
-    @property
-    def value(self) -> float:
-        if self.num_examples == 0:
-            return self.epoch_avg
-        return self.epoch_avg / self.num_examples
