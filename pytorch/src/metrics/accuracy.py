@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from typing import cast
 
 import torch
 
@@ -12,8 +13,7 @@ class Accuracy(Metric):
     @staticmethod
     def calculate_accuracy(output: torch.Tensor, target: torch.Tensor) -> float:
         accuracy = (output.argmax(1) == target).float().sum().item()
-        assert isinstance(accuracy, float)
-        return accuracy
+        return cast(float, accuracy)
 
     def update(self, val_dict: SimpleNamespace) -> float:
         output, target = val_dict.output, val_dict.target

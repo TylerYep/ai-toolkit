@@ -88,7 +88,8 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
             for word in lines:
                 self.data.append((word, category))
 
-        assert self.data
+        if not self.data:
+            raise RuntimeError("Data could not be loaded.")
         self.n_categories = len(self.all_categories)
         self.n_letters = len(ALL_LETTERS)
         self.n_hidden = 128

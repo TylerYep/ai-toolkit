@@ -68,13 +68,16 @@ def check_batch_dimension(
         loss = output[test_val].sum()
         loss.backward()
 
-        assert loss != 0, "Loss should be greater than zero."
-        assert (data.grad[test_val] != 0).any(), "Grad of test input is not nonzero."
-        assert (data.grad[:test_val] == 0.0).all() and (
-            data.grad[test_val + 1 :] == 0.0
-        ).all(), (
-            "There are nonzero gradients in the batch, when they should all be zero."
-        )
+        if loss == 0:
+            raise RuntimeError("Loss should be greater than zero.")
+        if (data.grad[test_val] == 0).all():
+            raise RuntimeError("Grad of test input is not nonzero.")
+        if (data.grad[:test_val] != 0.0).any() and (
+            (data.grad[test_val + 1 :] != 0.0).any()
+        ):
+            raise RuntimeError(
+                "Batch contains nonzero gradients, when they should all be zero."
+            )
 
 
 def overfit_example(
@@ -134,10 +137,11 @@ def detect_NaN_tensors(model: nn.Module) -> None:
     Verifies that the provided model does not have any exploding gradients.
     """
     for name, param in model.named_parameters():
-        assert torch.isfinite(param).all(), (
-            f"Detected NaN and/or inf values in model weights: {name}. "
-            f"Check your forward pass for numerically unstable operations."
-        )
+        if not torch.isfinite(param).all():
+            raise RuntimeError(
+                f"Detected NaN and/or inf values in model weights: {name}. "
+                f"Check your forward pass for numerically unstable operations."
+            )
 
 
 def check_all_layers_training(
@@ -161,7 +165,8 @@ def check_all_layers_training(
 
     after = model.parameters()
     for start, end in zip(before, after):
-        assert (start != end).any(), (
-            "Detected some layers that are not training. Did you freeze "
-            "some layers or forget to set the model to train mode?"
-        )
+        if (start == end).all():
+            raise RuntimeError(
+                "Detected some layers that are not training. Did you freeze "
+                "some layers or forget to set the model to train mode?"
+            )

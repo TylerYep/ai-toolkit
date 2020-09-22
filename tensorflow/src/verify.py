@@ -29,9 +29,14 @@ def gradient_check(model, train_images, train_labels, test_val=3):
         loss = tf.math.reduce_sum(model(x_tensor)[test_val])
 
     grad = t.gradient(loss, x_tensor).numpy()
-    assert loss.numpy() != 0
-    assert (grad[test_val] != 0).any()
-    assert (grad[:test_val] == 0.0).all() and (grad[test_val + 1 :] == 0.0).all()
+    if loss.numpy() == 0:
+        raise RuntimeError("Loss should be greater than zero.")
+    if (grad[test_val] == 0).all():
+        raise RuntimeError("Grad of test input is not nonzero.")
+    if (grad[:test_val] != 0.0).any() and (grad[test_val + 1 :] != 0.0).any():
+        raise RuntimeError(
+            "Batch contains nonzero gradients, when they should all be zero."
+        )
 
 
 def overfit_example(model, train_images, train_labels, batch_size=5, max_iters=50):

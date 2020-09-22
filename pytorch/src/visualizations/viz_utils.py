@@ -39,7 +39,8 @@ def rearrange(orig_img: torch.Tensor) -> torch.Tensor:
     elif len(img.shape) == 2:
         img = img.unsqueeze(0)
 
-    assert len(img.shape) == 3
+    if len(img.shape) != 3:
+        raise RuntimeError(f"image shape could not be rearranged: {img.shape}")
 
     # Determine correct number of channels and permute
     if img.shape[0] == 1:

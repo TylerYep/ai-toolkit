@@ -32,6 +32,6 @@ class Metric:
         self.num_examples = 0
 
     def get_batch_result(self, batch_size: int, log_interval: int = 1) -> float:
-        assert log_interval > 0
-        assert batch_size > 0
+        if log_interval <= 0 or batch_size <= 0:
+            raise RuntimeError("log_interval and batch_size must be positive.")
         return self.running_avg / (log_interval * batch_size)

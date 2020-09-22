@@ -93,11 +93,12 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
             [self.tag2id[y] for _, y in self.all_data]
         )
 
-        assert (
+        if not (
             self.data_tensor.size(0)
             == self.target_tensor.size(0)
             == self.seq_lengths.size(0)
-        )
+        ):
+            raise RuntimeError("Sizes do not match.")
 
     def __getitem__(self, index):
         return (self.data_tensor[index], self.seq_lengths[index]), self.target_tensor[

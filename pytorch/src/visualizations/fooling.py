@@ -28,7 +28,6 @@ def make_fooling_image(
     - X_fooling: An image that is close to X, but that is classifed as target_y
     by the model.
     """
-    assert class_labels[y] != class_labels[target_y]  # type: ignore[call-overload]
     X_fooling = X.clone().unsqueeze(dim=0)
     X_fooling.requires_grad_()
 

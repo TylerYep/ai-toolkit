@@ -13,7 +13,6 @@ from .rnn import BasicRNN
 
 def get_model_initializer(model_name: str) -> Any:
     """ Retrieves class initializer from its string name. """
-    assert hasattr(
-        sys.modules[__name__], model_name
-    ), f"Model class {model_name} not found in models/"
+    if not hasattr(sys.modules[__name__], model_name):
+        raise RuntimeError(f"Model class {model_name} not found in models/")
     return getattr(sys.modules[__name__], model_name)

@@ -24,7 +24,8 @@ class MetricTracker:
         checkpoint: Dict[str, Any],
         class_labels: Optional[List[str]] = None,
     ) -> None:
-        assert args.metrics
+        if not args.metrics:
+            raise RuntimeError("No metrics specified in args.")
         self.run_name = ""
         self.writer = None
         if not args.no_save:
@@ -52,14 +53,15 @@ class MetricTracker:
         return self.metric_data[name]
 
     def __eq__(self, other: object) -> bool:
-        assert isinstance(other, MetricTracker)
-        for metric in self.metric_data:
-            if (
-                metric not in other.metric_data
-                or self.metric_data[metric] != other.metric_data[metric]
-            ):
-                return False
-        return True
+        if isinstance(other, MetricTracker):
+            for metric in self.metric_data:
+                if (
+                    metric not in other.metric_data
+                    or self.metric_data[metric] != other.metric_data[metric]
+                ):
+                    return False
+            return True
+        return False
 
     def next_epoch(self) -> None:
         self.epoch += 1
@@ -72,7 +74,8 @@ class MetricTracker:
     def batch_update(
         self, val_dict: SimpleNamespace, i: int, num_batches: int, mode: Mode
     ) -> Dict[str, float]:
-        assert torch.isfinite(val_dict.loss).all(), "Loss in training is NaN or inf."
+        if not torch.isfinite(val_dict.loss).all():
+            raise RuntimeError("Loss in training is NaN or inf.")
         tqdm_dict = {}
         for metric_name, metric in self.metric_data.items():
             metric.update(val_dict)
