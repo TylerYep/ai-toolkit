@@ -1,7 +1,9 @@
+from typing import Any
+
 import tensorflow as tf
 
 
-def verify_model(model, train_images, train_labels):
+def verify_model(model: Any, train_images: Any, train_labels: Any) -> Any:
     """
     Performs all necessary validation on your model to ensure correctness.
     You may need to change the batch_size or max_iters in overfit_example
@@ -12,7 +14,9 @@ def verify_model(model, train_images, train_labels):
     print("Verification complete - all tests passed!")
 
 
-def gradient_check(model, train_images, train_labels, test_val=3):
+def gradient_check(
+    model: Any, train_images: Any, train_labels: Any, test_val: int = 3
+) -> Any:
     """
     Verifies that the provided model loads the data correctly. We do this by
     setting the loss to be something trivial (e.g. the sum of all outputs
@@ -39,7 +43,13 @@ def gradient_check(model, train_images, train_labels, test_val=3):
         )
 
 
-def overfit_example(model, train_images, train_labels, batch_size=5, max_iters=50):
+def overfit_example(
+    model: Any,
+    train_images: Any,
+    train_labels: Any,
+    batch_size: int = 5,
+    max_iters: int = 50,
+) -> Any:
     """
     Verifies that the provided model can overfit a single batch or example.
     """

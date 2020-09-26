@@ -1,8 +1,8 @@
-from typing import Any, Dict
 import argparse
 import os
 import shutil
 import string
+from typing import Any, Dict
 
 CONFIGS = {
     "maskrcnn": {

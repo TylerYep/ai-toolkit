@@ -1,15 +1,21 @@
 import os
+from typing import Any, List, Optional
 
-from src.args import init_pipeline
-from src.dataset import load_train_data
+from src.args import Arguments, init_pipeline
+from src.datasets import get_dataset_initializer
 
 import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
 
 def train_and_validate(
-    args, model, train_images, train_labels, class_labels, save_dir="checkpoints/"
-):
+    args: Arguments,
+    model: Any,
+    train_images: Any,
+    train_labels: Any,
+    class_labels: Any,
+    save_dir: str = "checkpoints/",
+) -> Any:
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     model_name = os.path.join(save_dir, "weights.{epoch:02d}-{val_loss:.2f}.hdf5")
@@ -23,7 +29,9 @@ def train_and_validate(
     return history
 
 
-def load_model(checkpoint, init_params, train_images, train_labels):
+def load_model(
+    checkpoint: Any, init_params: Any, train_images: Any, train_labels: Any
+) -> Any:
     """
     Note: It is possible to bake this tf.nn.softmax in as the activation
     function for the last layer of the network. While this can make the model
@@ -47,14 +55,14 @@ def load_model(checkpoint, init_params, train_images, train_labels):
     return model
 
 
-def train(arg_list=None):
+def train(arg_list: Optional[List[str]] = None) -> None:
     args, checkpoint = init_pipeline(arg_list)
     (
         (train_images, train_labels),
         (test_images, test_labels),
         class_labels,
         init_params,
-    ) = load_train_data()
+    ) = get_dataset_initializer(args.dataset).load_train_data()
     model = load_model(checkpoint, init_params, train_images, train_labels)
     # add_network(model, train_loader, device)
     # visualize(model, train_loader, class_labels, device, run_name)

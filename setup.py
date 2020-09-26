@@ -7,7 +7,7 @@ setuptools.setup(
     name="ai-toolkit",
     version="0.0.1",
     author="Tyler Yep",
-    author_email="tyep10@gmail.com",
+    author_email="tyep@cs.stanford.edu",
     description="AI Toolkit",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
@@ -18,5 +18,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
 )

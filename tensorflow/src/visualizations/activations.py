@@ -1,10 +1,12 @@
+from typing import Any
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 import tensorflow as tf
 
 
-def compute_activations(model, train_images, train_labels):
+def compute_activations(model: Any, train_images: Any, train_labels: Any) -> None:
     output, activations = model.call_with_activations(train_images)
     NUM_EXAMPLES = 2
     NUM_SUBPLOTS = NUM_EXAMPLES * len(activations)
@@ -24,5 +26,5 @@ def compute_activations(model, train_images, train_labels):
             ax.axis("off")
 
 
-# train_img, train_lab = next(iter(train_dataset))
-# compute_activations(model, train_img, train_lab)
+# train_img, train_label = next(iter(train_dataset))
+# compute_activations(model, train_img, train_label)
