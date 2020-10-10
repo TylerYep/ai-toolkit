@@ -16,3 +16,13 @@ def get_model_initializer(model_name: str) -> Any:
     if not hasattr(sys.modules[__name__], model_name):
         raise RuntimeError(f"Model class {model_name} not found in models/")
     return getattr(sys.modules[__name__], model_name)
+
+
+__all__ = (
+    "BasicCNN",
+    "DenseNet",
+    "BasicLSTM",
+    "MaskRCNN",
+    "BasicRNN",
+    "get_model_initializer",
+)

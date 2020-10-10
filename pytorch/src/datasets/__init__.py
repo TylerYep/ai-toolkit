@@ -12,3 +12,12 @@ def get_dataset_initializer(dataset_name: str) -> Any:
     if not hasattr(sys.modules[__name__], dataset_name):
         raise RuntimeError(f"Dataset class {dataset_name} not found in datasets/")
     return getattr(sys.modules[__name__], dataset_name)()
+
+
+__all__ = (
+    "DatasetCNN",
+    "DatasetLSTM",
+    "DatasetPenn",
+    "DatasetRNN",
+    "get_dataset_initializer",
+)

@@ -80,7 +80,7 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
         self.token2id = defaultdict(int)
         self.token_set, data = self.load_data(data_dir)
         self.token2id = self.set2id(self.token_set, "PAD", "UNK")
-        self.tag2id = self.set2id(set(data.keys()))
+        self.tag2id = self.set2id(set(data))
         self.all_data = []
         for cat in data:
             cat_data = data[cat]
