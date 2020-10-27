@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 from src.args import Arguments
-from src.datasets.dataset import DatasetLoader
+from src.datasets.dataset import TENSOR_DATA_LOADER, DatasetLoader
 
 
 class DatasetCNN(DatasetLoader):
@@ -35,7 +35,7 @@ class DatasetCNN(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
+    ) -> Tuple[TENSOR_DATA_LOADER, TENSOR_DATA_LOADER, Tuple[Any, ...]]:
         orig_dataset = datasets.FashionMNIST(
             self.DATA_PATH, train=True, download=True, transform=self.get_transforms()
         )
@@ -47,7 +47,7 @@ class DatasetCNN(DatasetLoader):
 
     def load_test_data(
         self, args: Arguments, device: torch.device
-    ) -> DataLoader[torch.Tensor]:
+    ) -> TENSOR_DATA_LOADER:
         collate_fn = self.get_collate_fn(device)
         test_set = datasets.FashionMNIST(
             self.DATA_PATH, train=False, transform=self.get_transforms()

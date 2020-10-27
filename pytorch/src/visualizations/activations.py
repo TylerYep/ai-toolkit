@@ -24,7 +24,7 @@ def compute_activations(
         for j, activ in enumerate(activations):
             activation = torch.abs(activ).mean(dim=1)[i]
             activation = activation.detach().cpu().numpy()
-            activation /= activation.max()  # type: ignore[has-type]
+            activation /= activation.max()
             activation = plt.get_cmap("inferno")(activation)
             activation = np.delete(
                 activation, 3, 2

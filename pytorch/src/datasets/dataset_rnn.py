@@ -6,16 +6,16 @@ import random
 import string
 import unicodedata
 import zipfile
-from typing import Any, Tuple
+from typing import Any, List, Tuple
 
 import torch
 import wget
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
-from torch.utils.data.dataset import Dataset
+from torch.utils.data.dataset import TensorDataset
 
 from src.args import Arguments
-from src.datasets.dataset import DatasetLoader
+from src.datasets.dataset import TENSOR_DATA_LOADER, DatasetLoader
 
 DATA_URL = "https://download.pytorch.org/tutorial/data.zip"
 ALL_LETTERS = string.ascii_letters + " .,;'"
@@ -32,7 +32,7 @@ class DatasetRNN(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
+    ) -> Tuple[TENSOR_DATA_LOADER, TENSOR_DATA_LOADER, Tuple[Any, ...]]:
         orig_dataset = LanguageWords(self.DATA_PATH)
         train_loader, val_loader = self.split_data(
             orig_dataset, args, device, val_split
@@ -41,7 +41,7 @@ class DatasetRNN(DatasetLoader):
 
     def load_test_data(
         self, args: Arguments, device: torch.device
-    ) -> DataLoader[torch.Tensor]:
+    ) -> TENSOR_DATA_LOADER:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
         test_loader = DataLoader(
@@ -63,7 +63,7 @@ class DatasetRNN(DatasetLoader):
 #     return xx_pad, yy_pad, x_lens, y_lens
 
 
-class LanguageWords(Dataset):  # type: ignore[type-arg]
+class LanguageWords(TensorDataset):
     """ Dataset for training a model on a dataset. """
 
     def __init__(self, data_path):
@@ -97,10 +97,10 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
 
         random.shuffle(self.data)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.data)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Tuple[torch.Tensor, torch.Tensor]:
         line, category = self.data[index]
         category_tensor = torch.tensor([self.all_categories.index(category)])
         line_tensor = self.lineToTensor(line)
@@ -108,13 +108,13 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
         return line_tensor, category_tensor.squeeze()
 
     @property
-    def model_params(self):
+    def model_params(self) -> Tuple[Any, ...]:
         return self.input_shape, self.max_word_length, self.n_hidden, self.n_categories
         # , self.n_letters
 
     @staticmethod
-    def read_lines(filename):
-        def unicodeToAscii(s):
+    def read_lines(filename: str) -> List[str]:
+        def unicodeToAscii(s: str) -> str:
             return "".join(
                 c
                 for c in unicodedata.normalize("NFD", s)
@@ -125,7 +125,7 @@ class LanguageWords(Dataset):  # type: ignore[type-arg]
             lines = f.read().strip().split("\n")
             return [unicodeToAscii(line) for line in lines]
 
-    def lineToTensor(self, line):
+    def lineToTensor(self, line: str) -> torch.Tensor:
         tensor = torch.zeros((1, self.max_word_length))
         for li, letter in enumerate(line):
             tensor[0][li] = ALL_LETTERS.index(letter)

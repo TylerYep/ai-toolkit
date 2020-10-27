@@ -11,11 +11,11 @@ import numpy as np
 import torch
 from PIL import Image
 from torch.utils.data import DataLoader
-from torch.utils.data.dataset import Dataset
+from torch.utils.data.dataset import TensorDataset
 from torchvision.transforms import functional as F
 
 from src.args import Arguments
-from src.datasets.dataset import DatasetLoader
+from src.datasets.dataset import TENSOR_DATA_LOADER, DatasetLoader
 
 
 class DatasetPenn(DatasetLoader):
@@ -41,7 +41,7 @@ class DatasetPenn(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
+    ) -> Tuple[TENSOR_DATA_LOADER, TENSOR_DATA_LOADER, Tuple[Any, ...]]:
         orig_dataset = PennFudanDataset("data", self.get_transforms(train=True))
         train_loader, val_loader = self.split_data(
             orig_dataset, args, device, val_split
@@ -51,7 +51,7 @@ class DatasetPenn(DatasetLoader):
 
     def load_test_data(
         self, args: Arguments, device: torch.device
-    ) -> DataLoader[torch.Tensor]:
+    ) -> TENSOR_DATA_LOADER:
         collate_fn = self.get_collate_fn(device)
         test_set = PennFudanDataset("data", self.get_transforms(train=False))
         test_loader = DataLoader(
@@ -114,7 +114,7 @@ class ToTensor:
         return image, target
 
 
-class PennFudanDataset(Dataset):  # type: ignore[type-arg]
+class PennFudanDataset(TensorDataset):
     def __init__(self, root, transform=None):
         super().__init__()
         self.root = root

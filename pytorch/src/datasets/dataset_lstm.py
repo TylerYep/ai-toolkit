@@ -7,10 +7,10 @@ from typing import Any, Callable, List, Tuple
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
-from torch.utils.data.dataset import Dataset
+from torch.utils.data.dataset import TensorDataset
 
 from src.args import Arguments
-from src.datasets.dataset import DatasetLoader
+from src.datasets.dataset import TENSOR_DATA_LOADER, DatasetLoader
 
 
 class DatasetLSTM(DatasetLoader):
@@ -39,7 +39,7 @@ class DatasetLSTM(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
+    ) -> Tuple[TENSOR_DATA_LOADER, TENSOR_DATA_LOADER, Tuple[Any, ...]]:
         orig_dataset = LanguageWords(self.DATA_PATH)
         train_loader, val_loader = self.split_data(
             orig_dataset, args, device, val_split
@@ -48,7 +48,7 @@ class DatasetLSTM(DatasetLoader):
 
     def load_test_data(
         self, args: Arguments, device: torch.device
-    ) -> DataLoader[torch.Tensor]:
+    ) -> TENSOR_DATA_LOADER:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
         test_loader = DataLoader(
@@ -61,7 +61,7 @@ class DatasetLSTM(DatasetLoader):
         return test_loader
 
 
-class LanguageWords(Dataset):  # type: ignore[type-arg]
+class LanguageWords(TensorDataset):
     """Dataset wrapping data, target and length tensors.
 
     Each sample will be retrieved by indexing both tensors along the first dimension.

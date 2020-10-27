@@ -28,8 +28,9 @@ def test_model(
 ) -> None:
     model.eval()
     test_loss, correct = 0.0, 0.0
+    test_len = len(test_loader)
     with torch.no_grad():
-        with tqdm(desc="Test", total=len(test_loader), ncols=120) as pbar:
+        with tqdm(desc="Test", total=test_len, ncols=120) as pbar:
             for data, target in test_loader:
                 if isinstance(data, (list, tuple)):
                     output = model(*data)
@@ -43,11 +44,10 @@ def test_model(
                 correct += pred.eq(target.view_as(pred)).sum().item()
                 pbar.update()
 
-    test_loss /= len(test_loader.dataset)
+    test_loss /= test_len
     print(
         f"\nTest set: Average loss: {test_loss:.4f},",
-        f"Accuracy: {correct}/{len(test_loader.dataset)}",
-        f"({100. * correct / len(test_loader.dataset):.2f}%)\n",
+        f"Accuracy: {correct}/{test_len} ({100. * correct / test_len:.2f}%)\n",
     )
 
 

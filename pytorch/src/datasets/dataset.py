@@ -4,10 +4,12 @@ import sys
 from typing import Any, Callable, List, Tuple
 
 import torch
-from torch.utils.data import DataLoader, Dataset, random_split
+from torch.utils.data import DataLoader, TensorDataset, random_split
 from torch.utils.data.dataloader import default_collate
 
 from src.args import Arguments
+
+TENSOR_DATA_LOADER = DataLoader[Tuple[torch.Tensor, ...]]
 
 
 class DatasetLoader:
@@ -33,22 +35,23 @@ class DatasetLoader:
 
     def split_data(
         self,
-        orig_dataset: Dataset[torch.Tensor],
+        orig_dataset: TensorDataset,
         args: Arguments,
         device: torch.device,
         val_split: float,
-    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor]]:
+    ) -> Tuple[TENSOR_DATA_LOADER, TENSOR_DATA_LOADER]:
         collate_fn = self.get_collate_fn(device)
         generator_seed = torch.Generator().manual_seed(0)
+        orig_len = len(orig_dataset)
         if args.num_examples:
             n = args.num_examples
-            data_split = [n, n, len(orig_dataset) - 2 * n]
+            data_split = [n, n, orig_len - 2 * n]
             train_set, val_set = random_split(orig_dataset, data_split, generator_seed)[
                 :-1
             ]
         else:
-            train_size = int((1 - val_split) * len(orig_dataset))
-            data_split = [train_size, len(orig_dataset) - train_size]
+            train_size = int((1 - val_split) * orig_len)
+            data_split = [train_size, orig_len - train_size]
             train_set, val_set = random_split(orig_dataset, data_split, generator_seed)
 
         train_loader = DataLoader(
@@ -70,10 +73,10 @@ class DatasetLoader:
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[DataLoader[torch.Tensor], DataLoader[torch.Tensor], Tuple[Any, ...]]:
+    ) -> Tuple[TENSOR_DATA_LOADER, TENSOR_DATA_LOADER, Tuple[Any, ...]]:
         raise NotImplementedError
 
     def load_test_data(
         self, args: Arguments, device: torch.device
-    ) -> DataLoader[torch.Tensor]:
+    ) -> TENSOR_DATA_LOADER:
         raise NotImplementedError

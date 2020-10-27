@@ -31,7 +31,7 @@ def rearrange(orig_img: torch.Tensor) -> torch.Tensor:
 
     if min_val < 0 or max_val > img_data_max:
         img -= img.min()
-        img /= img.max()  # type: ignore[has-type]
+        img /= img.max()
 
     # Reshape
     if len(img.shape) == 4 and img.shape[0] == 1:
