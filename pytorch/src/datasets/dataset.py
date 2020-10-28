@@ -9,7 +9,7 @@ from torch.utils.data.dataloader import default_collate
 
 from src.args import Arguments
 
-TENSOR_DATA_LOADER = DataLoader[Tuple[torch.Tensor, ...]]
+TensorDataLoader = DataLoader[Tuple[torch.Tensor, ...]]
 
 
 class DatasetLoader:
@@ -39,7 +39,7 @@ class DatasetLoader:
         args: Arguments,
         device: torch.device,
         val_split: float,
-    ) -> Tuple[TENSOR_DATA_LOADER, TENSOR_DATA_LOADER]:
+    ) -> Tuple[TensorDataLoader, TensorDataLoader]:
         collate_fn = self.get_collate_fn(device)
         generator_seed = torch.Generator().manual_seed(0)
         orig_len = len(orig_dataset)
@@ -73,10 +73,8 @@ class DatasetLoader:
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[TENSOR_DATA_LOADER, TENSOR_DATA_LOADER, Tuple[Any, ...]]:
+    ) -> Tuple[TensorDataLoader, TensorDataLoader, Tuple[Any, ...]]:
         raise NotImplementedError
 
-    def load_test_data(
-        self, args: Arguments, device: torch.device
-    ) -> TENSOR_DATA_LOADER:
+    def load_test_data(self, args: Arguments, device: torch.device) -> TensorDataLoader:
         raise NotImplementedError

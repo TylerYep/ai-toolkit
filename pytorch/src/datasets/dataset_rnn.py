@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data.dataset import TensorDataset
 
 from src.args import Arguments
-from src.datasets.dataset import TENSOR_DATA_LOADER, DatasetLoader
+from src.datasets.dataset import DatasetLoader, TensorDataLoader
 
 DATA_URL = "https://download.pytorch.org/tutorial/data.zip"
 ALL_LETTERS = string.ascii_letters + " .,;'"
@@ -32,16 +32,14 @@ class DatasetRNN(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[TENSOR_DATA_LOADER, TENSOR_DATA_LOADER, Tuple[Any, ...]]:
+    ) -> Tuple[TensorDataLoader, TensorDataLoader, Tuple[Any, ...]]:
         orig_dataset = LanguageWords(self.DATA_PATH)
         train_loader, val_loader = self.split_data(
             orig_dataset, args, device, val_split
         )
         return train_loader, val_loader, orig_dataset.model_params
 
-    def load_test_data(
-        self, args: Arguments, device: torch.device
-    ) -> TENSOR_DATA_LOADER:
+    def load_test_data(self, args: Arguments, device: torch.device) -> TensorDataLoader:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
         test_loader = DataLoader(

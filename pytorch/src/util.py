@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import random
 import shutil
-from typing import Any, Dict, Iterator, Optional, cast
+from typing import Any, Dict, Iterator, Optional, Tuple, cast
 
 import numpy as np
 import torch
@@ -12,8 +12,11 @@ import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 from torch.utils.data import DataLoader
 
+# Redefining here to avoid circular import
+TensorDataLoader = DataLoader[Tuple[torch.Tensor, ...]]
 
-def get_sample_loader(loader: DataLoader[torch.Tensor]) -> Iterator[Any]:
+
+def get_sample_loader(loader: TensorDataLoader) -> Iterator[Any]:
     """ Returns a generator that outputs a single batch of data. """
     sample_loader = iter(loader)
     while True:

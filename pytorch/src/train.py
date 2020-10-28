@@ -10,11 +10,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
-from torch.utils.data import DataLoader
 
 from src import util
 from src.args import Arguments, init_pipeline
-from src.datasets import get_dataset_initializer
+from src.datasets import TensorDataLoader, get_dataset_initializer
 from src.losses import get_loss_initializer
 from src.metric_tracker import MetricTracker, Mode
 from src.models import get_model_initializer
@@ -30,7 +29,7 @@ else:
 def train_and_validate(
     args: Arguments,
     model: nn.Module,
-    loader: DataLoader[torch.Tensor],
+    loader: TensorDataLoader,
     optimizer: Optional[optim.Optimizer],
     criterion: nn.Module,
     metrics: MetricTracker,
@@ -92,7 +91,10 @@ def get_scheduler(
 
 
 def load_model(
-    args: Arguments, device: torch.device, init_params: List[Any], loader: Iterator[Any]
+    args: Arguments,
+    device: torch.device,
+    init_params: Tuple[Any, ...],
+    loader: Iterator[Any],
 ) -> Tuple[nn.Module, nn.Module, optim.Optimizer, Optional[lr_scheduler._LRScheduler]]:
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
