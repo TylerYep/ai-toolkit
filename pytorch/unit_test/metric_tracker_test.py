@@ -1,7 +1,7 @@
 """ train_test.py """
 from types import SimpleNamespace
 
-from pytest import CaptureFixture
+import pytest
 
 from src.args import init_pipeline
 from src.metric_tracker import MetricTracker, Mode
@@ -50,7 +50,7 @@ class TestMetricTracker:
 
     @staticmethod
     def test_epoch_update(
-        capsys: CaptureFixture[str], example_batch: SimpleNamespace
+        capsys: pytest.CaptureFixture[str], example_batch: SimpleNamespace
     ) -> None:
         arg_list = ["--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"]
         args, _, _ = init_pipeline(arg_list)

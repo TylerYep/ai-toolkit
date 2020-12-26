@@ -5,7 +5,7 @@ from typing import Any, Iterator
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchsummary
+import torchinfo
 
 from src.args import Arguments
 
@@ -42,7 +42,7 @@ def model_summary(args: Arguments, model: nn.Module, loader: Iterator[Any]) -> N
     Prints out model using torchsummary.
     """
     data, _ = next(loader)
-    torchsummary.summary(model, data, batch_dim=args.batch_dim)
+    torchinfo.summary(model, input_data=data, batch_dim=args.batch_dim)
 
 
 def check_batch_dimension(
