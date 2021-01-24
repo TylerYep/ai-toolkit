@@ -91,7 +91,7 @@ def jitter(X: torch.Tensor, ox: int, oy: int) -> torch.Tensor:
 #     transform = T.Compose(
 #         [
 #             T.Lambda(lambda x: x[0]),
-#             T.Normalize(mean=[0, 0, 0], std=(1.0 / SQUEEZENET_STD).tolist()),
+#             T.Normalize(mean=[0, 0, 0], std=(1 / SQUEEZENET_STD).tolist()),
 #             T.Normalize(mean=(-SQUEEZENET_MEAN).tolist(), std=[1, 1, 1]),
 #             T.Lambda(rescale) if should_rescale else T.Lambda(lambda x: x),
 #             T.ToPILImage(),

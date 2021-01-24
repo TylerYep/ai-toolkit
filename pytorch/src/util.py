@@ -44,7 +44,7 @@ def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = "") ->
         is_best: (bool) True if it is the best model seen till now
     """
     print("Saving checkpoint...\n")
-    run_name = run_name if run_name else state["run_name"]
+    run_name = run_name or state["run_name"]
     save_path = os.path.join(run_name, "checkpoint.pth.tar")
     torch.save(state, save_path)
     if is_best:

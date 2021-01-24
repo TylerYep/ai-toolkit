@@ -1,8 +1,4 @@
-import json
-import os
 import random
-import shutil
-from argparse import Namespace
 from typing import Any, Dict
 
 import numpy as np
@@ -29,11 +25,11 @@ def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = "") ->
         is_best: (bool) True if it is the best model seen till now
     """
     print("Saving checkpoint...\n")
-    # run_name = run_name if run_name else state["run_name"]
+    run_name = run_name or state["run_name"]
     # save_path = os.path.join(run_name, "checkpoint.pth.tar")
     # torch.save(state, save_path)
-    # if is_best:
-    #     print("Saving new model_best...\n")
+    if is_best:
+        print("Saving new model_best...\n")
     #     shutil.copyfile(save_path, os.path.join(run_name, "model_best.pth.tar"))
 
 
@@ -43,9 +39,10 @@ def load_checkpoint(checkpoint_name: str, use_best: bool = False) -> Dict[str, A
     Args:
         checkpoint: (string) filename which needs to be loaded
     """
+    del use_best
     if not checkpoint_name:
         return {}
     print("Loading checkpoint...")
-    return {}
     # load_file = "model_best.pth.tar" if use_best else "checkpoint.pth.tar"
+    return {}
     # return torch.load(os.path.join(SAVE_DIR, checkpoint_name, load_file))

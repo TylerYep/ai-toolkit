@@ -72,8 +72,8 @@ def check_batch_dimension(
             raise RuntimeError("Loss should be greater than zero.")
         if (data.grad[test_val] == 0).all():
             raise RuntimeError("Grad of test input is not nonzero.")
-        if (data.grad[:test_val] != 0.0).any() and (
-            (data.grad[test_val + 1 :] != 0.0).any()
+        if (data.grad[:test_val] != 0).any() and (
+            (data.grad[test_val + 1 :] != 0).any()
         ):
             raise RuntimeError(
                 "Batch contains nonzero gradients, when they should all be zero."

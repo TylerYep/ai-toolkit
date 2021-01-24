@@ -37,7 +37,7 @@ def gradient_check(
         raise RuntimeError("Loss should be greater than zero.")
     if (grad[test_val] == 0).all():
         raise RuntimeError("Grad of test input is not nonzero.")
-    if (grad[:test_val] != 0.0).any() and (grad[test_val + 1 :] != 0.0).any():
+    if (grad[:test_val] != 0).any() and (grad[test_val + 1 :] != 0).any():
         raise RuntimeError(
             "Batch contains nonzero gradients, when they should all be zero."
         )

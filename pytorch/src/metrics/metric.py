@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 @dataclass
 class Metric:
-    epoch_avg: float = 0.0
-    running_avg: float = 0.0
+    epoch_avg: float = 0
+    running_avg: float = 0
     num_examples: int = 0
 
     def __post_init__(self) -> None:
@@ -24,11 +24,11 @@ class Metric:
         raise NotImplementedError
 
     def batch_reset(self) -> None:
-        self.running_avg = 0.0
+        self.running_avg = 0
 
     def epoch_reset(self) -> None:
-        self.epoch_avg = 0.0
-        self.running_avg = 0.0
+        self.epoch_avg = 0
+        self.running_avg = 0
         self.num_examples = 0
 
     def get_batch_result(self, batch_size: int, log_interval: int = 1) -> float:

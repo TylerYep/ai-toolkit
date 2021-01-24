@@ -11,7 +11,7 @@ class TestAccuracy:
 
         accuracy = Accuracy.calculate_accuracy(output, target)
 
-        assert accuracy == 2.0
+        assert accuracy == 2
 
     @staticmethod
     def test_batch_accuracy(example_batch: SimpleNamespace) -> None:

@@ -102,9 +102,7 @@ def copy_file_or_folder(source: str, destination: str, filename: str) -> None:
 def fill_template_files(destination: str, config: Dict[str, Any]) -> None:
     # Fill in template files with entries in config.
     for root, _, files in os.walk(destination):
-        if (
-            "data" in root or "checkpoints" in root or "cache" in root
-        ):  # TODO use .gitignore instead
+        if "data" in root or "checkpoints" in root or "cache" in root:
             continue
         for filename in files:
             if "_temp.py" in filename:

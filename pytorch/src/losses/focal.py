@@ -16,6 +16,6 @@ class FocalLoss(nn.Module):
             + max_val
             + ((-max_val).exp() + (-output - max_val).exp()).log()
         )
-        invprobs = F.logsigmoid(-output * (target * 2.0 - 1.0))
+        invprobs = F.logsigmoid(-output * (target * 2 - 1))
         loss = (invprobs * self.gamma).exp() * loss
         return loss.mean()

@@ -3,7 +3,7 @@ repos:
     hooks:
     -   id: mypy
         name: mypy
-        entry: mypy
+        entry: bash -c 'cd pytorch; mypy .'
         language: python
         types: [python]
         require_serial: true

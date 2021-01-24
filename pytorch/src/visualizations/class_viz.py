@@ -64,7 +64,7 @@ def create_class_visualization(
         # As regularizer, clamp and periodically blur the image
         # for c in range(3):
         #     lo = float(-SQUEEZENET_MEAN[c] / SQUEEZENET_STD[c])
-        #     hi = float((1.0 - SQUEEZENET_MEAN[c]) / SQUEEZENET_STD[c])
+        #     hi = float((1 - SQUEEZENET_MEAN[c]) / SQUEEZENET_STD[c])
         #     img.data[:, c].clamp_(min=lo, max=hi)
         # if t % blur_every == 0:
         #     blur_image(img.data, sigma=0.5)
