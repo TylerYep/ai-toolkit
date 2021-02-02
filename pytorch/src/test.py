@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from typing import List, Optional
 
 import torch
 import torch.nn as nn
@@ -50,7 +49,7 @@ def test_model(
     )
 
 
-def test(arg_list: Optional[List[str]] = None) -> None:
+def test(arg_list: list[str] | None = None) -> None:
     args, device, checkpoint = init_pipeline(arg_list)
     criterion = get_loss_initializer(args.loss)()
     test_loader = get_dataset_initializer(args.dataset).load_test_data(args, device)

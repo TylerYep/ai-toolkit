@@ -6,7 +6,7 @@ import random
 import string
 import unicodedata
 import zipfile
-from typing import Any, List, Tuple
+from typing import Any
 
 import torch
 import wget
@@ -32,7 +32,7 @@ class DatasetRNN(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[TensorDataLoader, TensorDataLoader, Tuple[Any, ...]]:
+    ) -> tuple[TensorDataLoader, TensorDataLoader, tuple[Any, ...]]:
         orig_dataset = LanguageWords(self.DATA_PATH)
         train_loader, val_loader = self.split_data(
             orig_dataset, args, device, val_split
@@ -98,7 +98,7 @@ class LanguageWords(TensorDataset):
     def __len__(self) -> int:
         return len(self.data)
 
-    def __getitem__(self, index: int) -> Tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
         line, category = self.data[index]
         category_tensor = torch.tensor([self.all_categories.index(category)])
         line_tensor = self.lineToTensor(line)
@@ -106,12 +106,12 @@ class LanguageWords(TensorDataset):
         return line_tensor, category_tensor.squeeze()
 
     @property
-    def model_params(self) -> Tuple[Any, ...]:
+    def model_params(self) -> tuple[Any, ...]:
         return self.input_shape, self.max_word_length, self.n_hidden, self.n_categories
         # , self.n_letters
 
     @staticmethod
-    def read_lines(filename: str) -> List[str]:
+    def read_lines(filename: str) -> list[str]:
         def unicodeToAscii(s: str) -> str:
             return "".join(
                 c

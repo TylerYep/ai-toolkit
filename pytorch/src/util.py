@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import random
 import shutil
-from typing import Any, Dict, Iterator, Optional, Tuple, cast
+from typing import Any, Dict, Iterator, Tuple, cast
 
 import numpy as np
 import torch
@@ -26,14 +26,14 @@ def get_sample_loader(loader: TensorDataLoader) -> Iterator[Any]:
             sample_loader = iter(loader)
 
 
-def set_rng_state(checkpoint: Dict[str, Any]) -> None:
+def set_rng_state(checkpoint: dict[str, Any]) -> None:
     if checkpoint:
         random.setstate(checkpoint["rng_state"])
         np.random.set_state(checkpoint["np_rng_state"])
         torch.set_rng_state(checkpoint["torch_rng_state"])
 
 
-def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = "") -> None:
+def save_checkpoint(state: dict[str, Any], is_best: bool, run_name: str = "") -> None:
     """
     Saves model and training parameters at checkpoint + 'last.pth.tar'.
     If is_best is True, also saves best.pth.tar
@@ -52,7 +52,7 @@ def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = "") ->
         shutil.copyfile(save_path, os.path.join(run_name, "model_best.pth.tar"))
 
 
-def load_checkpoint(checkpoint_path: str, use_best: bool = False) -> Dict[str, Any]:
+def load_checkpoint(checkpoint_path: str, use_best: bool = False) -> dict[str, Any]:
     """
     Loads torch checkpoint.
     Args:
@@ -64,10 +64,10 @@ def load_checkpoint(checkpoint_path: str, use_best: bool = False) -> Dict[str, A
 
 
 def load_state_dict(
-    checkpoint: Dict[str, Any],
+    checkpoint: dict[str, Any],
     model: nn.Module,
-    optimizer: Optional[optim.Optimizer] = None,
-    scheduler: Optional[lr_scheduler._LRScheduler] = None,
+    optimizer: optim.Optimizer | None = None,
+    scheduler: lr_scheduler._LRScheduler | None = None,
 ) -> None:
     """
     Loads model parameters (state_dict) from checkpoint. If optimizer or scheduler are

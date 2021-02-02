@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Tuple
+from typing import Any
 
 import torch
 from torch.utils.data import DataLoader
@@ -35,7 +35,7 @@ class DatasetCNN(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[TensorDataLoader, TensorDataLoader, Tuple[Any, ...]]:
+    ) -> tuple[TensorDataLoader, TensorDataLoader, tuple[Any, ...]]:
         orig_dataset = datasets.FashionMNIST(
             self.DATA_PATH, train=True, download=True, transform=self.get_transforms()
         )

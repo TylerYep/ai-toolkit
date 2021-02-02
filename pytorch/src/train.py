@@ -3,7 +3,7 @@ from __future__ import annotations
 import random
 import sys
 from types import SimpleNamespace
-from typing import Any, Iterator, List, Optional, Tuple
+from typing import Any, Iterator
 
 import numpy as np
 import torch
@@ -30,7 +30,7 @@ def train_and_validate(
     args: Arguments,
     model: nn.Module,
     loader: TensorDataLoader,
-    optimizer: Optional[optim.Optimizer],
+    optimizer: optim.Optimizer | None,
     criterion: nn.Module,
     metrics: MetricTracker,
     mode: Mode,
@@ -93,9 +93,9 @@ def get_scheduler(
 def load_model(
     args: Arguments,
     device: torch.device,
-    init_params: Tuple[Any, ...],
+    init_params: tuple[Any, ...],
     loader: Iterator[Any],
-) -> Tuple[nn.Module, nn.Module, optim.Optimizer, Optional[lr_scheduler._LRScheduler]]:
+) -> tuple[nn.Module, nn.Module, optim.Optimizer, lr_scheduler._LRScheduler | None]:
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
     optimizer = get_optimizer(args, model)
@@ -104,7 +104,7 @@ def load_model(
     return model, criterion, optimizer, scheduler
 
 
-def train(arg_list: Optional[List[str]] = None) -> MetricTracker:
+def train(arg_list: list[str] | None = None) -> MetricTracker:
     args, device, checkpoint = init_pipeline(arg_list)
     dataset_loader = get_dataset_initializer(args.dataset)
     train_loader, val_loader, init_params = dataset_loader.load_train_data(args, device)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from collections import defaultdict
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable
 
 import torch
 from torch.utils.data import DataLoader
@@ -15,7 +15,7 @@ from src.datasets.dataset import DatasetLoader, TensorDataLoader
 
 class DatasetLSTM(DatasetLoader):
     @staticmethod
-    def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
+    def get_collate_fn(device: torch.device) -> Callable[[list[Any]], Any]:
         """
         for indices in batch_sampler:
             yield collate_fn([dataset[i] for i in indices])
@@ -39,7 +39,7 @@ class DatasetLSTM(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[TensorDataLoader, TensorDataLoader, Tuple[Any, ...]]:
+    ) -> tuple[TensorDataLoader, TensorDataLoader, tuple[Any, ...]]:
         orig_dataset = LanguageWords(self.DATA_PATH)
         train_loader, val_loader = self.split_data(
             orig_dataset, args, device, val_split

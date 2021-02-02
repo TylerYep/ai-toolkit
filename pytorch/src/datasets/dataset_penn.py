@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import os
 import random
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable
 
 import numpy as np
 import torch
@@ -24,7 +24,7 @@ class DatasetPenn(DatasetLoader):
         self.CLASS_LABELS = ["YES", "NO"]
 
     @staticmethod
-    def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
+    def get_collate_fn(device: torch.device) -> Callable[[list[Any]], Any]:
         def collate(x):
             data, target = tuple(zip(*x))
             data = [image.to(device) for image in data]
@@ -41,7 +41,7 @@ class DatasetPenn(DatasetLoader):
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[TensorDataLoader, TensorDataLoader, Tuple[Any, ...]]:
+    ) -> tuple[TensorDataLoader, TensorDataLoader, tuple[Any, ...]]:
         orig_dataset = PennFudanDataset("data", self.get_transforms(train=True))
         train_loader, val_loader = self.split_data(
             orig_dataset, args, device, val_split

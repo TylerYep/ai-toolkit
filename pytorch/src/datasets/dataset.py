@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, Tuple
 
 import torch
 from torch.utils.data import DataLoader, TensorDataset, random_split
@@ -14,11 +14,11 @@ TensorDataLoader = DataLoader[Tuple[torch.Tensor, ...]]
 
 class DatasetLoader:
     def __init__(self) -> None:
-        self.CLASS_LABELS: List[str] = []
+        self.CLASS_LABELS: list[str] = []
         self.DATA_PATH = "/content/" if "google.colab" in sys.modules else "data/"
 
     @staticmethod
-    def get_collate_fn(device: torch.device) -> Callable[[List[Any]], Any]:
+    def get_collate_fn(device: torch.device) -> Callable[[list[Any]], Any]:
         """
         for indices in batch_sampler:
             yield collate_fn([dataset[i] for i in indices])
@@ -39,7 +39,7 @@ class DatasetLoader:
         args: Arguments,
         device: torch.device,
         val_split: float,
-    ) -> Tuple[TensorDataLoader, TensorDataLoader]:
+    ) -> tuple[TensorDataLoader, TensorDataLoader]:
         collate_fn = self.get_collate_fn(device)
         generator_seed = torch.Generator().manual_seed(0)
         orig_len = len(orig_dataset)
@@ -73,7 +73,7 @@ class DatasetLoader:
 
     def load_train_data(
         self, args: Arguments, device: torch.device, val_split: float = 0.2
-    ) -> Tuple[TensorDataLoader, TensorDataLoader, Tuple[Any, ...]]:
+    ) -> tuple[TensorDataLoader, TensorDataLoader, tuple[Any, ...]]:
         raise NotImplementedError
 
     def load_test_data(self, args: Arguments, device: torch.device) -> TensorDataLoader:
