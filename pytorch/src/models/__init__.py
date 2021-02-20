@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from typing import Type, cast
 
@@ -13,7 +15,7 @@ from .rnn import BasicRNN
 # from .efficient_net import EfficientNet
 
 
-def get_model_initializer(model_name: str) -> Type[nn.Module]:
+def get_model_initializer(model_name: str) -> type[nn.Module]:
     """ Retrieves class initializer from its string name. """
     if not hasattr(sys.modules[__name__], model_name):
         raise RuntimeError(f"Model class {model_name} not found in models/")

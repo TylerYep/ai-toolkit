@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import torch
@@ -20,7 +20,7 @@ def show_saliency_maps(
     model: nn.Module,
     X: torch.Tensor,
     y: torch.Tensor,
-    class_labels: List[str],
+    class_labels: list[str],
     run_name: str,
 ) -> None:
     def compute_saliency_maps(

@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,9 +12,12 @@ def compute_activations(
     model: nn.Module,
     data: torch.Tensor,
     target: torch.Tensor,
-    class_labels: List[str],
+    class_labels: list[str],
     run_name: str,
 ) -> None:
+    if not hasattr(model, "forward_with_activations"):
+        return
+
     model.eval()
     _, activations = model.forward_with_activations(data)  # type: ignore[operator]
     NUM_EXAMPLES = 4

@@ -1,4 +1,6 @@
-from typing import Any, Iterator, Optional
+from __future__ import annotations
+
+from typing import Any, Iterator
 
 import torch.nn as nn
 
@@ -33,7 +35,7 @@ def visualize(
     args: Arguments,
     model: nn.Module,
     loader: Iterator[Any],
-    metrics: Optional[MetricTracker] = None,
+    metrics: MetricTracker | None = None,
 ) -> None:
     if not args.no_visualize and metrics is not None:
         metrics.add_network(model, loader)
@@ -49,7 +51,7 @@ def visualize_trained(
     args: Arguments,
     model: nn.Module,
     loader: Iterator[Any],
-    metrics: Optional[MetricTracker] = None,
+    metrics: MetricTracker | None = None,
 ) -> None:
     if not args.no_visualize and metrics is not None:
         run_name = metrics.run_name

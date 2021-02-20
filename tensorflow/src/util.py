@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import random
-from typing import Any, Dict
+from typing import Any
 
 import numpy as np
 
@@ -14,7 +16,7 @@ def set_rng_state(checkpoint: Any) -> None:
         # torch.set_rng_state(checkpoint["torch_rng_state"])
 
 
-def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = "") -> None:
+def save_checkpoint(state: dict[str, Any], is_best: bool, run_name: str = "") -> None:
     """
     Saves model and training parameters at checkpoint + 'last.pth.tar'.
     If is_best is True, also saves best.pth.tar
@@ -33,7 +35,7 @@ def save_checkpoint(state: Dict[str, Any], is_best: bool, run_name: str = "") ->
     #     shutil.copyfile(save_path, os.path.join(run_name, "model_best.pth.tar"))
 
 
-def load_checkpoint(checkpoint_name: str, use_best: bool = False) -> Dict[str, Any]:
+def load_checkpoint(checkpoint_name: str, use_best: bool = False) -> dict[str, Any]:
     """
     Loads torch checkpoint.
     Args:

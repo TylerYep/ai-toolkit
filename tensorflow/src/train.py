@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import os
-from typing import Any, List, Optional
+from typing import Any
 
 from src.args import Arguments, init_pipeline
 from src.datasets import get_dataset_initializer
@@ -16,6 +18,7 @@ def train_and_validate(
     class_labels: Any,
     save_dir: str = "checkpoints/",
 ) -> Any:
+    del class_labels
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     model_name = os.path.join(save_dir, "weights.{epoch:02d}-{val_loss:.2f}.hdf5")
@@ -39,6 +42,7 @@ def load_model(
     impossible to provide an exact and numerically stable
     loss calculation for all models when using a softmax output.
     """
+    del checkpoint, init_params, train_images, train_labels
     optimizer = tf.keras.optimizers.Adam(learning_rate=3e-6)
     loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
     model = tf.keras.Sequential(
@@ -55,11 +59,12 @@ def load_model(
     return model
 
 
-def train(arg_list: Optional[List[str]] = None) -> None:
+def train(arg_list: list[str] | None = None) -> None:
     args, checkpoint = init_pipeline(arg_list)
     (
         (train_images, train_labels),
-        (test_images, test_labels),
+        (_, _),
+        # (test_images, test_labels),
         class_labels,
         init_params,
     ) = get_dataset_initializer(args.dataset).load_train_data()

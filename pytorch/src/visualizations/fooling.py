@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import torch
@@ -11,7 +11,7 @@ def make_fooling_image(
     model: nn.Module,
     X: torch.Tensor,
     y: torch.Tensor,
-    class_labels: List[str],
+    class_labels: list[str],
     target_y: int,
     run_name: str,
 ) -> None:

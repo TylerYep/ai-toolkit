@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import json
 import os
 from enum import Enum, unique
 from types import SimpleNamespace
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any, Iterator
 
 import torch
 import torch.nn as nn
@@ -21,8 +23,8 @@ class MetricTracker:
     def __init__(
         self,
         args: Arguments,
-        checkpoint: Dict[str, Any],
-        class_labels: Optional[List[str]] = None,
+        checkpoint: dict[str, Any],
+        class_labels: list[str] | None = None,
     ) -> None:
         if not args.metrics:
             raise RuntimeError("No metrics specified in args.")
@@ -40,14 +42,14 @@ class MetricTracker:
         metric_checkpoint = checkpoint.get("metric_obj", {})
         self.epoch = metric_checkpoint.get("epoch", 0)
         self.is_best = metric_checkpoint.get("is_best", True)
-        self.metric_data: Dict[str, Metric] = metric_checkpoint.get(
+        self.metric_data: dict[str, Metric] = metric_checkpoint.get(
             "metric_data",
             {name: get_metric_initializer(name)() for name in args.metrics},
         )
         self.primary_metric = metric_checkpoint.get("primary_metric", args.metrics[0])
         self.end_epoch = self.epoch + args.epochs
         self.args = args
-        self.prev_best: Optional[float] = None
+        self.prev_best: float | None = None
 
     def __getitem__(self, name: str) -> Metric:
         return self.metric_data[name]
@@ -73,7 +75,7 @@ class MetricTracker:
 
     def batch_update(
         self, val_dict: SimpleNamespace, i: int, num_batches: int, mode: Mode
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         if not torch.isfinite(val_dict.loss).all():
             raise RuntimeError("Loss in training is NaN or inf.")
         tqdm_dict = {}
@@ -135,7 +137,7 @@ class MetricTracker:
                     f"{target_class}/Predicted_{pred_class}", data[j], num_steps
                 )
 
-    def json_repr(self) -> Dict[str, Any]:
+    def json_repr(self) -> dict[str, Any]:
         return {
             "epoch": self.epoch,
             "metric_data": self.metric_data,

@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import torch
@@ -9,7 +9,7 @@ from .viz_utils import rearrange, save_figure
 def view_input(
     data: torch.Tensor,
     target: torch.Tensor,
-    class_labels: List[str],
+    class_labels: list[str],
     run_name: str,
 ) -> None:
     """ Data is of shape (B, C, H, W) """

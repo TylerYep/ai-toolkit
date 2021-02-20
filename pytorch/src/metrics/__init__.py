@@ -1,4 +1,6 @@
 """ Imports all Metric objects. """
+from __future__ import annotations
+
 import sys
 from typing import Type, cast
 
@@ -10,7 +12,7 @@ from .loss import Loss
 from .metric import Metric
 
 
-def get_metric_initializer(metric_name: str) -> Type[Metric]:
+def get_metric_initializer(metric_name: str) -> type[Metric]:
     """ Retrieves class initializer from its string name. """
     if not hasattr(sys.modules[__name__], metric_name):
         raise RuntimeError(f"Metric {metric_name} not found in metrics folder.")

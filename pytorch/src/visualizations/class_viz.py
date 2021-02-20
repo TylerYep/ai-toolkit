@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import random
-from typing import List
 
 import matplotlib.pyplot as plt
 import torch
@@ -12,7 +13,7 @@ def create_class_visualization(
     model: nn.Module,
     data: torch.Tensor,
     target_y: torch.Tensor,
-    class_labels: List[str],
+    class_labels: list[str],
     run_name: str,
     **kwargs: int,
 ) -> torch.Tensor:

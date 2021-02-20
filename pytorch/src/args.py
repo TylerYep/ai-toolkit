@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import argparse
 import json
 import os
 import random
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 import torch
@@ -40,7 +42,7 @@ class Arguments:
     use_best: bool
 
 
-def get_parsed_arguments(arg_list: Optional[List[str]]) -> Arguments:
+def get_parsed_arguments(arg_list: list[str] | None) -> Arguments:
     # fmt: off
     parser = argparse.ArgumentParser(description="PyTorch ML Pipeline")
 
@@ -139,8 +141,8 @@ def load_args_from_json(args: Arguments) -> None:
 
 
 def init_pipeline(
-    arg_list: Optional[List[str]] = None,
-) -> Tuple[Arguments, torch.device, Dict[str, Any]]:
+    arg_list: list[str] | None = None,
+) -> tuple[Arguments, torch.device, dict[str, Any]]:
     """ Pass in the empty list to skip argument parsing. """
     set_random_seeds()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -148,7 +150,7 @@ def init_pipeline(
     if args.config:
         load_args_from_json(args)
 
-    checkpoint: Dict[str, Any] = {}
+    checkpoint: dict[str, Any] = {}
     if args.checkpoint:
         checkpoint_path = os.path.join(args.save_dir, args.checkpoint)
         checkpoint = util.load_checkpoint(checkpoint_path, args.use_best)

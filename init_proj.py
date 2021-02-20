@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import argparse
 import os
 import shutil
 import string
-from typing import Any, Dict
+from typing import Any
 
 CONFIGS = {
     "maskrcnn": {
@@ -99,7 +101,7 @@ def copy_file_or_folder(source: str, destination: str, filename: str) -> None:
         # if any(ext in url_string for ext in extensionsToCheck):
 
 
-def fill_template_files(destination: str, config: Dict[str, Any]) -> None:
+def fill_template_files(destination: str, config: dict[str, Any]) -> None:
     # Fill in template files with entries in config.
     for root, _, files in os.walk(destination):
         if "data" in root or "checkpoints" in root or "cache" in root:
@@ -118,7 +120,7 @@ def fill_template_files(destination: str, config: Dict[str, Any]) -> None:
                 os.remove(full_src_path)
 
 
-def add_config_files(destination: str, config: Dict[str, Any]) -> None:
+def add_config_files(destination: str, config: dict[str, Any]) -> None:
     # Copy additional files specified in config, such as dataset.py
     presets = config["presets"]
     for key, src_path in presets.items():
@@ -129,7 +131,7 @@ def add_config_files(destination: str, config: Dict[str, Any]) -> None:
             print("Path not found.")
 
 
-def create_project_folder(config: Dict[str, Any]) -> None:
+def create_project_folder(config: dict[str, Any]) -> None:
     source = "pytorch"
     destination = config["destination"]
 

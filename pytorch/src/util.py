@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import random
 import shutil
-from typing import Any, Dict, Iterator, Tuple, cast
+from typing import Any, Iterator, Tuple, cast
 
 import numpy as np
 import torch
@@ -60,7 +60,7 @@ def load_checkpoint(checkpoint_path: str, use_best: bool = False) -> dict[str, A
     """
     load_file = "model_best.pth.tar" if use_best else "checkpoint.pth.tar"
     checkpoint = torch.load(os.path.join(checkpoint_path, load_file))
-    return cast(Dict[str, Any], checkpoint)
+    return cast(dict[str, Any], checkpoint)
 
 
 def load_state_dict(
