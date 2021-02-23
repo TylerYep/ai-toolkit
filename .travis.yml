@@ -7,4 +7,4 @@ install:
   - pip install -r requirements.txt
   - pip install --upgrade pytest
 script:
-  - cd "pytorch" && pytest -s -k "not test_one_epoch"
+  - pytest -s -k "not test_one_epoch"

@@ -2,6 +2,7 @@
 *.csv
 *.pkl
 data/*
+!data/.gitkeep
 checkpoints/
 logs/
 

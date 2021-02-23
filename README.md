@@ -44,8 +44,6 @@ The rough evaluation metric for this repo's success is how fast I can start work
 4. Start tensorboard using the `checkpoints/` folder with `tensorboard --logdir=checkpoints/`
 5. Start and stop training using `python train.py --checkpoint=<checkpoint name>`. The code should automatically resume training at the previous epoch and continue logging to the previous tensorboard.
 6. Run `python test.py --checkpoint=<checkpoint name>` to get final predictions.
-7. Edit `init_proj.py` to your desired configuration.
-8. Run `python init_proj.py <project_type>`, which creates your files in the `output/` directory.
 
 # Directory Structure
 - checkpoints/                  (Only created once you run train.py)
@@ -70,9 +68,8 @@ The rough evaluation metric for this repo's success is how fast I can start work
 
 
 # Goal Workflow
-1. Run `python init_proj.py` to initialize a repo with a given init config.
-2. Move data into `data/`.
-3. Fill in `preprocess.py` and `dataset.py`. (Optional: explore data by running `python viz.py`)
-4. Change `args.py` to specify input/output dimensions, batch size, etc.
-5. Run `train.py`, which saves model checkpoints, output predictions, and tensorboards in the same folder. Also automatically starts tensorboard server in a tmux session. Resume training at any point.
-6. Run `test.py` to get final predictions.
+1. Move data into `data/`.
+2. Fill in `preprocess.py` and `dataset.py`. (Optional: explore data by running `python viz.py`)
+3. Change `args.py` to specify input/output dimensions, batch size, etc.
+4. Run `train.py`, which saves model checkpoints, output predictions, and tensorboards in the same folder. Also automatically starts tensorboard server in a tmux session. Resume training at any point.
+5. Run `test.py` to get final predictions.

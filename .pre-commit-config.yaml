@@ -27,7 +27,7 @@ repos:
 
       - id: mypy
         name: mypy
-        entry: bash -c 'cd pytorch; mypy .'
+        entry: mypy
         language: python
         types: [python]
         require_serial: true
@@ -40,7 +40,7 @@ repos:
 
       - id: pytest
         name: pytest
-        entry: bash -c 'cd pytorch; pytest --durations=0 unit_test'
+        entry: pytest --durations=0 unit_test
         language: python
         types: [python]
         always_run: true
