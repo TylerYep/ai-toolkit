@@ -48,9 +48,7 @@ def train_and_validate(
             # If you have multiple optimizers, use model.zero_grad().
             # If you want to freeze layers, use optimizer.zero_grad().
             if mode == Mode.TRAIN and optimizer is not None:
-                # When available, use optimizer.zero_grad(set_to_none=True) instead.
-                for param in model.parameters():
-                    param.grad = None
+                optimizer.zero_grad(set_to_none=True)
 
             if isinstance(data, (list, tuple)):
                 output = model(*data)

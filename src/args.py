@@ -129,7 +129,7 @@ def get_parsed_arguments(arg_list: list[str] | None) -> Arguments:
 def load_args_from_json(args: Arguments) -> None:
     """ Update additional configs defined in the json file. """
     filename = args.config
-    found_json = os.path.join(args.config_dir, filename + ".json")
+    found_json = os.path.join(args.config_dir, f"{filename}.json")
     if not os.path.isfile(found_json):
         found_json = os.path.join(args.save_dir, filename, "args.json")
     with open(found_json) as f:
@@ -193,14 +193,15 @@ def get_run_name(args: Arguments) -> str:
     ]
     dirlist.sort()
     dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
-    if not dirlist:
-        result = "A"
-    else:
-        last_run_char = dirlist[-1][-1]
-        if last_run_char == "Z":
-            result = "A" * (len(dirlist[-1]) + 1)
-        else:
-            result = dirlist[-1][:-1] + chr(ord(last_run_char) + 1)
+    result = "A"
+    if dirlist:
+        last_folder = dirlist[-1]
+        last_run_char = last_folder[-1]
+        result = (
+            "A" * (len(last_folder) + 1)
+            if last_run_char == "Z"
+            else last_folder[:-1] + chr(ord(last_run_char) + 1)
+        )
     out_dir = os.path.join(save_dir, result)
     os.makedirs(out_dir)
     return out_dir
