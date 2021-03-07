@@ -4,8 +4,7 @@ import argparse
 import json
 import os
 import random
-from dataclasses import dataclass
-from typing import Any
+from typing import Any, NamedTuple
 
 import numpy as np
 import torch
@@ -13,8 +12,7 @@ import torch
 from src import util
 
 
-@dataclass
-class Arguments:
+class Arguments(NamedTuple):
     batch_dim: int
     batch_size: int
     checkpoint: str
