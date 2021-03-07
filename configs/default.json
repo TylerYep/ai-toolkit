@@ -19,12 +19,11 @@
     "name": "",
     "no_save": false,
     "no_verify": false,
-    "no_visualize": false,
+    "no_visualize": true,
     "num_examples": null,
     "num_workers": 0,
     "plot": false,
     "scheduler": false,
     "test_batch_size": 1000,
-    "visualize": true,
     "use_best": false
 }

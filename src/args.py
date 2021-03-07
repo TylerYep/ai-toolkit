@@ -161,11 +161,15 @@ def set_random_seeds(seed: int = 0) -> None:
     """
     Set torch.backends.cudnn.benchmark = True to speed up training,
     but may cause some non-determinism.
+
+    Disabling the benchmarking feature with torch.backends.cudnn.benchmark = False
+    causes cuDNN to deterministically select an algorithm, possibly at the cost of
+    reduced performance.
     """
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.set_deterministic(True)
+    torch.use_deterministic_algorithms(True)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = torch.cuda.is_available()
 
