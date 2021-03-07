@@ -40,7 +40,7 @@ repos:
 
       - id: pytest
         name: pytest
-        entry: pytest --durations=0 unit_test
+        entry: pytest --durations=0
         language: python
         types: [python]
         always_run: true

@@ -64,7 +64,7 @@ The rough evaluation metric for this repo's success is how fast I can start work
     - util.py
     - verify.py
     - viz.py                        (Stub, create more visualizations if necessary)
-- unit_test/
+- tests/
 
 
 # Goal Workflow
