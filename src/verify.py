@@ -127,7 +127,7 @@ def overfit_example(
     if not torch.allclose(loss, torch.tensor(0.0).to(device)):
         warnings.warn(
             f"\nOverfit Loss is not sufficiently close to 0: {loss}\n"
-            f"This may indicate an error with your model.",
+            "This may indicate an error with your model.",
             RuntimeWarning,
         )
 
@@ -140,7 +140,7 @@ def detect_NaN_tensors(model: nn.Module) -> None:
         if not torch.isfinite(param).all():
             raise RuntimeError(
                 f"Detected NaN and/or inf values in model weights: {name}. "
-                f"Check your forward pass for numerically unstable operations."
+                "Check your forward pass for numerically unstable operations."
             )
 
 

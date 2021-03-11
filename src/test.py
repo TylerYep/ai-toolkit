@@ -27,20 +27,19 @@ def test_model(
     model.eval()
     test_loss, correct = 0.0, 0.0
     test_len = len(test_loader)
-    with torch.no_grad():
-        with tqdm(desc="Test", total=test_len, ncols=120) as pbar:
-            for data, target in test_loader:
-                if isinstance(data, (list, tuple)):
-                    output = model(*data)
-                    batch_size = data[0].size(args.batch_dim)
-                else:
-                    output = model(data)
-                    batch_size = data.size(args.batch_dim)
-                loss = criterion(output, target)
-                test_loss += loss.item() * batch_size
-                pred = output.argmax(dim=1, keepdim=True)
-                correct += pred.eq(target.view_as(pred)).sum().item()
-                pbar.update()
+    with torch.no_grad(), tqdm(desc="Test", total=test_len, ncols=120) as pbar:
+        for data, target in test_loader:
+            if isinstance(data, (list, tuple)):
+                output = model(*data)
+                batch_size = data[0].size(args.batch_dim)
+            else:
+                output = model(data)
+                batch_size = data.size(args.batch_dim)
+            loss = criterion(output, target)
+            test_loss += loss.item() * batch_size
+            pred = output.argmax(dim=1, keepdim=True)
+            correct += pred.eq(target.view_as(pred)).sum().item()
+            pbar.update()
 
     test_loss /= test_len
     print(
