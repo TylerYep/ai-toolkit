@@ -89,13 +89,13 @@ def get_parsed_arguments(arg_list: list[str] | None) -> Arguments:
     parser.add_argument("--name", type=str, default="", metavar="NAME",
                         help="existing folder in checkpoint/ to save files to")
 
-    parser.add_argument("--no-save", action="store_true", default=False,
+    parser.add_argument("--no-save", action="store_true",
                         help="do not save any checkpoints")
 
-    parser.add_argument("--no-verify", action="store_true", default=False,
+    parser.add_argument("--no-verify", action="store_true",
                         help="do not perform model verification")
 
-    parser.add_argument("--no-visualize", action="store_true", default=False,
+    parser.add_argument("--no-visualize", action="store_true",
                         help="do not save visualization files")
 
     parser.add_argument("--num-examples", type=int, default=None, metavar="N",
@@ -104,19 +104,19 @@ def get_parsed_arguments(arg_list: list[str] | None) -> Arguments:
     parser.add_argument("--num-workers", type=int, default=0,
                         help="number of workers to use when training on GPU")
 
-    parser.add_argument("--plot", action="store_true", default=False,
+    parser.add_argument("--plot", action="store_true",
                         help="plot training examples")
 
     parser.add_argument("--save-dir", type=str, default="checkpoints",
                         help="checkpoint directory to use")
 
-    parser.add_argument("--scheduler", action="store_true", default=False,
+    parser.add_argument("--scheduler", action="store_true",
                         help="use learning rate scheduler")
 
     parser.add_argument("--test-batch-size", type=int, default=1000, metavar="N",
                         help="input batch size for testing (default: 1000)")
 
-    parser.add_argument("--use-best", action="store_true", default=False,
+    parser.add_argument("--use-best", action="store_true",
                         help="use best val metric checkpoint (default: most recent)")
     # fmt: on
 
@@ -186,13 +186,13 @@ def get_run_name(args: Arguments) -> str:
             os.makedirs(full_name)
         return full_name
 
+    result = "A"
     dirlist = [
         f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))
     ]
-    dirlist.sort()
-    dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
-    result = "A"
     if dirlist:
+        dirlist.sort()
+        dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
         last_folder = dirlist[-1]
         last_run_char = last_folder[-1]
         result = (

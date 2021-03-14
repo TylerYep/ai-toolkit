@@ -129,9 +129,9 @@ def train(arg_list: list[str] | None = None) -> MetricTracker:
                 "model_init": init_params,
                 "model_state_dict": model.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
-                "scheduler_state_dict": None
-                if scheduler is None
-                else scheduler.state_dict(),
+                "scheduler_state_dict": (
+                    None if scheduler is None else scheduler.state_dict()
+                ),
                 "rng_state": random.getstate(),
                 "np_rng_state": np.random.get_state(),
                 "torch_rng_state": torch.get_rng_state(),
