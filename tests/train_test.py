@@ -28,7 +28,7 @@ class TestTrain:
         assert metrics_test == metrics_end
 
     @staticmethod
-    def test_configs() -> None:
-        metric_tracker = train("--config=test")
+    def test_configs(tmp_path: Path) -> None:
+        metric_tracker = train("--config=test", f"--save-dir={tmp_path}")
 
-        assert round(metric_tracker["Loss"].value, 7) == 4.4703889
+        assert Path(metric_tracker.run_name).name == "A"

@@ -9,3 +9,5 @@ install:
   - pip install pytest-cov codecov
 script:
   - pytest -s --cov=src --cov-report= --durations=0 -k "not test_one_epoch"
+after_success:
+  - codecov
