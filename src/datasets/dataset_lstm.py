@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import os
 from collections import defaultdict
+from pathlib import Path
 from typing import Any, Callable
 
 import torch
@@ -126,18 +126,13 @@ class LanguageWords(TensorDataset):
 
     @staticmethod
     def load_data(data_dir):
-        filenames = os.listdir(data_dir)
         token_set = set()
         data = defaultdict(list)
-        for f in filenames:
-            if not f.endswith("txt"):
-                continue
-
-            cat = f.replace(".txt", "")
-            with open(os.path.join(data_dir, f)) as f:
+        for filepath in Path(data_dir).glob("*.txt"):
+            with open(filepath) as f:
                 for line in f:
                     line = line.strip().lower()
-                    data[cat].append(line)
+                    data[filepath.stem].append(line)
                     for token in line:
                         token_set.add(token)
         return token_set, data

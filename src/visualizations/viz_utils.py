@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import torch
@@ -9,7 +9,7 @@ import torch
 def save_figure(run_name: str, img_name: str) -> None:
     plt.tight_layout(pad=True)
     if run_name:
-        plt.savefig(os.path.join(run_name, img_name))
+        plt.savefig(Path(f"{run_name}/{img_name}"))
         plt.clf()
     else:
         plt.show()

@@ -3,8 +3,8 @@
 # pylint: disable=too-few-public-methods
 from __future__ import annotations
 
-import os
 import random
+from pathlib import Path
 from typing import Any, Callable
 
 import numpy as np
@@ -117,19 +117,17 @@ class PennFudanDataset(TensorDataset):
         super().__init__()
         self.root = root
         self.transform = transform
-        # load all image files, sorting them to
-        # ensure that they are aligned
-        self.imgs = sorted(os.listdir(os.path.join(root, "PNGImages")))
-        self.masks = sorted(os.listdir(os.path.join(root, "PedMasks")))
+        # load all image files, sorting them to ensure that they are aligned
+        self.imgs = sorted(Path(f"{root}/PNGImages").glob("*"))
+        self.masks = sorted(Path(f"{root}/PedMasks").glob("*"))
 
     def __getitem__(self, idx):
-        # load images ad masks
-        img_path = os.path.join(self.root, "PNGImages", self.imgs[idx])
-        mask_path = os.path.join(self.root, "PedMasks", self.masks[idx])
+        # load images and masks
+        img_path = self.imgs[idx].resolve()
+        mask_path = self.masks[idx].resolve()
         img = Image.open(img_path).convert("RGB")
-        # note that we haven't converted the mask to RGB,
-        # because each color corresponds to a different instance
-        # with 0 being background
+        # note that we haven't converted the mask to RGB, because each color corresponds
+        # to a different instance with 0 being background
         mask = Image.open(mask_path)
 
         mask = np.array(mask)

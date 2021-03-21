@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import glob
-import os
 import random
 import string
 import unicodedata
 import zipfile
+from pathlib import Path
 from typing import Any
 
 import torch
@@ -70,17 +69,18 @@ class LanguageWords(TensorDataset):
         self.all_categories = []
         self.data = []
 
-        if not os.path.isdir(f"{data_path}{data_path}names/"):
-            output_zip = os.path.join(data_path, os.path.basename(DATA_URL))
-            if not os.path.isdir(output_zip):
+        data_dir = Path(f"{data_path}{data_path}names/")
+        if not data_dir.is_dir():
+            output_zip = data_path / Path(DATA_URL).name
+            if not output_zip.is_dir():
                 output_zip = wget.download(DATA_URL, data_path)
             with zipfile.ZipFile(output_zip) as zip_ref:
                 zip_ref.extractall(data_path)
-            os.remove(output_zip)
+            output_zip.unlink()
 
         # Build the category_lines dictionary, a list of names per language
-        for filename in glob.glob(f"{data_path}{data_path}names/*.txt"):
-            category = os.path.splitext(os.path.basename(filename))[0]
+        for filename in data_dir.glob("*.txt"):
+            category = filename.stem
             self.all_categories.append(category)
             lines = self.read_lines(filename)
             for word in lines:
@@ -111,7 +111,7 @@ class LanguageWords(TensorDataset):
         # , self.n_letters
 
     @staticmethod
-    def read_lines(filename: str) -> list[str]:
+    def read_lines(filename: Path) -> list[str]:
         def unicodeToAscii(s: str) -> str:
             return "".join(
                 c
