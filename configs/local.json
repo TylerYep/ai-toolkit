@@ -3,7 +3,6 @@
     "n": 16,
     "loss": "mixed",
     "model": "unet",
-    "name": "",
     "batch_size": 8,
     "checkpoint": "",
     "epochs": 500,

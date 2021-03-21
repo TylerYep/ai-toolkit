@@ -102,8 +102,8 @@ def load_model(
     return model, criterion, optimizer, scheduler
 
 
-def train(arg_list: list[str] | None = None) -> MetricTracker:
-    args, device, checkpoint = init_pipeline(arg_list)
+def train(*arg_list: str) -> MetricTracker:
+    args, device, checkpoint = init_pipeline(*arg_list)
     dataset_loader = get_dataset_initializer(args.dataset)
     train_loader, val_loader, init_params = dataset_loader.load_train_data(args, device)
     sample_loader = util.get_sample_loader(train_loader)

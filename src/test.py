@@ -48,8 +48,8 @@ def test_model(
     )
 
 
-def test(arg_list: list[str] | None = None) -> None:
-    args, device, checkpoint = init_pipeline(arg_list)
+def test(*arg_list: str) -> None:
+    args, device, checkpoint = init_pipeline(*arg_list)
     criterion = get_loss_initializer(args.loss)()
     test_loader = get_dataset_initializer(args.dataset).load_test_data(args, device)
     init_params = checkpoint.get("model_init", [])

@@ -2,7 +2,7 @@
     "batch_dim": 0,
     "batch_size": 4,
     "checkpoint": "",
-    "config": "",
+    "config": "maskrcnn",
     "epochs": 10,
     "gamma": 0.7,
     "img_dim": 256,
@@ -13,7 +13,6 @@
         "Loss"
     ],
     "model": "MaskRCNN",
-    "name": "",
     "no_save": true,
     "num_examples": 100,
      "num_workers": 0,

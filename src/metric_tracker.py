@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
-import os
 from enum import Enum, unique
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Iterator
 
@@ -31,11 +31,12 @@ class MetricTracker:
         self.run_name = ""
         self.writer = None
         if not args.no_save:
-            self.run_name = checkpoint.get("run_name", get_run_name(args))
+            run_name = checkpoint.get("run_name", get_run_name(args))
+            self.run_name = str(run_name)
             self.writer = SummaryWriter(self.run_name)
             print(f"Storing checkpoints in: {self.run_name}\n")
-            with open(os.path.join(self.run_name, "args.json"), "w") as f:
-                json.dump(args._asdict(), f, indent=4)
+            with open(Path(run_name) / "args.json", "w") as f:
+                json.dump(args.to_json(), f, indent=4)
 
         self.class_labels = [] if class_labels is None else class_labels
 
@@ -63,7 +64,10 @@ class MetricTracker:
                 ):
                     return False
             return True
-        return False
+        return NotImplemented
+
+    def __repr__(self) -> str:
+        return str(self.json_repr())
 
     def next_epoch(self) -> None:
         self.epoch += 1

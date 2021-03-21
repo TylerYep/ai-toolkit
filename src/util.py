@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import os
 import random
 import shutil
+from pathlib import Path
 from typing import Any, Dict, Iterator, Tuple, cast
 
 import numpy as np
@@ -44,22 +44,22 @@ def save_checkpoint(state: dict[str, Any], is_best: bool, run_name: str = "") ->
         is_best: (bool) True if it is the best model seen till now
     """
     print("Saving checkpoint...\n")
-    run_name = run_name or state["run_name"]
-    save_path = os.path.join(run_name, "checkpoint.pth.tar")
+    run_name_path = Path(run_name or state["run_name"])
+    save_path = run_name_path / "checkpoint.pth.tar"
     torch.save(state, save_path)
     if is_best:
         print("Saving new model_best...\n")
-        shutil.copyfile(save_path, os.path.join(run_name, "model_best.pth.tar"))
+        shutil.copyfile(save_path, run_name_path / "model_best.pth.tar")
 
 
-def load_checkpoint(checkpoint_path: str, use_best: bool = False) -> dict[str, Any]:
+def load_checkpoint(checkpoint_path: Path, use_best: bool = False) -> dict[str, Any]:
     """
     Loads torch checkpoint.
     Args:
         checkpoint_path: (string) filename which needs to be loaded
     """
     load_file = "model_best.pth.tar" if use_best else "checkpoint.pth.tar"
-    checkpoint = torch.load(os.path.join(checkpoint_path, load_file))
+    checkpoint = torch.load(checkpoint_path / load_file)
     return cast(Dict[str, Any], checkpoint)
 
 

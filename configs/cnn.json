@@ -2,8 +2,7 @@
     "batch_dim": 0,
     "batch_size": 128,
     "checkpoint": "",
-    "config": "",
-    "config_dir": "configs",
+    "config": "cnn",
     "dataset": "DatasetCNN",
     "epochs": 100,
     "gamma": 0.7,
@@ -16,7 +15,6 @@
         "Accuracy"
     ],
     "model": "BasicCNN",
-    "name": "",
     "no_save": false,
     "no_verify": false,
     "no_visualize": false,

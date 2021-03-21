@@ -2,22 +2,27 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import random
-from typing import Any, NamedTuple
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Any
 
 import numpy as np
 import torch
+from dataslots import dataslots
 
 from src import util
 
 
-class Arguments(NamedTuple):
+@dataslots
+@dataclass
+class Arguments:
+    """ Use dataclass over NamedTuple to assign fields when loading from json. """
+
     batch_dim: int
     batch_size: int
-    checkpoint: str
+    checkpoint: Path
     config: str
-    config_dir: str
     dataset: str
     epochs: int
     gamma: float
@@ -27,20 +32,36 @@ class Arguments(NamedTuple):
     lr: float
     metrics: str
     model: str
-    name: str
     no_save: bool
     no_verify: bool
     no_visualize: bool
     num_examples: int
     num_workers: int
     plot: bool
-    save_dir: str
+    save_dir: Path
     scheduler: bool
     test_batch_size: int
     use_best: bool
 
+    def update(self, args_json: dict[str, Any]) -> None:
+        annotations = self.__annotations__  # pylint: disable=no-member
+        for key, val in args_json.items():
+            if not hasattr(self, key):
+                raise KeyError(f"Not a valid argument for Arguments: {key}")
+            try:
+                setattr(
+                    self, key, Path(val) if val and annotations[key] == "Path" else val
+                )
+            except AttributeError as e:
+                raise AttributeError(key, val) from e
 
-def get_parsed_arguments(arg_list: list[str] | None) -> Arguments:
+    def to_json(self) -> dict[str, Any]:
+        return {
+            k: str(v) if isinstance(v, Path) else v for k, v in asdict(self).items()
+        }
+
+
+def get_parsed_arguments(arg_list: tuple[str, ...]) -> Arguments:
     # fmt: off
     parser = argparse.ArgumentParser(description="PyTorch ML Pipeline")
 
@@ -50,14 +71,11 @@ def get_parsed_arguments(arg_list: list[str] | None) -> Arguments:
     parser.add_argument("--batch-size", type=int, default=128, metavar="B",
                         help="input batch size for training (default: 128)")
 
-    parser.add_argument("--checkpoint", type=str, default="", metavar="CKPT",
+    parser.add_argument("--checkpoint", type=Path, default=None, metavar="CKPT",
                         help="for loading a checkpoint model")
 
     parser.add_argument("--config", type=str, default="",
                         help="config file as args: <checkpoints, configs>/<name>.json")
-
-    parser.add_argument("--config-dir", type=str, default="configs",
-                        help="config directory to use")
 
     parser.add_argument("--dataset", type=str, default="DatasetRNN",
                         help="dataset in datasets/ folder to use")
@@ -86,9 +104,6 @@ def get_parsed_arguments(arg_list: list[str] | None) -> Arguments:
     parser.add_argument("--model", type=str, default="BasicRNN", metavar="MODEL",
                         help="model architecture to use")
 
-    parser.add_argument("--name", type=str, default="", metavar="NAME",
-                        help="existing folder in checkpoint/ to save files to")
-
     parser.add_argument("--no-save", action="store_true",
                         help="do not save any checkpoints")
 
@@ -107,7 +122,7 @@ def get_parsed_arguments(arg_list: list[str] | None) -> Arguments:
     parser.add_argument("--plot", action="store_true",
                         help="plot training examples")
 
-    parser.add_argument("--save-dir", type=str, default="checkpoints",
+    parser.add_argument("--save-dir", type=Path, default=Path("checkpoints"),
                         help="checkpoint directory to use")
 
     parser.add_argument("--scheduler", action="store_true",
@@ -124,34 +139,26 @@ def get_parsed_arguments(arg_list: list[str] | None) -> Arguments:
     return Arguments(**vars(namespace))
 
 
-def load_args_from_json(args: Arguments) -> None:
-    """ Update additional configs defined in the json file. """
-    filename = args.config
-    found_json = os.path.join(args.config_dir, f"{filename}.json")
-    if not os.path.isfile(found_json):
-        found_json = os.path.join(args.save_dir, filename, "args.json")
-    with open(found_json) as f:
-        arg_dict = json.load(f)
-        for key, val in arg_dict.items():
-            if not hasattr(args, key):
-                raise KeyError(f"Not a valid argument for Arguments: {key}")
-            setattr(args, key, val)
+def load_args_from_json(args: Arguments, found_json: Path) -> None:
+    """ Update using additional configs defined in a json file. """
+    if found_json.is_file():
+        with open(found_json) as f:
+            args.update(json.load(f))
 
 
-def init_pipeline(
-    arg_list: list[str] | None = None,
-) -> tuple[Arguments, torch.device, dict[str, Any]]:
+def init_pipeline(*arg_list: str) -> tuple[Arguments, torch.device, dict[str, Any]]:
     """ Pass in the empty list to skip argument parsing. """
     set_random_seeds()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     args = get_parsed_arguments(arg_list)
-    if args.config:
-        load_args_from_json(args)
-
     checkpoint: dict[str, Any] = {}
-    if args.checkpoint:
-        checkpoint_path = os.path.join(args.save_dir, args.checkpoint)
-        checkpoint = util.load_checkpoint(checkpoint_path, args.use_best)
+    if args.config:
+        load_args_from_json(args, Path(f"configs/{args.config}.json"))
+    elif args.checkpoint is not None:
+        checkpoint_path = args.save_dir / args.checkpoint
+        load_args_from_json(args, checkpoint_path / "args.json")
+        if checkpoint_path.is_dir():
+            checkpoint = util.load_checkpoint(checkpoint_path, args.use_best)
     return args, device, checkpoint
 
 
@@ -172,24 +179,18 @@ def set_random_seeds(seed: int = 0) -> None:
     torch.backends.cudnn.benchmark = torch.cuda.is_available()
 
 
-def get_run_name(args: Arguments) -> str:
+def get_run_name(args: Arguments) -> Path:
     save_dir = args.save_dir
-    if not os.path.isdir(save_dir):
-        os.makedirs(save_dir)
+    if not save_dir.is_dir():
+        save_dir.mkdir(parents=True)
 
     if args.checkpoint:
-        return os.path.join(save_dir, args.checkpoint)
-
-    if args.name:
-        full_name = os.path.join(save_dir, args.name)
-        if not os.path.isdir(full_name):
-            os.makedirs(full_name)
-        return full_name
+        checkpoint_name = save_dir / args.checkpoint
+        checkpoint_name.mkdir(exist_ok=True)
+        return checkpoint_name
 
     result = "A"
-    dirlist = [
-        f for f in os.listdir(save_dir) if os.path.isdir(os.path.join(save_dir, f))
-    ]
+    dirlist = [str(f.name) for f in save_dir.iterdir() if f.is_dir()]
     if dirlist:
         dirlist.sort()
         dirlist.sort(key=lambda k: (len(k), k))  # Sort alphabetically but by length
@@ -200,6 +201,6 @@ def get_run_name(args: Arguments) -> str:
             if last_run_char == "Z"
             else last_folder[:-1] + chr(ord(last_run_char) + 1)
         )
-    out_dir = os.path.join(save_dir, result)
-    os.makedirs(out_dir)
+    out_dir = save_dir / result
+    out_dir.mkdir()
     return out_dir

@@ -10,8 +10,9 @@ from src.metric_tracker import MetricTracker, Mode
 class TestMetricTracker:
     @staticmethod
     def test_init_metrics() -> None:
-        arg_list = ["--no-save", "--no-visualize", "--num-examples=100", "--epochs=1"]
-        args, _, _ = init_pipeline(arg_list)
+        args, _, _ = init_pipeline(
+            "--no-save", "--no-visualize", "--num-examples=100", "--epochs=1"
+        )
 
         metrics = MetricTracker(args, {})
 
@@ -19,8 +20,7 @@ class TestMetricTracker:
 
     @staticmethod
     def test_one_batch_update(example_batch: SimpleNamespace) -> None:
-        arg_list = ["--no-save", "--no-visualize", "--epochs=1"]
-        args, _, _ = init_pipeline(arg_list)
+        args, _, _ = init_pipeline("--no-save", "--no-visualize", "--epochs=1")
         metrics = MetricTracker(args, {})
 
         tqdm_dict = metrics.batch_update(example_batch, 0, 1, Mode.TRAIN)
@@ -33,8 +33,9 @@ class TestMetricTracker:
 
     @staticmethod
     def test_many_batch_update(example_batch: SimpleNamespace) -> None:
-        arg_list = ["--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"]
-        args, _, _ = init_pipeline(arg_list)
+        args, _, _ = init_pipeline(
+            "--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"
+        )
         metrics = MetricTracker(args, {})
         num_batches = 4
         tqdm_dict = {}
@@ -52,8 +53,9 @@ class TestMetricTracker:
     def test_epoch_update(
         capsys: pytest.CaptureFixture[str], example_batch: SimpleNamespace
     ) -> None:
-        arg_list = ["--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"]
-        args, _, _ = init_pipeline(arg_list)
+        args, _, _ = init_pipeline(
+            "--no-save", "--no-visualize", "--epochs=1", "--log-interval=3"
+        )
         metrics = MetricTracker(args, {})
         num_batches = 4
         for i in range(num_batches):
