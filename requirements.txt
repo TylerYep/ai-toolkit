@@ -1,3 +1,4 @@
+dataslots==1.0.2
 efficientnet_pytorch==0.7.0
 matplotlib==3.3.4
 numpy==1.20.1

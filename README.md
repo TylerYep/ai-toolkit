@@ -3,7 +3,7 @@
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/release/python-370/)
 [![Build Status](https://travis-ci.com/TylerYep/ai-toolkit.svg?branch=master)](https://travis-ci.com/TylerYep/ai-toolkit)
 [![GitHub license](https://img.shields.io/github/license/TylerYep/ai-toolkit)](https://github.com/TylerYep/ai-toolkit/blob/master/LICENSE)
-
+[![codecov](https://codecov.io/gh/TylerYep/ai-toolkit/branch/master/graph/badge.svg)](https://codecov.io/gh/TylerYep/ai-toolkit)
 
 ## Motivation
 When working on ML projects, especially supervised learning, there tends to be a lot of repeated code, because in every project, we always want a way to checkpoint our work, visualize loss curves in tensorboard, add additional metrics, and see example output. Some projects we are able to do this better than others. Ideally, we want to have some way to consolidate all of this code into a single place.
