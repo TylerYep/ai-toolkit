@@ -6,5 +6,6 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install --upgrade pytest
+  - pip install pytest-cov codecov
 script:
-  - pytest -s -k "not test_one_epoch"
+  - pytest -s --cov=src --cov-report= --durations=0 -k "not test_one_epoch"
