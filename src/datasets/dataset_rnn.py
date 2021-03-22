@@ -69,14 +69,12 @@ class LanguageWords(TensorDataset):
         self.all_categories = []
         self.data = []
 
-        data_dir = Path(f"{data_path}{data_path}names/")
+        data_dir = data_path / data_path / "names/"
         if not data_dir.is_dir():
-            output_zip = data_path / Path(DATA_URL).name
-            if not output_zip.is_dir():
-                output_zip = wget.download(DATA_URL, data_path)
+            output_zip = wget.download(DATA_URL, str(data_path))
             with zipfile.ZipFile(output_zip) as zip_ref:
                 zip_ref.extractall(data_path)
-            output_zip.unlink()
+            Path(output_zip).unlink()
 
         # Build the category_lines dictionary, a list of names per language
         for filename in data_dir.glob("*.txt"):

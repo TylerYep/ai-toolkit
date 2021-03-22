@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from typing import Any, Callable, Tuple
 
 import torch
@@ -15,7 +16,7 @@ TensorDataLoader = DataLoader[Tuple[torch.Tensor, ...]]
 class DatasetLoader:
     def __init__(self) -> None:
         self.CLASS_LABELS: list[str] = []
-        self.DATA_PATH = "/content/" if "google.colab" in sys.modules else "data/"
+        self.DATA_PATH = Path("/content/" if "google.colab" in sys.modules else "data/")
 
     @staticmethod
     def get_collate_fn(device: torch.device) -> Callable[[list[Any]], Any]:
