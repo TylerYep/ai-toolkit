@@ -5,7 +5,7 @@ from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 
 
 class MaskRCNN(nn.Module):
-    """ Neural network """
+    """Neural network"""
 
     def __init__(self, num_classes=2, hidden_size=256):
         super().__init__()
@@ -25,7 +25,7 @@ class MaskRCNN(nn.Module):
         )
 
     def forward(self, images, targets):
-        """ Forward pass for your feedback prediction network. """
+        """Forward pass for your feedback prediction network."""
         out = self.model_ft(images, targets)
         return out
 

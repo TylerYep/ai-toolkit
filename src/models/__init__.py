@@ -16,7 +16,7 @@ from .rnn import BasicRNN
 
 
 def get_model_initializer(model_name: str) -> type[nn.Module]:
-    """ Retrieves class initializer from its string name. """
+    """Retrieves class initializer from its string name."""
     if not hasattr(sys.modules[__name__], model_name):
         raise RuntimeError(f"Model class {model_name} not found in models/")
     return cast(Type[nn.Module], getattr(sys.modules[__name__], model_name))

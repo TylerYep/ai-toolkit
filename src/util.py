@@ -17,7 +17,7 @@ TensorDataLoader = DataLoader[Tuple[torch.Tensor, ...]]
 
 
 def get_sample_loader(loader: TensorDataLoader) -> Iterator[Any]:
-    """ Returns a generator that outputs a single batch of data. """
+    """Returns a generator that outputs a single batch of data."""
     sample_loader = iter(loader)
     while True:
         try:

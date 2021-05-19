@@ -24,9 +24,7 @@ def show_saliency_maps(
     run_name: str,
 ) -> None:
     def compute_saliency_maps(
-        model: nn.Module,
-        X: torch.Tensor,
-        y: torch.Tensor,
+        model: nn.Module, X: torch.Tensor, y: torch.Tensor
     ) -> torch.Tensor:
         """
         Compute a class saliency map using the model for images X and labels y.

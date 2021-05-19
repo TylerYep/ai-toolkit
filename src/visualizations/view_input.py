@@ -7,12 +7,9 @@ from .viz_utils import rearrange, save_figure
 
 
 def view_input(
-    data: torch.Tensor,
-    target: torch.Tensor,
-    class_labels: list[str],
-    run_name: str,
+    data: torch.Tensor, target: torch.Tensor, class_labels: list[str], run_name: str
 ) -> None:
-    """ Data is of shape (B, C, H, W) """
+    """Data is of shape (B, C, H, W)"""
     NUM_EXAMPLES = 15
     NUM_ROWS = 4
     _, axs = plt.subplots(NUM_ROWS, NUM_EXAMPLES // NUM_ROWS + 1)

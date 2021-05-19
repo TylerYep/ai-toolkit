@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class DenseNet(nn.Module):
-    """ Neural network """
+    """Neural network"""
 
     def __init__(self, input_shape):
         super().__init__()
@@ -19,7 +19,7 @@ class DenseNet(nn.Module):
         )
 
     def forward(self, x):
-        """ Forward pass for your feedback prediction network. """
+        """Forward pass for your feedback prediction network."""
         x = x.reshape((-1, 784))
         return self.model(x)
 

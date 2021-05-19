@@ -13,7 +13,7 @@ from .metric import Metric
 
 
 def get_metric_initializer(metric_name: str) -> type[Metric]:
-    """ Retrieves class initializer from its string name. """
+    """Retrieves class initializer from its string name."""
     if not hasattr(sys.modules[__name__], metric_name):
         raise RuntimeError(f"Metric {metric_name} not found in metrics folder.")
     return cast(Type[Metric], getattr(sys.modules[__name__], metric_name))

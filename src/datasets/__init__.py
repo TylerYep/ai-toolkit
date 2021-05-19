@@ -9,7 +9,7 @@ from .dataset_rnn import DatasetRNN
 
 
 def get_dataset_initializer(dataset_name: str) -> DatasetLoader:
-    """ Retrieves class initializer from its string name. """
+    """Retrieves class initializer from its string name."""
     if not hasattr(sys.modules[__name__], dataset_name):
         raise RuntimeError(f"Dataset class {dataset_name} not found in datasets/")
     return cast(DatasetLoader, getattr(sys.modules[__name__], dataset_name)())

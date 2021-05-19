@@ -17,7 +17,7 @@ from src import util
 @dataslots
 @dataclass
 class Arguments:
-    """ Use dataclass over NamedTuple to assign fields when loading from json. """
+    """Use dataclass over NamedTuple to assign fields when loading from json."""
 
     batch_dim: int
     batch_size: int
@@ -140,14 +140,14 @@ def get_parsed_arguments(arg_list: tuple[str, ...]) -> Arguments:
 
 
 def load_args_from_json(args: Arguments, found_json: Path) -> None:
-    """ Update using additional configs defined in a json file. """
+    """Update using additional configs defined in a json file."""
     if found_json.is_file():
         with open(found_json) as f:
             args.update(json.load(f))
 
 
 def init_pipeline(*arg_list: str) -> tuple[Arguments, torch.device, dict[str, Any]]:
-    """ Pass in the empty list to skip argument parsing. """
+    """Pass in the empty list to skip argument parsing."""
     set_random_seeds()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     args = get_parsed_arguments(arg_list)

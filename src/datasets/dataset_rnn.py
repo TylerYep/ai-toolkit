@@ -61,7 +61,7 @@ class DatasetRNN(DatasetLoader):
 
 
 class LanguageWords(TensorDataset):
-    """ Dataset for training a model on a dataset. """
+    """Dataset for training a model on a dataset."""
 
     def __init__(self, data_path):
         super().__init__()

@@ -11,7 +11,7 @@ from .focal import FocalLoss
 
 
 def get_loss_initializer(loss_fn: str) -> Any:
-    """ Retrieves class initializer from its string name. """
+    """Retrieves class initializer from its string name."""
     if loss_fn == "nn.CrossEntropyLoss":
         return nn.CrossEntropyLoss
     if loss_fn in ("F.nll_loss", "nn.NLLLoss"):

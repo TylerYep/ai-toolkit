@@ -4,7 +4,7 @@ from torch.nn import functional as F
 
 
 class BasicCNN(nn.Module):
-    """ Neural network """
+    """Neural network"""
 
     def __init__(self, input_shape):
         super().__init__()
@@ -17,7 +17,7 @@ class BasicCNN(nn.Module):
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
-        """ Forward pass for your feedback prediction network. """
+        """Forward pass for your feedback prediction network."""
         x = self.conv1(x)
         x = F.relu(x)
         x = self.conv2(x)
