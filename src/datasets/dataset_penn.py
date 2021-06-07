@@ -9,10 +9,10 @@ from typing import Any, Callable
 
 import numpy as np
 import torch
-from PIL import Image
+from PIL import Image  # type: ignore[import]
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import TensorDataset
-from torchvision.transforms import functional as F
+from torchvision.transforms import functional as F  # type: ignore[import]
 
 from src.args import Arguments
 from src.datasets.dataset import DatasetLoader, TensorDataLoader

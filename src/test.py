@@ -13,7 +13,7 @@ from src.models import get_model_initializer
 from src.verify import model_summary
 
 if "google.colab" in sys.modules:
-    from tqdm import tqdm_notebook as tqdm
+    from tqdm import tqdm_notebook as tqdm  # type: ignore[import]
 else:
     from tqdm import tqdm
 

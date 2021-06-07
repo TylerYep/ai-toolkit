@@ -1,7 +1,11 @@
 import torch.nn as nn
-from torchvision.models.detection import maskrcnn_resnet50_fpn
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
+from torchvision.models.detection import maskrcnn_resnet50_fpn  # type: ignore[import]
+from torchvision.models.detection.faster_rcnn import (  # type: ignore[import]
+    FastRCNNPredictor,
+)
+from torchvision.models.detection.mask_rcnn import (  # type: ignore[import]
+    MaskRCNNPredictor,
+)
 
 
 class MaskRCNN(nn.Module):

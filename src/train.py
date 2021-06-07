@@ -21,7 +21,7 @@ from src.verify import verify_model
 from src.viz import visualize, visualize_trained
 
 if "google.colab" in sys.modules:
-    from tqdm import tqdm_notebook as tqdm
+    from tqdm import tqdm_notebook as tqdm  # type: ignore[import]
 else:
     from tqdm import tqdm
 

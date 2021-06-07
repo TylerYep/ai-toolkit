@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt  # type: ignore[import]
 import torch
 
 # import torchvision.transforms as T

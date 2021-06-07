@@ -9,7 +9,7 @@ from typing import Any
 
 import numpy as np
 import torch
-from dataslots import dataslots
+from dataslots import dataslots  # type: ignore[import]
 
 from src import util
 

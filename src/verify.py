@@ -10,7 +10,7 @@ import torchinfo
 from src.args import Arguments
 
 if "google.colab" in sys.modules:
-    from tqdm import tqdm_notebook as tqdm
+    from tqdm import tqdm_notebook as tqdm  # type: ignore[import]
 else:
     from tqdm import tqdm
 

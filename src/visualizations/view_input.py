@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt  # type: ignore[import]
 import torch
 
 from .viz_utils import rearrange, save_figure
