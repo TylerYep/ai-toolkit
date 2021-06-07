@@ -6,8 +6,8 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms  # type: ignore[import]
 
-from src.args import Arguments
-from src.datasets.dataset import DatasetLoader, TensorDataLoader
+from ai_toolkit.args import Arguments
+from ai_toolkit.datasets.dataset import DatasetLoader, TensorDataLoader
 
 
 class DatasetCNN(DatasetLoader):

@@ -1,7 +1,7 @@
 """ accuracy_test.py """
 from types import SimpleNamespace
 
-from src.metrics import Loss
+from ai_toolkit.metrics import Loss
 
 
 class TestLoss:

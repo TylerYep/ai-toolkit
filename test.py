@@ -1,4 +1,4 @@
-from src import test
+from ai_toolkit import test
 
 if __name__ == "__main__":
     test()

@@ -29,6 +29,6 @@ jobs:
         mypy .
     - name: pytest
       run: |
-        pytest --cov=src --cov-report= --durations=0 -k "not test_one_epoch"
+        pytest --cov=ai_toolkit --cov-report= --durations=0 -k "not test_one_epoch"
     - name: codecov
       uses: codecov/codecov-action@v1

@@ -52,7 +52,7 @@ The rough evaluation metric for this repo's success is how fast I can start work
 - checkpoints/ (Only created once you run train.py)
 - data/
 - configs/
-- src/
+- ai_toolkit/
   - datasets/
   - losses/
   - metrics/
@@ -72,7 +72,7 @@ The rough evaluation metric for this repo's success is how fast I can start work
 # Goal Workflow
 
 1. Move data into `data/`.
-2. Fill in `preprocess.py` and `dataset.py`. (Optional: explore data by running `python viz.py`)
+2. Fill in `preprocess.py` and `dataset.py`. (explore data by running `python viz.py`)
 3. Change `args.py` to specify input/output dimensions, batch size, etc.
 4. Run `train.py`, which saves model checkpoints, output predictions, and tensorboards in the same folder. Also automatically starts tensorboard server in a tmux session. Resume training at any point.
 5. Run `test.py` to get final predictions.

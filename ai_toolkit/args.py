@@ -11,7 +11,7 @@ import numpy as np
 import torch
 from dataslots import dataslots  # type: ignore[import]
 
-from src import util
+from ai_toolkit import util
 
 
 @dataslots

@@ -11,14 +11,14 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 
-from src import util
-from src.args import Arguments, init_pipeline
-from src.datasets import TensorDataLoader, get_dataset_initializer
-from src.losses import get_loss_initializer
-from src.metric_tracker import MetricTracker, Mode
-from src.models import get_model_initializer
-from src.verify import verify_model
-from src.viz import visualize, visualize_trained
+from ai_toolkit import util
+from ai_toolkit.args import Arguments, init_pipeline
+from ai_toolkit.datasets import TensorDataLoader, get_dataset_initializer
+from ai_toolkit.losses import get_loss_initializer
+from ai_toolkit.metric_tracker import MetricTracker, Mode
+from ai_toolkit.models import get_model_initializer
+from ai_toolkit.verify import verify_model
+from ai_toolkit.viz import visualize, visualize_trained
 
 if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm  # type: ignore[import]

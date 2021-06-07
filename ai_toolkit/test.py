@@ -5,12 +5,12 @@ import sys
 import torch
 import torch.nn as nn
 
-from src import util
-from src.args import Arguments, init_pipeline
-from src.datasets import TensorDataLoader, get_dataset_initializer
-from src.losses import get_loss_initializer
-from src.models import get_model_initializer
-from src.verify import model_summary
+from ai_toolkit import util
+from ai_toolkit.args import Arguments, init_pipeline
+from ai_toolkit.datasets import TensorDataLoader, get_dataset_initializer
+from ai_toolkit.losses import get_loss_initializer
+from ai_toolkit.models import get_model_initializer
+from ai_toolkit.verify import model_summary
 
 if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm  # type: ignore[import]

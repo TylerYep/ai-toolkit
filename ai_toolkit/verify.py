@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torchinfo
 
-from src.args import Arguments
+from ai_toolkit.args import Arguments
 
 if "google.colab" in sys.modules:
     from tqdm import tqdm_notebook as tqdm  # type: ignore[import]

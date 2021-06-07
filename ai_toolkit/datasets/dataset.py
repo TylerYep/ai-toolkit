@@ -8,7 +8,7 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset, random_split
 from torch.utils.data.dataloader import default_collate
 
-from src.args import Arguments
+from ai_toolkit.args import Arguments
 
 TensorDataLoader = DataLoader[Tuple[torch.Tensor, ...]]
 

@@ -14,8 +14,8 @@ from torch.utils.data import DataLoader
 from torch.utils.data.dataset import TensorDataset
 from torchvision.transforms import functional as F  # type: ignore[import]
 
-from src.args import Arguments
-from src.datasets.dataset import DatasetLoader, TensorDataLoader
+from ai_toolkit.args import Arguments
+from ai_toolkit.datasets.dataset import DatasetLoader, TensorDataLoader
 
 
 class DatasetPenn(DatasetLoader):

@@ -4,12 +4,12 @@ from typing import Any, Iterator
 
 import torch.nn as nn
 
-from src import util
-from src.args import Arguments, init_pipeline
-from src.datasets import get_dataset_initializer
-from src.metric_tracker import MetricTracker
-from src.models import get_model_initializer
-from src.visualizations import (
+from ai_toolkit import util
+from ai_toolkit.args import Arguments, init_pipeline
+from ai_toolkit.datasets import get_dataset_initializer
+from ai_toolkit.metric_tracker import MetricTracker
+from ai_toolkit.models import get_model_initializer
+from ai_toolkit.visualizations import (
     compute_activations,
     create_class_visualization,
     make_fooling_image,

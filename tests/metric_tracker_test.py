@@ -3,8 +3,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from src.args import init_pipeline
-from src.metric_tracker import MetricTracker, Mode
+from ai_toolkit.args import init_pipeline
+from ai_toolkit.metric_tracker import MetricTracker, Mode
 
 
 class TestMetricTracker:

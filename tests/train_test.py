@@ -1,7 +1,7 @@
 """ train_test.py """
 from pathlib import Path
 
-from src.train import train
+from ai_toolkit.train import train
 
 
 class TestTrain:

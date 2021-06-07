@@ -10,8 +10,8 @@ import torch
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
 
-from src.args import Arguments, get_run_name
-from src.metrics import Metric, get_metric_initializer
+from ai_toolkit.args import Arguments, get_run_name
+from ai_toolkit.metrics import Metric, get_metric_initializer
 
 
 @unique
