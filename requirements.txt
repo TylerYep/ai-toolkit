@@ -5,8 +5,8 @@ numpy==1.20.3
 pandas==1.2.4
 pillow==8.2.0
 tensorboard==2.5.0
-torch==1.8.1
+torch==1.9.0
 torchinfo
-torchvision==0.9.1
-tqdm==4.61.0
+torchvision==0.10.0
+tqdm==4.61.1
 wget==3.2

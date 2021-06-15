@@ -73,10 +73,7 @@ def create_class_visualization(
         # Periodically show the image
         if t == 0 or (t + 1) % show_every == 0 or t == num_iterations - 1:
             plt.imshow(rearrange(img.data))
-            plt.title(
-                f"{class_labels[target_y]}\n"  # type: ignore[call-overload]
-                f"Iteration {t + 1} / {num_iterations}"
-            )
+            plt.title(f"{class_labels[target_y]}\nIteration {t + 1} / {num_iterations}")
             plt.gcf().set_size_inches(4, 4)
             plt.axis("off")
             # plt.show()

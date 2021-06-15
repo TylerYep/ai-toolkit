@@ -61,7 +61,7 @@ def show_saliency_maps(
         plt.subplot(2, N, i + 1)
         plt.imshow(img)
         plt.axis("off")
-        plt.title(class_labels[y[i]])  # type: ignore[call-overload]
+        plt.title(class_labels[y[i]])
         plt.subplot(2, N, N + i + 1)
         plt.imshow(saliency[i], cmap=plt.cm.hot)  # pylint: disable=no-member
         plt.axis("off")

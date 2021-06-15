@@ -36,9 +36,7 @@ def compute_activations(
             ax = axs[j, i]
             ax.imshow(activation)
             ax.axis("off")
-            ax.set_title(
-                class_labels[target[i]] if j == 0 else ""  # type: ignore[call-overload]
-            )
+            ax.set_title(class_labels[target[i]] if j == 0 else "")
 
     save_figure(run_name, "activation_layers.png")
 

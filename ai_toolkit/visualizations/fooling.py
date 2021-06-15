@@ -50,7 +50,7 @@ def make_fooling_image(
     ax = axs.flat[0]
 
     ax.imshow(rearrange(X))
-    ax.set_title(class_labels[y])  # type: ignore[call-overload]
+    ax.set_title(class_labels[y])
     ax.axis("off")
 
     ax = axs.flat[1]

@@ -16,7 +16,7 @@ def view_input(
     data, target = data.cpu(), target.cpu()
     for i, ax in enumerate(axs.flat):
         img = rearrange(data[i])
-        label = class_labels[target[i]]  # type: ignore[call-overload]
+        label = class_labels[target[i]]
         ax.imshow(img)
         ax.axis("off")
         ax.set_title(label)
