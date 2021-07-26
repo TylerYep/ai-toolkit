@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from typing import Type, cast
 
-import torch.nn as nn
+from torch import nn
 
 from .cnn import BasicCNN
 from .dense import DenseNet

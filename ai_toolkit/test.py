@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 from ai_toolkit import util
 from ai_toolkit.args import Arguments, init_pipeline

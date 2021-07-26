@@ -7,9 +7,8 @@ from typing import Any, Iterator, Tuple
 
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.optim.lr_scheduler as lr_scheduler
+from torch import nn, optim
+from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader
 
 # Redefining here to avoid circular import

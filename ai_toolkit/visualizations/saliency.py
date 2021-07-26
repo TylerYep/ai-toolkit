@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt  # type: ignore[import]
 import torch
-import torch.nn as nn
+from torch import nn
 
 from .viz_utils import rearrange, save_figure
 

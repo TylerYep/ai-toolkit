@@ -7,7 +7,7 @@ from types import SimpleNamespace
 from typing import Any, Iterator
 
 import torch
-import torch.nn as nn
+from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 
 from ai_toolkit.args import Arguments, get_run_name

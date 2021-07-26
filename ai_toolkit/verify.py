@@ -3,9 +3,8 @@ import warnings
 from typing import Any, Iterator
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import torchinfo
+from torch import nn, optim
 
 from ai_toolkit.args import Arguments
 

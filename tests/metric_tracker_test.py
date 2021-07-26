@@ -25,8 +25,8 @@ class TestMetricTracker:
 
         tqdm_dict = metrics.batch_update(example_batch, 0, 1, Mode.TRAIN)
 
-        for key in tqdm_dict:
-            tqdm_dict[key] = round(tqdm_dict[key], 2)
+        for key, value in tqdm_dict.items():
+            tqdm_dict[key] = round(value, 2)
         result = [round(metric.epoch_avg, 2) for metric in metrics.metric_data.values()]
         assert tqdm_dict == {"Loss": 0.21, "Accuracy": 0.67}
         assert result == [0.63, 2]
@@ -42,8 +42,8 @@ class TestMetricTracker:
         for i in range(num_batches):
             tqdm_dict = metrics.batch_update(example_batch, i, num_batches, Mode.TRAIN)
 
-        for key in tqdm_dict:
-            tqdm_dict[key] = round(tqdm_dict[key], 2)
+        for key, value in tqdm_dict.items():
+            tqdm_dict[key] = round(value, 2)
         result = [round(metric.epoch_avg, 2) for metric in metrics.metric_data.values()]
         assert tqdm_dict == {"Loss": 0.21, "Accuracy": 0.67}
         assert all(metric.running_avg == 0 for metric in metrics.metric_data.values())

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Iterator
 
-import torch.nn as nn
+from torch import nn
 
 from ai_toolkit import util
 from ai_toolkit.args import Arguments, init_pipeline

@@ -7,6 +7,12 @@ repos:
         language: python
         types: [python]
 
+      - id: pycln
+        name: pycln
+        entry: pycln
+        language: python
+        types: [python]
+
       - id: isort
         name: isort
         entry: isort

@@ -4,7 +4,7 @@ import random
 
 import matplotlib.pyplot as plt  # type: ignore[import]
 import torch
-import torch.nn as nn
+from torch import nn
 
 from .viz_utils import jitter, rearrange, save_figure
 

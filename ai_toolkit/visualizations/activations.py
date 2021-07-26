@@ -3,7 +3,7 @@ from __future__ import annotations
 import matplotlib.pyplot as plt  # type: ignore[import]
 import numpy as np
 import torch
-import torch.nn as nn
+from torch import nn
 
 from .viz_utils import save_figure
 

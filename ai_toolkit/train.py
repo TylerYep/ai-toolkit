@@ -7,9 +7,8 @@ from typing import Any, Iterator
 
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.optim.lr_scheduler as lr_scheduler
+from torch import nn, optim
+from torch.optim import lr_scheduler
 
 from ai_toolkit import util
 from ai_toolkit.args import Arguments, init_pipeline
