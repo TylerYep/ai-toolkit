@@ -27,7 +27,7 @@ def test_model(
     model.eval()
     test_loss, correct = 0.0, 0.0
     test_len = len(test_loader)
-    with torch.no_grad(), tqdm(desc="Test", total=test_len, ncols=120) as pbar:
+    with torch.inference_mode(), tqdm(desc="Test", total=test_len, ncols=120) as pbar:
         for data, target in test_loader:
             if isinstance(data, (list, tuple)):
                 output = model(*data)

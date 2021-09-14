@@ -35,7 +35,7 @@ class MetricTracker:
             self.run_name = str(run_name)
             self.writer = SummaryWriter(self.run_name)
             print(f"Storing checkpoints in: {self.run_name}\n")
-            with open(Path(run_name) / "args.json", "w") as f:
+            with open(Path(run_name) / "args.json", "w", encoding="utf-8") as f:
                 json.dump(args.to_json(), f, indent=4)
 
         self.class_labels = [] if class_labels is None else class_labels

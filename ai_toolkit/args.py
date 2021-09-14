@@ -142,7 +142,7 @@ def get_parsed_arguments(arg_list: tuple[str, ...]) -> Arguments:
 def load_args_from_json(args: Arguments, found_json: Path) -> None:
     """Update using additional configs defined in a json file."""
     if found_json.is_file():
-        with open(found_json) as f:
+        with open(found_json, encoding="utf-8") as f:
             args.update(json.load(f))
 
 
