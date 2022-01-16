@@ -1,4 +1,3 @@
-""" accuracy_test.py """
 from types import SimpleNamespace
 
 from ai_toolkit.metrics import Accuracy

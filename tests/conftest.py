@@ -1,4 +1,3 @@
-""" conftest.py """
 from types import SimpleNamespace
 
 import pytest

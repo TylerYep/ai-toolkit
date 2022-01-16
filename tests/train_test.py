@@ -1,4 +1,3 @@
-""" train_test.py """
 from pathlib import Path
 
 from ai_toolkit.train import train

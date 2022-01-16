@@ -1,4 +1,3 @@
-""" train_test.py """
 from types import SimpleNamespace
 
 import pytest

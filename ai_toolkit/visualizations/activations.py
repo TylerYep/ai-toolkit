@@ -25,8 +25,8 @@ def compute_activations(
     _, axs = plt.subplots(NUM_SUBPLOTS // NUM_EXAMPLES, NUM_EXAMPLES)
     for i in range(NUM_EXAMPLES):
         for j, activ in enumerate(activations):
-            activation = torch.abs(activ).mean(dim=1)[i]
-            activation = activation.detach().cpu().numpy()
+            activation_tensor = torch.abs(activ).mean(dim=1)[i]
+            activation = activation_tensor.detach().cpu().numpy()
             activation /= activation.max()
             activation = plt.get_cmap("inferno")(activation)
             activation = np.delete(
