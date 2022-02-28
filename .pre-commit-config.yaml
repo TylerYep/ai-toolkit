@@ -9,7 +9,7 @@ repos:
 
       - id: pycln
         name: pycln
-        entry: pycln
+        entry: pycln -a
         language: python
         types: [python]
 
