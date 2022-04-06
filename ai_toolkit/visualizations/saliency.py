@@ -11,7 +11,7 @@ def compute_saliency(inputs: torch.Tensor, run_name: str) -> None:
     # Deprecated
     saliency = inputs.grad.data
     saliency, _ = torch.max(saliency, dim=1)  # dim 1 is the channel dimension
-    plt.imshow(saliency.numpy()[0], cmap=plt.cm.gray)  # pylint: disable=no-member
+    plt.imshow(saliency.numpy()[0], cmap=plt.cm.gray)
     plt.axis("off")
     save_figure(run_name, "saliency.png")
 
@@ -63,7 +63,7 @@ def show_saliency_maps(
         plt.axis("off")
         plt.title(class_labels[y[i]])
         plt.subplot(2, N, N + i + 1)
-        plt.imshow(saliency[i], cmap=plt.cm.hot)  # pylint: disable=no-member
+        plt.imshow(saliency[i], cmap=plt.cm.hot)
         plt.axis("off")
 
     save_figure(run_name, "saliency.png")
