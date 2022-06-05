@@ -9,13 +9,11 @@ from typing import Any
 
 import numpy as np
 import torch
-from dataslots import dataslots  # type: ignore[import]
 
 from ai_toolkit import util
 
 
-@dataslots
-@dataclass
+@dataclass(slots=True)
 class Arguments:
     """Use dataclass over NamedTuple to assign fields when loading from json."""
 

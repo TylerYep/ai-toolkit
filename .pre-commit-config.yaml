@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: pyupgrade
         name: pyupgrade
-        entry: pyupgrade --py38-plus
+        entry: pyupgrade --py310-plus
         language: python
         types: [python]
 

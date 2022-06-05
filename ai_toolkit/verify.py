@@ -37,9 +37,7 @@ def verify_model(
 
 
 def model_summary(args: Arguments, model: nn.Module, loader: Iterator[Any]) -> None:
-    """
-    Prints out model using torchsummary.
-    """
+    """Prints out model using torchinfo."""
     data, _ = next(loader)
     torchinfo.summary(model, input_data=data, batch_dim=args.batch_dim)
 

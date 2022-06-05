@@ -1,9 +1,9 @@
-dataslots
 efficientnet_pytorch
 matplotlib
 numpy
 pandas
 pillow
+protobuf==3.19.1
 tensorboard
 torch
 torchinfo
