@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any, Callable, Tuple
+from typing import Any, Callable
 
 import torch
 from torch.utils.data import DataLoader, TensorDataset, random_split
@@ -10,7 +10,7 @@ from torch.utils.data.dataloader import default_collate
 
 from ai_toolkit.args import Arguments
 
-TensorDataLoader = DataLoader[Tuple[torch.Tensor, ...]]
+TensorDataLoader = DataLoader[tuple[torch.Tensor, ...]]
 
 
 class DatasetLoader:

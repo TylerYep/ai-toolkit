@@ -3,7 +3,7 @@ from __future__ import annotations
 import random
 import shutil
 from pathlib import Path
-from typing import Any, Iterator, Tuple
+from typing import Any, Iterator
 
 import numpy as np
 import torch
@@ -12,7 +12,7 @@ from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader
 
 # Redefining here to avoid circular import
-TensorDataLoader = DataLoader[Tuple[torch.Tensor, ...]]
+TensorDataLoader = DataLoader[tuple[torch.Tensor, ...]]
 
 
 def get_sample_loader(loader: TensorDataLoader) -> Iterator[Any]:
