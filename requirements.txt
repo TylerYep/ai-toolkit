@@ -3,7 +3,7 @@ matplotlib
 numpy
 pandas
 pillow
-protobuf==3.19.1
+protobuf
 tensorboard
 torch
 torchinfo
