@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import random
 import sys
+from collections.abc import Iterator
 from types import SimpleNamespace
-from typing import Any, Iterator
+from typing import Any
 
 import numpy as np
 import torch

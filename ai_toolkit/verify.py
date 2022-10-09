@@ -1,6 +1,7 @@
 import sys
 import warnings
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 import torch
 import torchinfo
