@@ -55,6 +55,7 @@ def create_class_visualization(
         scores = model(img)
         target_score = scores[0, target_y]
         target_score.backward()
+        assert img.grad is not None
         g = img.grad.data - 2 * l2_reg * img.data
         img.data += learning_rate * g
         img.grad.data.zero_()

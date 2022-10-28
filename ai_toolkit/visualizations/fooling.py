@@ -39,6 +39,7 @@ def make_fooling_image(
             break
         loss = scores[0, target_y]
         loss.backward()
+        assert X_fooling.grad is not None
         g = X_fooling.grad.data
         dX = learning_rate * g / torch.norm(g) ** 2
         X_fooling.data += dX

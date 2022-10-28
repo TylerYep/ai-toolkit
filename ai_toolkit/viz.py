@@ -19,8 +19,8 @@ from ai_toolkit.visualizations import (
 )
 
 
-def viz() -> None:
-    args, device, checkpoint = init_pipeline()
+def viz(*arg_list: str) -> None:
+    args, device, checkpoint = init_pipeline(*arg_list)
     dataset_loader = get_dataset_initializer(args.dataset)
     train_loader, _, init_params = dataset_loader.load_train_data(args, device)
     init_params = checkpoint.get("model_init", init_params)

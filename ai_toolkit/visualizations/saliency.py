@@ -11,6 +11,7 @@ from .viz_utils import rearrange, save_figure
 
 def compute_saliency(inputs: torch.Tensor, run_name: str) -> None:
     # Deprecated
+    assert inputs.grad is not None
     saliency = inputs.grad.data
     saliency, _ = torch.max(saliency, dim=1)  # dim 1 is the channel dimension
     plt.imshow(saliency.numpy()[0], cmap=plt.cm.gray)
@@ -48,8 +49,8 @@ def show_saliency_maps(
         scores = model(X)
         loss = scores.gather(1, y.view(-1, 1)).squeeze()
         loss.backward(torch.ones(scores.shape[0]))
-        grad = X.grad.data
-        saliency, _ = torch.max(grad.abs(), dim=1)
+        assert X.grad is not None
+        saliency, _ = torch.max(X.grad.data.abs(), dim=1)
         return cast(torch.Tensor, saliency)
 
     saliency = compute_saliency_maps(model, X, y)
