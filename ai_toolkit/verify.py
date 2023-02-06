@@ -9,8 +9,9 @@ from torch import nn, optim
 
 from ai_toolkit.args import Arguments
 
+tqdm: Any
 if "google.colab" in sys.modules:
-    from tqdm import tqdm_notebook as tqdm  # type: ignore[import]
+    from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm
 

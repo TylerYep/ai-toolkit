@@ -20,8 +20,9 @@ from ai_toolkit.models import get_model_initializer
 from ai_toolkit.verify import verify_model
 from ai_toolkit.viz import visualize, visualize_trained
 
+tqdm: Any
 if "google.colab" in sys.modules:
-    from tqdm import tqdm_notebook as tqdm  # type: ignore[import]
+    from tqdm import tqdm_notebook as tqdm
 else:
     from tqdm import tqdm
 

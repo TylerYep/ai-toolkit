@@ -26,7 +26,7 @@ jobs:
         pip install -r requirements.txt
     - name: mypy
       run: |
-        mypy .
+        mypy --install-types --non-interactive .
     - name: pytest
       run: |
         pytest --cov=ai_toolkit --cov-report= --durations=0 -k "not test_one_epoch"
