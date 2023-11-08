@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import cast
-
 import matplotlib.pyplot as plt  # type: ignore[import]
 import torch
 from torch import nn
@@ -51,7 +49,7 @@ def show_saliency_maps(
         loss.backward(torch.ones(scores.shape[0]))
         assert X.grad is not None
         saliency, _ = torch.max(X.grad.data.abs(), dim=1)
-        return cast(torch.Tensor, saliency)
+        return saliency
 
     saliency = compute_saliency_maps(model, X, y)
 

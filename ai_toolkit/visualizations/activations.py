@@ -19,7 +19,7 @@ def compute_activations(
         return
 
     model.eval()
-    _, activations = model.forward_with_activations(data)  # type: ignore[operator]
+    _, activations = model.forward_with_activations(data)
     NUM_EXAMPLES = 4
     NUM_SUBPLOTS = NUM_EXAMPLES * len(activations)
     _, axs = plt.subplots(NUM_SUBPLOTS // NUM_EXAMPLES, NUM_EXAMPLES)

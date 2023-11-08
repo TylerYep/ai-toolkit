@@ -109,7 +109,7 @@ class LanguageWords(TensorDataset):
         # , self.n_letters
 
     @staticmethod
-    def read_lines(filename: Path) -> list[str]:
+    def read_lines(filepath: Path) -> list[str]:
         def unicodeToAscii(s: str) -> str:
             return "".join(
                 c
@@ -117,7 +117,7 @@ class LanguageWords(TensorDataset):
                 if unicodedata.category(c) != "Mn" and c in ALL_LETTERS
             )
 
-        with open(filename, encoding="utf-8") as f:
+        with filepath.open(encoding="utf-8") as f:
             lines = f.read().strip().split("\n")
             return [unicodeToAscii(line) for line in lines]
 

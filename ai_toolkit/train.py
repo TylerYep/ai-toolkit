@@ -85,7 +85,7 @@ def get_optimizer(args: Arguments, model: nn.Module) -> optim.Optimizer:
 
 def get_scheduler(
     args: Arguments, optimizer: optim.Optimizer
-) -> lr_scheduler._LRScheduler:
+) -> lr_scheduler.LRScheduler:
     return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)
 
 
@@ -94,7 +94,7 @@ def load_model(
     device: torch.device,
     init_params: tuple[Any, ...],
     loader: Iterator[Any],
-) -> tuple[nn.Module, nn.Module, optim.Optimizer, lr_scheduler._LRScheduler | None]:
+) -> tuple[nn.Module, nn.Module, optim.Optimizer, lr_scheduler.LRScheduler | None]:
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
     optimizer = get_optimizer(args, model)

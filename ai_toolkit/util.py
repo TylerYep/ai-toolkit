@@ -67,7 +67,7 @@ def load_state_dict(
     checkpoint: dict[str, Any],
     model: nn.Module,
     optimizer: optim.Optimizer | None = None,
-    scheduler: lr_scheduler._LRScheduler | None = None,
+    scheduler: lr_scheduler.LRScheduler | None = None,
 ) -> None:
     """
     Loads model parameters (state_dict) from checkpoint. If optimizer or scheduler are

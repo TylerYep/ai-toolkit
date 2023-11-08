@@ -130,7 +130,7 @@ class LanguageWords(TensorDataset):
         token_set = set()
         data = defaultdict(list)
         for filepath in Path(data_dir).glob("*.txt"):
-            with open(filepath, encoding="utf-8") as f:
+            with filepath.open(encoding="utf-8") as f:
                 for line in f:
                     line = line.strip().lower()
                     data[filepath.stem].append(line)
