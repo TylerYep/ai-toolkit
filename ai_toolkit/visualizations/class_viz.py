@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 
-import matplotlib.pyplot as plt  # type: ignore[import-untyped]
+import matplotlib.pyplot as plt
 import torch
 from torch import nn
 
