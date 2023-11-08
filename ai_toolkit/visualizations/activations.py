@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import matplotlib.pyplot as plt  # type: ignore[import]
+import matplotlib.pyplot as plt  # type: ignore[import-untyped]
 import numpy as np
 import torch
 from torch import nn

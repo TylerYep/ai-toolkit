@@ -10,10 +10,10 @@ from typing import Any
 
 import numpy as np
 import torch
-from PIL import Image  # type: ignore[import]
+from PIL import Image
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import TensorDataset
-from torchvision.transforms import functional as F  # type: ignore[import]
+from torchvision.transforms import functional as F  # type: ignore[import-untyped]
 
 from ai_toolkit.args import Arguments
 from ai_toolkit.datasets.dataset import DatasetLoader, TensorDataLoader
@@ -129,9 +129,9 @@ class PennFudanDataset(TensorDataset):
         img = Image.open(img_path).convert("RGB")
         # note that we haven't converted the mask to RGB, because each color corresponds
         # to a different instance with 0 being background
-        mask = Image.open(mask_path)
+        img_mask = Image.open(mask_path)
 
-        mask = np.array(mask)
+        mask = np.array(img_mask)
         # instances are encoded as different colors
         obj_ids = np.unique(mask)
         # first id is the background, so remove it

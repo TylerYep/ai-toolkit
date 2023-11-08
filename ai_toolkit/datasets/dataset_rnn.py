@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import torch
-import wget  # type: ignore[import]
+import wget  # type: ignore[import-untyped]
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import TensorDataset

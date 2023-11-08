@@ -1,4 +1,4 @@
-from efficientnet_pytorch import EfficientNet as EffNet  # type: ignore[import]
+from efficientnet_pytorch import EfficientNet as ENet  # type: ignore[import-untyped]
 from torch import nn
 
 
@@ -10,9 +10,9 @@ class EfficientNet(nn.Module):
         self.input_shape = input_shape
         model_str = f"efficientnet-b{b}"
         self.efficient_net = (
-            EffNet.from_pretrained(model_str, num_classes=num_classes)
+            ENet.from_pretrained(model_str, num_classes=num_classes)
             if pretrained
-            else EffNet.from_name(model_str, num_classes=num_classes)
+            else ENet.from_name(model_str, num_classes=num_classes)
         )
 
     def forward(self, x):

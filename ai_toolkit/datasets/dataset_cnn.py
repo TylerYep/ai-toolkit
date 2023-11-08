@@ -4,7 +4,7 @@ from typing import Any
 
 import torch
 from torch.utils.data import DataLoader
-from torchvision import datasets, transforms  # type: ignore[import]
+from torchvision import datasets, transforms  # type: ignore[import-untyped]
 
 from ai_toolkit.args import Arguments
 from ai_toolkit.datasets.dataset import DatasetLoader, TensorDataLoader
