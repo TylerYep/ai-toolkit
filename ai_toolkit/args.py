@@ -42,7 +42,7 @@ class Arguments:
     use_best: bool
 
     def update(self, args_json: dict[str, Any]) -> None:
-        annotations = self.__annotations__  # pylint: disable=no-member
+        annotations = self.__annotations__
         for key, val in args_json.items():
             if not hasattr(self, key):
                 raise KeyError(f"Not a valid argument for Arguments: {key}")

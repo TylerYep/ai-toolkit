@@ -1,6 +1,5 @@
 # Sample code from the TorchVision 0.3 Object Detection Finetuning Tutorial
 # http://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
-# pylint: disable=too-few-public-methods
 from __future__ import annotations
 
 import random
@@ -27,7 +26,7 @@ class DatasetPenn(DatasetLoader):
     @staticmethod
     def get_collate_fn(device: torch.device) -> Callable[[list[Any]], Any]:
         def collate(x):
-            data, target = tuple(zip(*x))
+            data, target = tuple(zip(*x, strict=False))
             data = [image.to(device) for image in data]  # type: ignore[assignment]
             target = [{k: v.to(device) for k, v in t.items()} for t in target]  # type: ignore[assignment]
             return (data, target)
