@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import matplotlib.pyplot as plt
-import torch
 
 from .viz_utils import rearrange, save_figure
+
+if TYPE_CHECKING:
+    import torch
 
 
 def view_input(

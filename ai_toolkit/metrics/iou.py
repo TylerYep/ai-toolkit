@@ -10,12 +10,11 @@ class IoU(Metric):
     def calculate_iou(
         output: torch.Tensor, target: torch.Tensor, eps: float = 1e-7
     ) -> float:
-        output = output > 0.5
+        output = output > 0.5  # type: ignore[assignment]
         output, target = output.squeeze(), target.squeeze().bool()
         intersection = (output & target).float().sum((1, 2)) + eps
         union = (output | target).float().sum((1, 2)) + eps
-        accuracy = (intersection / union).sum().item()
-        return accuracy
+        return (intersection / union).sum().item()
 
     def update(self, val_dict: SimpleNamespace) -> float:
         output, target = val_dict.output, val_dict.target

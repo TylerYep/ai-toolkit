@@ -4,13 +4,15 @@ import random
 import shutil
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
 from torch import nn, optim
-from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader
+
+if TYPE_CHECKING:
+    from torch.optim import lr_scheduler
 
 # Redefining here to avoid circular import
 TensorDataLoader = DataLoader[tuple[torch.Tensor, ...]]
@@ -22,7 +24,7 @@ def get_sample_loader(loader: TensorDataLoader) -> Iterator[Any]:
     while True:
         try:
             yield next(sample_loader)
-        except StopIteration:
+        except StopIteration:  # noqa: PERF203
             sample_loader = iter(loader)
 
 

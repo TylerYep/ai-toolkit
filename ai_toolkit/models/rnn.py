@@ -12,5 +12,4 @@ class BasicRNN(nn.Module):
     def forward(self, x):
         x, _ = self.rnn(x)
         x = x.squeeze()
-        x = self.i2o(x)
-        return x
+        return self.i2o(x)

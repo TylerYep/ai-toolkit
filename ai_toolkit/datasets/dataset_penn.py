@@ -28,8 +28,8 @@ class DatasetPenn(DatasetLoader):
     def get_collate_fn(device: torch.device) -> Callable[[list[Any]], Any]:
         def collate(x):
             data, target = tuple(zip(*x))
-            data = [image.to(device) for image in data]
-            target = [{k: v.to(device) for k, v in t.items()} for t in target]
+            data = [image.to(device) for image in data]  # type: ignore[assignment]
+            target = [{k: v.to(device) for k, v in t.items()} for t in target]  # type: ignore[assignment]
             return (data, target)
 
         return collate
@@ -53,14 +53,13 @@ class DatasetPenn(DatasetLoader):
     def load_test_data(self, args: Arguments, device: torch.device) -> TensorDataLoader:
         collate_fn = self.get_collate_fn(device)
         test_set = PennFudanDataset("data", self.get_transforms(train=False))
-        test_loader = DataLoader(
+        return DataLoader(
             test_set,
             batch_size=args.test_batch_size,
             collate_fn=collate_fn,
             pin_memory=torch.cuda.is_available(),
             num_workers=args.num_workers,
         )
-        return test_loader
 
 
 # output = model(data, target)

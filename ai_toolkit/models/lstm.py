@@ -33,7 +33,7 @@ class BasicLSTM(nn.Module):
         )
 
     def forward(self, batch, lengths):
-        hidden = self.init_hidden(batch.size(-1))
+        hidden = self.init_hidden(batch.size(-1))  # type: ignore[no-untyped-call]
         embeds = self.embedding(batch)
         packed_input = pack_padded_sequence(embeds, lengths)
         _, (ht, _) = self.lstm(packed_input, hidden)
@@ -43,5 +43,4 @@ class BasicLSTM(nn.Module):
         # ht[-1] = (batch_size x hidden_size)
         output = self.dropout_layer(ht[-1])
         output = self.hidden2out(output)
-        output = F.log_softmax(output, dim=1)
-        return output
+        return F.log_softmax(output, dim=1)

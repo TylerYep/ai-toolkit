@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import Any
-
-from torch import nn
+from typing import TYPE_CHECKING, Any
 
 from ai_toolkit import util
 from ai_toolkit.args import Arguments, init_pipeline
@@ -17,6 +15,9 @@ from ai_toolkit.visualizations import (
     show_saliency_maps,
     view_input,
 )
+
+if TYPE_CHECKING:
+    from torch import nn
 
 
 def viz(*arg_list: str) -> None:

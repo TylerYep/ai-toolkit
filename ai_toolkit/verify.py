@@ -34,7 +34,7 @@ def verify_model(
         check_batch_dimension(model, loader, optimizer)
         overfit_example(model, loader, optimizer, criterion, device, args.batch_dim)
         check_all_layers_training(model, loader, optimizer, criterion)
-        detect_NaN_tensors(model)
+        detect_nan_tensors(model)
         print("Verification complete - all tests passed!")
 
 
@@ -128,10 +128,11 @@ def overfit_example(
             f"\nOverfit Loss is not sufficiently close to 0: {loss}\n"
             "This may indicate an error with your model.",
             RuntimeWarning,
+            stacklevel=2,
         )
 
 
-def detect_NaN_tensors(model: nn.Module) -> None:
+def detect_nan_tensors(model: nn.Module) -> None:
     """
     Verifies that the provided model does not have any exploding gradients.
     """

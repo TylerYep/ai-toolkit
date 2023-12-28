@@ -32,8 +32,7 @@ class MaskRCNN(nn.Module):
 
     def forward(self, images, targets):
         """Forward pass for your feedback prediction network."""
-        out = self.model_ft(images, targets)
-        return out
+        return self.model_ft(images, targets)
 
     def forward_with_activations(self, x):
         pass

@@ -1,6 +1,6 @@
 # ai-toolkit
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![Build Status](https://github.com/TylerYep/ai-toolkit/actions/workflows/test.yml/badge.svg)](https://github.com/TylerYep/ai-toolkit/actions/workflows/test.yml)
 [![GitHub license](https://img.shields.io/github/license/TylerYep/ai-toolkit)](https://github.com/TylerYep/ai-toolkit/blob/main/LICENSE)
 [![codecov](https://codecov.io/gh/TylerYep/ai-toolkit/branch/main/graph/badge.svg)](https://codecov.io/gh/TylerYep/ai-toolkit)

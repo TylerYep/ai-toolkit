@@ -45,19 +45,18 @@ class DatasetLSTM(DatasetLoader):
         train_loader, val_loader = self.split_data(
             orig_dataset, args, device, val_split
         )
-        return train_loader, val_loader, orig_dataset.model_params + (device,)
+        return train_loader, val_loader, (*orig_dataset.model_params, device)
 
     def load_test_data(self, args: Arguments, device: torch.device) -> TensorDataLoader:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
-        test_loader = DataLoader(
+        return DataLoader(
             test_set,
             batch_size=args.test_batch_size,
             collate_fn=collate_fn,
             pin_memory=torch.cuda.is_available(),
             num_workers=args.num_workers,
         )
-        return test_loader
 
 
 class LanguageWords(TensorDataset):
@@ -131,8 +130,8 @@ class LanguageWords(TensorDataset):
         data = defaultdict(list)
         for filepath in Path(data_dir).glob("*.txt"):
             with filepath.open(encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip().lower()
+                for line_with_spaces in f:
+                    line = line_with_spaces.strip().lower()
                     data[filepath.stem].append(line)
                     for token in line:
                         token_set.add(token)

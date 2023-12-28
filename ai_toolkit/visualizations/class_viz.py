@@ -45,7 +45,7 @@ def create_class_visualization(
     # Randomly initialize the image as a PyTorch Tensor, and make it requires gradient.
     INPUT_SHAPE = data[0].unsqueeze(0).shape
     img = torch.randn(INPUT_SHAPE).mul_(1.0)
-    img = img.type(dtype).requires_grad_()  # type: ignore[call-overload]
+    img = img.type(dtype).requires_grad_()
 
     for t in range(num_iterations):
         # Randomly jitter the image a bit; this gives slightly nicer results
@@ -72,7 +72,7 @@ def create_class_visualization(
         #     blur_image(img.data, sigma=0.5)
 
         # Periodically show the image
-        if t == 0 or (t + 1) % show_every == 0 or t == num_iterations - 1:
+        if t in (0, num_iterations - 1) or (t + 1) % show_every == 0:
             plt.imshow(rearrange(img.data))
             plt.title(f"{class_labels[target_y]}\nIteration {t + 1} / {num_iterations}")
             plt.gcf().set_size_inches(4, 4)

@@ -25,7 +25,7 @@ class DatasetRNN(DatasetLoader):
     def pad_collate(batch):
         (xx, yy) = zip(*batch)
         x_lens = torch.tensor([len(x) for x in xx])
-        xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)
+        xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)  # type: ignore[arg-type]
         yy_pad = torch.stack(yy)
         return xx_pad, yy_pad, x_lens
 
@@ -41,14 +41,13 @@ class DatasetRNN(DatasetLoader):
     def load_test_data(self, args: Arguments, device: torch.device) -> TensorDataLoader:
         collate_fn = self.get_collate_fn(device)
         test_set = LanguageWords(self.DATA_PATH)
-        test_loader = DataLoader(
+        return DataLoader(
             test_set,
             batch_size=args.test_batch_size,
             collate_fn=collate_fn,
             pin_memory=torch.cuda.is_available(),
             num_workers=args.num_workers,
         )
-        return test_loader
 
 
 # def pad_collate(batch):
@@ -99,7 +98,7 @@ class LanguageWords(TensorDataset):
     def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
         line, category = self.data[index]
         category_tensor = torch.tensor([self.all_categories.index(category)])
-        line_tensor = self.lineToTensor(line)
+        line_tensor = self.line_to_tensor(line)
         # torch.tensor([ALL_LETTERS.index(letter) for letter in line])
         return line_tensor, category_tensor.squeeze()
 
@@ -110,7 +109,7 @@ class LanguageWords(TensorDataset):
 
     @staticmethod
     def read_lines(filepath: Path) -> list[str]:
-        def unicodeToAscii(s: str) -> str:
+        def unicode_to_ascii(s: str) -> str:
             return "".join(
                 c
                 for c in unicodedata.normalize("NFD", s)
@@ -119,9 +118,9 @@ class LanguageWords(TensorDataset):
 
         with filepath.open(encoding="utf-8") as f:
             lines = f.read().strip().split("\n")
-            return [unicodeToAscii(line) for line in lines]
+            return [unicode_to_ascii(line) for line in lines]
 
-    def lineToTensor(self, line: str) -> torch.Tensor:
+    def line_to_tensor(self, line: str) -> torch.Tensor:
         tensor = torch.zeros((1, self.max_word_length))
         for li, letter in enumerate(line):
             tensor[0][li] = ALL_LETTERS.index(letter)

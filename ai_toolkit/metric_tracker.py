@@ -9,7 +9,7 @@ from typing import Any
 
 import torch
 from torch import nn
-from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter  # type: ignore[attr-defined]
 
 from ai_toolkit.args import Arguments, get_run_name
 from ai_toolkit.metrics import Metric, get_metric_initializer
@@ -34,7 +34,7 @@ class MetricTracker:
         if not args.no_save:
             run_name = checkpoint.get("run_name", get_run_name(args))
             self.run_name = str(run_name)
-            self.writer = SummaryWriter(self.run_name)
+            self.writer = SummaryWriter(self.run_name)  # type: ignore[no-untyped-call]
             print(f"Storing checkpoints in: {self.run_name}\n")
             with (Path(run_name) / "args.json").open("w", encoding="utf-8") as f:
                 json.dump(args.to_json(), f, indent=4)
@@ -103,10 +103,14 @@ class MetricTracker:
             for metric in self.metric_data.values():
                 metric.batch_reset()
 
-        if mode == Mode.VAL and not self.args.no_visualize:
+        if (
+            mode == Mode.VAL
+            and not self.args.no_visualize
+            and hasattr(val_dict.data, "size")
+            and len(val_dict.data.size()) == 4
+        ):
             # (N, C, H, W)
-            if hasattr(val_dict.data, "size") and len(val_dict.data.size()) == 4:
-                self.add_images(val_dict, num_steps)
+            self.add_images(val_dict, num_steps)
         return tqdm_dict
 
     def epoch_update(self, mode: Mode) -> None:
@@ -123,11 +127,11 @@ class MetricTracker:
     def add_network(self, model: nn.Module, loader: Iterator[Any]) -> None:
         if self.writer is not None:
             data, _ = next(loader)
-            self.writer.add_graph(model, data)
+            self.writer.add_graph(model, data)  # type: ignore[no-untyped-call]
 
     def write(self, title: str, val: float, step_num: int) -> None:
         if self.writer is not None:
-            self.writer.add_scalar(title, val, step_num)
+            self.writer.add_scalar(title, val, step_num)  # type: ignore[no-untyped-call]
 
     def add_images(self, val_dict: SimpleNamespace, num_steps: int) -> None:
         if self.writer is not None and self.class_labels:
@@ -137,7 +141,7 @@ class MetricTracker:
                 target_ind = int(target.detach()[j])
                 pred_class = self.class_labels[int(pred_ind)]
                 target_class = self.class_labels[target_ind]
-                self.writer.add_image(
+                self.writer.add_image(  # type: ignore[no-untyped-call]
                     f"{target_class}/Predicted_{pred_class}", data[j], num_steps
                 )
 
