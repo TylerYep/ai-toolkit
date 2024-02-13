@@ -61,7 +61,7 @@ def check_batch_dimension(
     data, _ = next(loader)
     optimizer.zero_grad()
 
-    if not isinstance(data, (list, tuple)):
+    if not isinstance(data, list | tuple):
         data.requires_grad_()
         output = model(data)
         loss = output[test_val].sum()
@@ -94,7 +94,7 @@ def overfit_example(
     """
 
     def batch_slice(input_data: Any, batch_size: int, batch_dim: int) -> Any:
-        if isinstance(input_data, (list, tuple)):
+        if isinstance(input_data, list | tuple):
             return [batch_slice(data, batch_size, batch_dim) for data in input_data]
         if input_data.ndim == 1:
             return input_data[:batch_size]
@@ -114,7 +114,7 @@ def overfit_example(
     with tqdm(desc="Verify Model", total=max_iters, ncols=120) as pbar:
         for _ in range(max_iters):
             optimizer.zero_grad()
-            output = model(*data) if isinstance(data, (list, tuple)) else model(data)
+            output = model(*data) if isinstance(data, list | tuple) else model(data)
             loss = criterion(output, target)
             if torch.allclose(loss, torch.tensor(0.0).to(device)):
                 break
@@ -158,13 +158,13 @@ def check_all_layers_training(
     before = [param.clone().detach() for param in model.parameters()]
 
     optimizer.zero_grad()
-    output = model(*data) if isinstance(data, (list, tuple)) else model(data)
+    output = model(*data) if isinstance(data, list | tuple) else model(data)
     loss = criterion(output, target)
     loss.backward()
     optimizer.step()
 
     after = model.parameters()
-    for start, end in zip(before, after):
+    for start, end in zip(before, after, strict=False):
         if (start == end).all():
             raise RuntimeError(
                 "Detected some layers that are not training. Did you freeze "

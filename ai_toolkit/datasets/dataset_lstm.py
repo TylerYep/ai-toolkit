@@ -24,9 +24,7 @@ class DatasetLSTM(DatasetLoader):
 
         def to_device(b):
             return (
-                list(map(to_device, b))
-                if isinstance(b, (list, tuple))
-                else b.to(device)
+                list(map(to_device, b)) if isinstance(b, list | tuple) else b.to(device)
             )
 
         def sort_batch(data, target):
@@ -120,7 +118,9 @@ class LanguageWords(TensorDataset):
     @staticmethod
     def pad_sequences(vectorized_seqs, seq_lengths):
         seq_tensor = torch.zeros((len(vectorized_seqs), seq_lengths.max())).long()
-        for idx, (seq, seqlen) in enumerate(zip(vectorized_seqs, seq_lengths)):
+        for idx, (seq, seqlen) in enumerate(
+            zip(vectorized_seqs, seq_lengths, strict=False)
+        ):
             seq_tensor[idx, :seqlen] = torch.LongTensor(seq)
         return seq_tensor
 

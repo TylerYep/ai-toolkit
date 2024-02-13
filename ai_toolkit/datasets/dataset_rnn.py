@@ -23,7 +23,7 @@ ALL_LETTERS = string.ascii_letters + " .,;'"
 class DatasetRNN(DatasetLoader):
     @staticmethod
     def pad_collate(batch):
-        (xx, yy) = zip(*batch)
+        (xx, yy) = zip(*batch, strict=False)
         x_lens = torch.tensor([len(x) for x in xx])
         xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)  # type: ignore[arg-type]
         yy_pad = torch.stack(yy)

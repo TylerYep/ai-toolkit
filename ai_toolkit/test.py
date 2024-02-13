@@ -31,7 +31,7 @@ def test_model(
     test_len = len(test_loader)
     with torch.inference_mode(), tqdm(desc="Test", total=test_len, ncols=120) as pbar:
         for data, target in test_loader:
-            if isinstance(data, (list, tuple)):
+            if isinstance(data, list | tuple):
                 output = model(*data)
                 batch_size = data[0].size(args.batch_dim)
             else:

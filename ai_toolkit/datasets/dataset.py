@@ -28,9 +28,7 @@ class DatasetLoader:
 
         def to_device(b: torch.Tensor) -> Any:
             return (
-                list(map(to_device, b))
-                if isinstance(b, (list, tuple))
-                else b.to(device)
+                list(map(to_device, b)) if isinstance(b, list | tuple) else b.to(device)
             )
 
         return lambda x: map(to_device, default_collate(x))

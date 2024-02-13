@@ -24,7 +24,7 @@ def get_sample_loader(loader: TensorDataLoader) -> Iterator[Any]:
     while True:
         try:
             yield next(sample_loader)
-        except StopIteration:  # noqa: PERF203
+        except StopIteration:
             sample_loader = iter(loader)
 
 

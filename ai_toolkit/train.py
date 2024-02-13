@@ -51,7 +51,7 @@ def train_and_validate(
             if mode == Mode.TRAIN and optimizer is not None:
                 optimizer.zero_grad(set_to_none=True)
 
-            if isinstance(data, (list, tuple)):
+            if isinstance(data, list | tuple):
                 output = model(*data)
                 batch_size = data[0].size(args.batch_dim)
             else:
