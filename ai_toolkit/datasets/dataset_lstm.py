@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import TensorDataset
 
-from ai_toolkit.args import Arguments
 from ai_toolkit.datasets.dataset import DatasetLoader, TensorDataLoader
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from ai_toolkit.args import Arguments
 
 
 class DatasetLSTM(DatasetLoader):

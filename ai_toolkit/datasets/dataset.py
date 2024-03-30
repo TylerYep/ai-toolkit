@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import sys
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import torch
 from torch.utils.data import DataLoader, TensorDataset, random_split
 from torch.utils.data.dataloader import default_collate
 
-from ai_toolkit.args import Arguments
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from ai_toolkit.args import Arguments
 
 TensorDataLoader = DataLoader[tuple[torch.Tensor, ...]]
 
@@ -28,7 +30,9 @@ class DatasetLoader:
 
         def to_device(b: torch.Tensor) -> Any:
             return (
-                list(map(to_device, b)) if isinstance(b, list | tuple) else b.to(device)
+                list(map(to_device, b))
+                if isinstance(b, list | tuple)  # type: ignore[unreachable]
+                else b.to(device)
             )
 
         return lambda x: map(to_device, default_collate(x))

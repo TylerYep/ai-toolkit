@@ -10,7 +10,7 @@ class Dice(Metric):
     def calculate_dice_coefficent(
         output: torch.Tensor, target: torch.Tensor, eps: float = 1e-7
     ) -> float:
-        output = (output > 0.5).float()  # type: ignore[attr-defined]
+        output = (output > 0.5).float()
         batch_size = output.shape[0]
         dice_target = target.reshape(batch_size, -1)
         dice_output = output.reshape(batch_size, -1)

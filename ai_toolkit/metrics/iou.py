@@ -10,7 +10,7 @@ class IoU(Metric):
     def calculate_iou(
         output: torch.Tensor, target: torch.Tensor, eps: float = 1e-7
     ) -> float:
-        output = output > 0.5  # type: ignore[assignment]
+        output = output > 0.5
         output, target = output.squeeze(), target.squeeze().bool()
         intersection = (output & target).float().sum((1, 2)) + eps
         union = (output | target).float().sum((1, 2)) + eps

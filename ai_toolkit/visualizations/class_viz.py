@@ -45,7 +45,7 @@ def create_class_visualization(
     # Randomly initialize the image as a PyTorch Tensor, and make it requires gradient.
     INPUT_SHAPE = data[0].unsqueeze(0).shape
     img = torch.randn(INPUT_SHAPE).mul_(1.0)
-    img = img.type(dtype).requires_grad_()
+    img = img.type(dtype).requires_grad_()  # type: ignore[call-overload]
 
     for t in range(num_iterations):
         # Randomly jitter the image a bit; this gives slightly nicer results

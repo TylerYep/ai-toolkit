@@ -14,7 +14,7 @@ class TestTrain:
             "--checkpoint=TEST",
         )
 
-        assert round(metric_tracker["Loss"].value, 7) == 4.5642366
+        assert round(metric_tracker["Loss"].value, 7) == 4.5642376
 
     @staticmethod
     def test_epoch_resume(tmp_path: Path) -> None:

@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import random
 import sys
-from collections.abc import Iterator
 from types import SimpleNamespace
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
@@ -19,6 +18,9 @@ from ai_toolkit.metric_tracker import MetricTracker, Mode
 from ai_toolkit.models import get_model_initializer
 from ai_toolkit.verify import verify_model
 from ai_toolkit.viz import visualize, visualize_trained
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 tqdm: Any
 if "google.colab" in sys.modules:

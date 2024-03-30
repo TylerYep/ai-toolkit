@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import random
 import shutil
-from collections.abc import Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -12,6 +11,8 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from torch.optim import lr_scheduler
 
 # Redefining here to avoid circular import

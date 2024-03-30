@@ -5,7 +5,7 @@ import string
 import unicodedata
 import zipfile
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import torch
 import wget  # type: ignore[import-untyped]
@@ -13,8 +13,10 @@ from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import TensorDataset
 
-from ai_toolkit.args import Arguments
 from ai_toolkit.datasets.dataset import DatasetLoader, TensorDataLoader
+
+if TYPE_CHECKING:
+    from ai_toolkit.args import Arguments
 
 DATA_URL = "https://download.pytorch.org/tutorial/data.zip"
 ALL_LETTERS = string.ascii_letters + " .,;'"

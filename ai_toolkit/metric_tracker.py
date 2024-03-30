@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Iterator
 from enum import Enum, unique
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import torch
 from torch import nn
@@ -13,6 +11,10 @@ from torch.utils.tensorboard import SummaryWriter  # type: ignore[attr-defined]
 
 from ai_toolkit.args import Arguments, get_run_name
 from ai_toolkit.metrics import Metric, get_metric_initializer
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from types import SimpleNamespace
 
 
 @unique

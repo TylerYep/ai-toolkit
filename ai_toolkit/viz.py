@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any
 
 from ai_toolkit import util
 from ai_toolkit.args import Arguments, init_pipeline
 from ai_toolkit.datasets import get_dataset_initializer
-from ai_toolkit.metric_tracker import MetricTracker
 from ai_toolkit.models import get_model_initializer
 from ai_toolkit.visualizations import (
     compute_activations,
@@ -17,7 +15,11 @@ from ai_toolkit.visualizations import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from torch import nn
+
+    from ai_toolkit.metric_tracker import MetricTracker
 
 
 def viz(*arg_list: str) -> None:
