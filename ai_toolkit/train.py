@@ -86,9 +86,7 @@ def get_optimizer(args: Arguments, model: nn.Module) -> Optimizer:
     return AdamW(params, lr=args.lr)
 
 
-def get_scheduler(
-    args: Arguments, optimizer: Optimizer
-) -> lr_scheduler.LRScheduler:
+def get_scheduler(args: Arguments, optimizer: Optimizer) -> lr_scheduler.LRScheduler:
     return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)
 
 
