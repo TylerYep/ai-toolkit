@@ -7,8 +7,9 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
-from torch import nn, optim
+from torch import nn
 from torch.optim import lr_scheduler
+from torch.optimizer import AdamW, Optimizer
 
 from ai_toolkit import util
 from ai_toolkit.args import Arguments, init_pipeline
@@ -33,7 +34,7 @@ def train_and_validate(
     args: Arguments,
     model: nn.Module,
     loader: TensorDataLoader,
-    optimizer: optim.Optimizer | None,
+    optimizer: Optimizer | None,
     criterion: nn.Module,
     metrics: MetricTracker,
     mode: Mode,
@@ -80,13 +81,13 @@ def train_and_validate(
     metrics.epoch_update(mode)
 
 
-def get_optimizer(args: Arguments, model: nn.Module) -> optim.Optimizer:
+def get_optimizer(args: Arguments, model: nn.Module) -> Optimizer:
     params = filter(lambda p: p.requires_grad, model.parameters())
-    return optim.AdamW(params, lr=args.lr)
+    return AdamW(params, lr=args.lr)
 
 
 def get_scheduler(
-    args: Arguments, optimizer: optim.Optimizer
+    args: Arguments, optimizer: Optimizer
 ) -> lr_scheduler.LRScheduler:
     return lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.gamma)
 
@@ -96,7 +97,7 @@ def load_model(
     device: torch.device,
     init_params: tuple[Any, ...],
     loader: Iterator[Any],
-) -> tuple[nn.Module, nn.Module, optim.Optimizer, lr_scheduler.LRScheduler | None]:
+) -> tuple[nn.Module, nn.Module, Optimizer, lr_scheduler.LRScheduler | None]:
     criterion = get_loss_initializer(args.loss)()
     model = get_model_initializer(args.model)(*init_params).to(device)
     optimizer = get_optimizer(args, model)
