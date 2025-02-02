@@ -7,7 +7,7 @@ from .metric import Metric
 
 class Accuracy(Metric):
     def __repr__(self) -> str:
-        return f"{self.name}: {100. * self.value:.2f}%"
+        return f"{self.name}: {100.0 * self.value:.2f}%"
 
     @staticmethod
     def calculate_accuracy(output: torch.Tensor, target: torch.Tensor) -> float:

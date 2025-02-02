@@ -24,9 +24,9 @@ def get_model_initializer(model_name: str) -> type[nn.Module]:
 
 __all__ = (
     "BasicCNN",
-    "DenseNet",
     "BasicLSTM",
-    "MaskRCNN",
     "BasicRNN",
+    "DenseNet",
+    "MaskRCNN",
     "get_model_initializer",
 )
