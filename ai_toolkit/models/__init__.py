@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import cast
-
-from torch import nn
+from typing import TYPE_CHECKING, cast
 
 from .cnn import BasicCNN
 from .dense import DenseNet
@@ -14,12 +12,15 @@ from .rnn import BasicRNN
 # from .unet import UNet
 # from .efficient_net import EfficientNet
 
+if TYPE_CHECKING:
+    from torch import nn
+
 
 def get_model_initializer(model_name: str) -> type[nn.Module]:
     """Retrieves class initializer from its string name."""
     if not hasattr(sys.modules[__name__], model_name):
         raise RuntimeError(f"Model class {model_name} not found in models/")
-    return cast(type[nn.Module], getattr(sys.modules[__name__], model_name))
+    return cast("type[nn.Module]", getattr(sys.modules[__name__], model_name))
 
 
 __all__ = (

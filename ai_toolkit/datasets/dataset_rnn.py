@@ -27,7 +27,11 @@ class DatasetRNN(DatasetLoader):
     def pad_collate(batch):
         (xx, yy) = zip(*batch, strict=False)
         x_lens = torch.tensor([len(x) for x in xx])
-        xx_pad = pad_sequence(xx, batch_first=True, padding_value=0)
+        xx_pad = pad_sequence(
+            xx,
+            batch_first=True,
+            padding_value=0,
+        )
         yy_pad = torch.stack(yy)
         return xx_pad, yy_pad, x_lens
 

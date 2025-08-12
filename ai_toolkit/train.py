@@ -8,8 +8,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 import torch
 from torch import nn
-from torch.optim import lr_scheduler
-from torch.optimizer import AdamW, Optimizer
+from torch.optim import AdamW, lr_scheduler
 
 from ai_toolkit import util
 from ai_toolkit.args import Arguments, init_pipeline
@@ -22,6 +21,8 @@ from ai_toolkit.viz import visualize, visualize_trained
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+    from torch.optim.optimizer import Optimizer
 
 tqdm: Any
 if "google.colab" in sys.modules:
