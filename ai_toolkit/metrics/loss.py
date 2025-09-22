@@ -10,4 +10,4 @@ class Loss(Metric):
         self.epoch_avg += loss * val_dict.batch_size
         self.running_avg += loss * val_dict.batch_size
         self.num_examples += val_dict.batch_size
-        return cast(float, loss)
+        return cast("float", loss)

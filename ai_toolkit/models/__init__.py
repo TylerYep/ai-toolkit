@@ -19,14 +19,14 @@ def get_model_initializer(model_name: str) -> type[nn.Module]:
     """Retrieves class initializer from its string name."""
     if not hasattr(sys.modules[__name__], model_name):
         raise RuntimeError(f"Model class {model_name} not found in models/")
-    return cast(type[nn.Module], getattr(sys.modules[__name__], model_name))
+    return cast("type[nn.Module]", getattr(sys.modules[__name__], model_name))
 
 
 __all__ = (
     "BasicCNN",
-    "DenseNet",
     "BasicLSTM",
-    "MaskRCNN",
     "BasicRNN",
+    "DenseNet",
+    "MaskRCNN",
     "get_model_initializer",
 )

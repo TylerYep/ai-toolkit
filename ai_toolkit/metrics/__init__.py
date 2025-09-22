@@ -15,7 +15,7 @@ def get_metric_initializer(metric_name: str) -> type[Metric]:
     """Retrieves class initializer from its string name."""
     if not hasattr(sys.modules[__name__], metric_name):
         raise RuntimeError(f"Metric {metric_name} not found in metrics folder.")
-    return cast(type[Metric], getattr(sys.modules[__name__], metric_name))
+    return cast("type[Metric]", getattr(sys.modules[__name__], metric_name))
 
 
 __all__ = (

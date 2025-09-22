@@ -30,7 +30,7 @@ class F1Score(Metric):
         f1 = 2 * (precision * recall) / (precision + recall + eps)
         f1 = f1.clamp(min=eps, max=1 - eps)
         f1_score = 1 - f1.mean()
-        return cast(float, f1_score)
+        return cast("float", f1_score)
 
     def update(self, val_dict: SimpleNamespace) -> float:
         y_pred, y_true = val_dict.output, val_dict.target

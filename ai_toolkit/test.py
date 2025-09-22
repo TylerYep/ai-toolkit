@@ -46,7 +46,7 @@ def test_model(
     test_loss /= test_len
     print(
         f"\nTest set: Average loss: {test_loss:.4f},",
-        f"Accuracy: {correct}/{test_len} ({100. * correct / test_len:.2f}%)\n",
+        f"Accuracy: {correct}/{test_len} ({100.0 * correct / test_len:.2f}%)\n",
     )
 
 
