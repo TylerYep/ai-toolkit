@@ -5,7 +5,8 @@ from typing import Any
 
 import torch
 import torchinfo
-from torch import nn, optim
+from torch import nn
+from torch.optim.optimizer import Optimizer
 
 from ai_toolkit.args import Arguments
 
@@ -20,7 +21,7 @@ def verify_model(
     args: Arguments,
     model: nn.Module,
     loader: Iterator[Any],
-    optimizer: optim.Optimizer,
+    optimizer: Optimizer,
     criterion: nn.Module,
     device: torch.device,
 ) -> None:
@@ -47,7 +48,7 @@ def model_summary(args: Arguments, model: nn.Module, loader: Iterator[Any]) -> N
 def check_batch_dimension(
     model: nn.Module,
     loader: Iterator[Any],
-    optimizer: optim.Optimizer,
+    optimizer: Optimizer,
     test_val: int = 2,
 ) -> None:
     """
@@ -82,7 +83,7 @@ def check_batch_dimension(
 def overfit_example(
     model: nn.Module,
     loader: Iterator[Any],
-    optimizer: optim.Optimizer,
+    optimizer: Optimizer,
     criterion: nn.Module,
     device: torch.device,
     batch_dim: int = 0,
@@ -147,7 +148,7 @@ def detect_nan_tensors(model: nn.Module) -> None:
 def check_all_layers_training(
     model: nn.Module,
     loader: Iterator[Any],
-    optimizer: optim.Optimizer,
+    optimizer: Optimizer,
     criterion: nn.Module,
 ) -> None:
     """

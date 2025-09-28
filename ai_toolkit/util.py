@@ -7,13 +7,14 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
-from torch import nn, optim
+from torch import nn
 from torch.utils.data import DataLoader
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from torch.optim import lr_scheduler
+    from torch.optim.optimizer import Optimizer
 
 # Redefining here to avoid circular import
 TensorDataLoader = DataLoader[tuple[torch.Tensor, ...]]
@@ -69,7 +70,7 @@ def load_checkpoint(checkpoint_path: Path, use_best: bool = False) -> dict[str, 
 def load_state_dict(
     checkpoint: dict[str, Any],
     model: nn.Module,
-    optimizer: optim.Optimizer | None = None,
+    optimizer: Optimizer | None = None,
     scheduler: lr_scheduler.LRScheduler | None = None,
 ) -> None:
     """
