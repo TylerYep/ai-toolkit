@@ -22,7 +22,7 @@ dependencies = [
     "pillow",
     "protobuf",
     "tensorboard",
-    "torch==2.2",
+    "torch==2.8.0",
     "torchinfo",
     "torchvision",
     "tqdm",
